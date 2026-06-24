@@ -63,7 +63,25 @@ function App() {
       setVerdict(result);
     } catch (err) {
       console.error(err);
-      setError(err.message || 'An error occurred during analysis.');
+      
+      let friendlyMessage = 'We ran into an issue analyzing the product. Please try again.';
+      
+      if (import.meta.env.DEV) {
+        // Show detailed technical errors during local development
+        friendlyMessage = err.message || 'An unexpected error occurred.';
+      } else {
+        // Mask technical jargon in production
+        const msg = (err.message || '').toLowerCase();
+        if (msg.includes('api key') || msg.includes('missing') || msg.includes('.env')) {
+          friendlyMessage = 'Our AI service is currently undergoing maintenance. Please try again shortly.';
+        } else if (msg.includes('fetch') || msg.includes('network') || msg.includes('connect')) {
+          friendlyMessage = 'Unable to connect to the server. Please check your internet connection and try again.';
+        } else if (msg.includes('rate limit') || msg.includes('429') || msg.includes('busy')) {
+          friendlyMessage = 'The AI service is currently busy. Please wait a moment and try again.';
+        }
+      }
+      
+      setError(friendlyMessage);
     } finally {
       setIsLoading(false);
       setLoadingStatus('');

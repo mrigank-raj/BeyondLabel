@@ -8,7 +8,7 @@ App.jsx
 ├── Error Banner              # Inline dismissable error (rendered in App.jsx)
 ├── AnalysisForm.jsx          # Form orchestrator
 │   ├── TextInput             # Product name input (inline in AnalysisForm)
-│   ├── ImageUpload.jsx       # Drag-and-drop label photo upload
+│   ├── ImageUpload.jsx       # Drag-and-drop upload + camera capture
 │   └── GoalSelector.jsx      # 4 health goal buttons with icons
 ├── VerdictCard.jsx           # AI verdict display with copy/share
 └── Footer.jsx                # Disclaimer and branding
@@ -22,7 +22,7 @@ src/
 │   ├── Hero.jsx              # Gradient heading, status badge, entrance animation
 │   ├── AnalysisForm.jsx      # Form with inline validation, shake on error
 │   ├── GoalSelector.jsx      # Goal buttons with emoji icons and check marks
-│   ├── ImageUpload.jsx       # Drag-and-drop + click upload with preview
+│   ├── ImageUpload.jsx       # Drag-and-drop + click upload + camera capture with preview
 │   ├── VerdictCard.jsx       # Verdict card with copy/share and auto-scroll
 │   └── Footer.jsx            # Legal disclaimer and version info
 ├── services/

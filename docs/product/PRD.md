@@ -112,10 +112,11 @@ on a small screen so that I can use it while standing in a store
 ### P1 — Should Have
 | ID | Feature | Acceptance Criteria |
 |----|---------|---------------------|
-| F8 | Photo label upload | OCR extracts text, same analysis pipeline runs |
+| F8 | Photo label upload | User uploads photo, same analysis pipeline runs |
 | F9 | India-specific manipulation flags | Detects soy inflation, jaggery sugar trick, serving size tricks |
 | F10 | Analysis history | Last 5 products saved in session |
 | F11 | Share verdict | User can copy or share verdict as text |
+| F12a | Camera label capture | User can take photo directly from device camera (mobile native + desktop viewfinder) |
 
 ### P2 — Future
 | ID | Feature |

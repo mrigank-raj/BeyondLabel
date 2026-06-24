@@ -60,16 +60,36 @@
 
 ---
 
-## Phase 4: Vercel Deployment + User Testing 🔜 Next
+## Phase 3.5: Camera Capture ✅ Complete
+
+**Goal**: Allow users to take a photo of a food label directly from their device camera without leaving the app.
+
+| Task | Status |
+|---|---|
+| Add "📸 Take Photo" button to `ImageUpload.jsx` | ✅ |
+| Implement native mobile capture via `capture="environment"` attribute | ✅ |
+| Implement desktop live viewfinder via `getUserMedia()` API | ✅ |
+| Add canvas-to-file capture logic (`captureFromViewfinder()`) | ✅ |
+| Add viewfinder UI with guide lines, shutter button, close button | ✅ |
+| Add proper camera stream cleanup (cancel, capture, unmount) | ✅ |
+| Add camera error handling (permission denied, no camera found) | ✅ |
+| Add mobile device detection for hybrid approach | ✅ |
+| Production build verification | ✅ |
+
+---
+
+## Phase 4: Vercel Deployment + User Testing ✅ Complete
 
 **Goal**: Deploy the app to Vercel and begin user testing.
 
 | Task | Status |
 |---|---|
-| Run final `npm run build` and verify clean output | ⬜ |
-| Create Vercel project and connect GitHub repo | ⬜ |
-| Configure environment variables on Vercel dashboard | ⬜ |
-| Deploy to Vercel and verify live URL | ⬜ |
+| Run final `npm run build` and verify clean output | ✅ |
+| Create Vercel project and connect GitHub repo | ✅ |
+| Configure environment variables on Vercel dashboard | ✅ |
+| Deploy to Vercel and verify live URL | ✅ |
+| Improve error handling for production (user-friendly messages) | ✅ |
+| Update Gemini model fallback chain (1.5 → 2.0/2.5) | ✅ |
 | Test on real mobile devices (Android Chrome, iOS Safari) | ⬜ |
 | Share with 3–5 test users for initial feedback | ⬜ |
 | Collect and document user feedback | ⬜ |

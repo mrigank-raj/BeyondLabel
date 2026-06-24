@@ -6,7 +6,7 @@
 
 ## What It Does
 
-BeyondLabel helps Indian consumers see through misleading food labels. Users type a product name or upload a food label photo, select their health goal — **Muscle Gain**, **Fat Loss**, **General Health**, or **Diabetes Management** — and receive an instant AI-powered verdict:
+BeyondLabel helps Indian consumers see through misleading food labels. Users type a product name, upload a food label photo, or **snap a picture directly from their camera** — select their health goal — **Muscle Gain**, **Fat Loss**, **General Health**, or **Diabetes Management** — and receive an instant AI-powered verdict:
 
 - ✅ **Trustworthy** — The product is what it claims to be.
 - ⚠️ **Question It** — There are concerns worth knowing about.

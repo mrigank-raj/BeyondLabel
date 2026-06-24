@@ -46,6 +46,11 @@ I am not misled by a hallucinated analysis
 US10: As a user on mobile I want the interface to work cleanly 
 on a small screen so that I can use it while standing in a store
 
+US11: As a user in a physical store I want to take a photo of 
+a food label directly from the app using my phone camera so 
+that I can get an instant verdict without saving the photo 
+first or switching between apps
+
 ## Acceptance Criteria Format
 Each user story will be expanded with full acceptance criteria 
 after round 1 of user research and testing.

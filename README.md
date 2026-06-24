@@ -106,7 +106,7 @@ BeyondLabel/
 
 ## Live Demo
 
-🔗 **[Vercel link coming soon]**
+🔗 **[beyondlabel.vercel.app](https://beyondlabel.vercel.app)**
 
 ---
 

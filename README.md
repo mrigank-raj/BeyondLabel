@@ -49,7 +49,7 @@ BeyondLabel catches these tricks and explains them in plain English, personalize
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/BeyondLabel.git
+git clone https://github.com/mrigank-raj/BeyondLabel.git
 cd BeyondLabel
 
 # 2. Install dependencies

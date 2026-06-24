@@ -185,7 +185,7 @@ export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
 
   const mimeType = imageFile.type;
   const prompt = buildImagePrompt(goalId);
-  const models = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-pro'];
+  const models = ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.0-flash-lite'];
   let lastError = null;
 
   for (const model of models) {

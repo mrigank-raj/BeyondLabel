@@ -1,0 +1,71 @@
+PRODUCT NAME: BeyondLabel
+
+PROBLEM STATEMENT:
+Health-conscious Indian consumers are being misled by 
+front-of-pack claims on packaged food products. Labels say 
+"High Protein," "Zero Sugar," and "Natural" — but FSSAI 
+regulations remain too weak to enforce honest labeling, and 
+most consumers lack the nutritional expertise to decode 
+ingredient lists themselves. Existing tools like Yuka and 
+FactsScan return a numerical score but never explain why a 
+product is misleading, don't personalize to the user's health 
+goal, and miss India-specific manipulation tactics like soy 
+protein inflation, jaggery marketed as "no refined sugar," or 
+serving size deception. BeyondLabel solves this by using AI to 
+analyze any Indian packaged food product and return a 
+plain-English, goal-specific verdict — not a score, but a reason.
+
+WHO HAS THIS PROBLEM:
+Health-conscious Indian consumers aged 18–35 who are actively 
+trying to make better food choices — gym-goers, fitness 
+beginners, diabetics, and parents — who shop on Amazon, 
+Blinkit, Flipkart, or in physical stores like DMart. They are 
+motivated but misled. They want to eat right but cannot trust 
+what brands put on the front of the pack.
+
+WHAT THEY DO TODAY:
+Watch YouTube reviews (often sponsored), Google the product, 
+use AI manually by copying ingredient lists, or simply guess. 
+All of these are slow, unreliable, or require nutritional 
+expertise they don't have.
+
+WHAT BEYONDLABEL DOES:
+User types a product name or uploads a photo of a food label, 
+selects their health goal (Muscle Gain / Fat Loss / General 
+Health / Diabetes Management), and receives an instant 
+AI-powered verdict: Trustworthy / Question It / Avoid — with 
+a plain-English explanation of why, and a specific better 
+alternative.
+
+WHAT MAKES IT DIFFERENT:
+- AI reasoning, not a database score
+- Explains WHY a product is misleading, not just that it is
+- Personalized to the user's specific health goal
+- Built specifically for Indian food products and Indian label 
+  manipulation tactics
+- No barcode scanner needed — works with product name or 
+  label photo
+
+CORE DESIGN PRINCIPLE:
+Our job is not to help users find healthy products. Our job 
+is to help users reject dishonest ones.
+
+WHAT WE ARE NOT BUILDING:
+- Restaurant or homemade food analyzer
+- Calorie tracker or diet planner
+- Barcode scanner with product database
+- Social features or community ratings
+- User accounts or saved history (V1)
+
+TECH STACK:
+- Frontend: React + Tailwind CSS
+- AI for text: Groq API
+- AI for images: Google Gemini API (vision)
+- Hosting: Vercel
+- No backend required for MVP
+
+SUCCESS FOR MVP:
+A user types "Pintola Protein Oats", selects "Muscle Gain", 
+clicks Analyze, and receives a verdict that correctly 
+identifies the soy vs whey deception, explains why it matters 
+for muscle gain, and suggests a better alternative.

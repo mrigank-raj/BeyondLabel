@@ -1,6 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getHistory, getWeeklyInsights } from '../services/storageService';
 
 const DashboardHistory = ({ onAnalyzeNew }) => {
+  const [history, setHistory] = useState([]);
+  const [insights, setInsights] = useState({ safeRatio: 0, scanned: 0, goalAligned: 0, flagged: 0 });
+
+  useEffect(() => {
+    setHistory(getHistory());
+    setInsights(getWeeklyInsights());
+  }, []);
   return (
     <div className="w-full animate-fade-in space-y-6">
       {/* Mobile Header */}
@@ -117,65 +125,60 @@ const DashboardHistory = ({ onAnalyzeNew }) => {
             </div>
             
             <div className="space-y-4">
-              {/* Item 1 */}
-              <div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer group">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden shadow-sm">
-                    <img src="https://images.unsplash.com/photo-1585250005703-0d53cbfd5248?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Peanut Butter" className="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900">Organic Peanut Butter</h4>
-                    <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.5">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      Today, 10:42 AM
-                    </p>
-                  </div>
+              {history.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500 mb-4">No analysis history yet.</p>
+                  <button 
+                    onClick={onAnalyzeNew}
+                    className="px-6 py-2 bg-primary-lighter/20 text-primary font-bold rounded-pill text-sm hover:bg-primary-lighter/30 transition-colors"
+                  >
+                    Scan your first product
+                  </button>
                 </div>
-                <div className="text-right flex items-center gap-4">
-                  <div className="hidden sm:block">
-                    <span className="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-md uppercase tracking-widest block w-fit ml-auto mb-1">
-                      Excellent Match
-                    </span>
-                    <span className="text-xs text-gray-500 font-medium">Fits Muscle Gain</span>
-                  </div>
-                  <svg className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </div>
-
-              <div className="h-px bg-gray-100 w-full" />
-
-              {/* Item 2 */}
-              <div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer group">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden shadow-sm">
-                    <img src="https://images.unsplash.com/photo-1622484211148-7076a084dd88?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Protein Bar" className="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900">Protein Plus Bar</h4>
-                    <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.5">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      Yesterday
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right flex items-center gap-4">
-                  <div className="hidden sm:block">
-                    <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded-md uppercase tracking-widest block w-fit ml-auto mb-1">
-                      Hidden Sugars
-                    </span>
-                    <span className="text-xs text-gray-500 font-medium">Conflicts with Goals</span>
-                  </div>
-                  <svg className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </div>
+              ) : (
+                history.map((item, index) => (
+                  <React.Fragment key={item.id}>
+                    <div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden shadow-sm flex items-center justify-center text-2xl">
+                          {item.imageUrl ? (
+                            <img src={item.imageUrl} alt={item.productName} className="w-full h-full object-cover" />
+                          ) : (
+                            '📦'
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900">{item.productName}</h4>
+                          <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.5">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {new Date(item.timestamp).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right flex items-center gap-4">
+                        <div className="hidden sm:block">
+                          <span className={`px-2 py-1 text-[10px] font-bold rounded-md uppercase tracking-widest block w-fit ml-auto mb-1 ${
+                            item.verdictData?.verdict === 'Trustworthy' ? 'bg-green-100 text-green-700' :
+                            item.verdictData?.verdict === 'Avoid' ? 'bg-red-100 text-red-700' :
+                            'bg-amber-100 text-amber-700'
+                          }`}>
+                            {item.verdictData?.verdict}
+                          </span>
+                          <span className="text-xs text-gray-500 font-medium line-clamp-1 max-w-[150px]">
+                            {item.verdictData?.goalNote || item.verdictData?.suggestion || 'Analyzed'}
+                          </span>
+                        </div>
+                        <svg className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                    {index < history.length - 1 && <div className="h-px bg-gray-100 w-full" />}
+                  </React.Fragment>
+                ))
+              )}
             </div>
           </section>
 
@@ -195,25 +198,25 @@ const DashboardHistory = ({ onAnalyzeNew }) => {
             <div className="space-y-2 mb-8 relative z-10">
               <div className="flex justify-between text-sm font-semibold">
                 <span className="text-green-100">Safe Ratio</span>
-                <span className="text-green-400 font-bold">85%</span>
+                <span className="text-green-400 font-bold">{insights.safeRatio}%</span>
               </div>
               <div className="w-full bg-black/20 rounded-full h-3 overflow-hidden">
-                <div className="bg-green-400 h-3 rounded-full" style={{ width: '85%' }}></div>
+                <div className="bg-green-400 h-3 rounded-full transition-all duration-1000" style={{ width: `${insights.safeRatio}%` }}></div>
               </div>
             </div>
 
             <div className="space-y-4 relative z-10">
               <div className="flex justify-between items-center pb-3 border-b border-white/10">
                 <span className="text-sm text-green-100/80">Products Scanned</span>
-                <span className="font-bold">24</span>
+                <span className="font-bold">{insights.scanned}</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-white/10">
                 <span className="text-sm text-green-100/80">Goal Aligned</span>
-                <span className="font-bold text-green-400">18</span>
+                <span className="font-bold text-green-400">{insights.goalAligned}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-green-100/80">Flagged Ingredients</span>
-                <span className="font-bold text-red-400">6</span>
+                <span className="font-bold text-red-400">{insights.flagged}</span>
               </div>
             </div>
           </section>

@@ -19,46 +19,54 @@ const cleanMarkdown = (text) => {
 };
 
 /**
- * Parses the structured text response into a verdict object.
- * Handles markdown formatting and varied whitespace/newline patterns.
+ * Parses the structured JSON response into a verdict object.
  */
 const parseVerdict = (text) => {
   try {
     console.log("Raw AI Response:", text); // Debug logging
 
-    const extract = (key) => {
-      // Match "KEY:" followed by content, stopping at the next "ALL_CAPS_KEY:" or end of string
-      // Uses [\\s\\S] instead of . to match across newlines
-      const regex = new RegExp(`${key}\\s*:\\s*([\\s\\S]*?)(?=(?:VERDICT|WHY|ALTERNATIVE|GOAL NOTE|SUGGESTION)\\s*:|$)`, 'i');
-      const match = text.match(regex);
-      return match ? cleanMarkdown(match[1]) : null;
-    };
-
-    let verdict = extract('VERDICT');
-    // Sanitize verdict to one of the known values
-    if (verdict && verdict.includes('Trustworthy')) verdict = 'Trustworthy';
-    else if (verdict && verdict.includes('Question It')) verdict = 'Question It';
-    else if (verdict && verdict.includes('Avoid')) verdict = 'Avoid';
-    else if (verdict && verdict.includes('Insufficient Data')) verdict = 'Insufficient Data';
-    else verdict = verdict || 'Insufficient Data';
-
-    if (verdict === 'Insufficient Data') {
-      return {
-        verdict,
-        why: extract('WHY') || 'Could not determine product details.',
-        suggestion: extract('SUGGESTION') || extract('ALTERNATIVE') || 'Try uploading a clear photo of the back of the pack.'
-      };
+    // Remove markdown code blocks if the AI accidentally added them
+    let cleanText = text.trim();
+    if (cleanText.startsWith('```json')) {
+      cleanText = cleanText.substring(7);
+    } else if (cleanText.startsWith('```')) {
+      cleanText = cleanText.substring(3);
     }
+    if (cleanText.endsWith('```')) {
+      cleanText = cleanText.substring(0, cleanText.length - 3);
+    }
+    cleanText = cleanText.trim();
+
+    const parsedData = JSON.parse(cleanText);
+
+    // Sanitize verdict to one of the known values
+    let verdict = parsedData.verdict || 'Insufficient Data';
+    if (verdict.includes('Trustworthy')) verdict = 'Trustworthy';
+    else if (verdict.includes('Questionable') || verdict.includes('Question It')) verdict = 'Questionable';
+    else if (verdict.includes('Avoid')) verdict = 'Avoid';
+    else verdict = 'Insufficient Data';
 
     return {
       verdict,
-      why: extract('WHY') || 'No explanation provided.',
-      alternative: extract('ALTERNATIVE') || null,
-      goalNote: extract('GOAL NOTE') || null
+      why: parsedData.why || 'No explanation provided.',
+      suggestion: parsedData.suggestion || null,
+      goalNote: parsedData.goalNote || null,
+      nutrition_facts: parsedData.nutrition_facts || null,
+      ingredients: parsedData.ingredients || [],
+      alternatives: parsedData.alternatives || []
     };
   } catch (e) {
     console.error("Parse error:", e);
-    throw new Error('Failed to parse AI response. Please try again.');
+    // Fallback if parsing fails entirely
+    return {
+      verdict: 'Insufficient Data',
+      why: 'Failed to parse AI response. The server may have returned malformed data.',
+      suggestion: 'Please try again.',
+      goalNote: null,
+      nutrition_facts: null,
+      ingredients: [],
+      alternatives: []
+    };
   }
 };
 
@@ -139,7 +147,8 @@ export const analyzeProduct = async (productName, goalId, onRetry = null) => {
             model: model,
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.3,
-            max_tokens: 1024
+            max_tokens: 1024,
+            response_format: { type: "json_object" }
           })
         },
         2, // 2 retries per model before trying fallback model
@@ -208,6 +217,7 @@ export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
             generationConfig: {
               temperature: 0.3,
               maxOutputTokens: 1024,
+              responseMimeType: "application/json"
             }
           })
         },

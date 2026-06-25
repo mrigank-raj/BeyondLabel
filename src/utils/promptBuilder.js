@@ -11,26 +11,55 @@ CRITICAL: Look for these common Indian food label manipulation tactics:
 6. "0% Trans Fat" when product contains partially hydrogenated oils.
 7. "Natural flavors" covering artificial additives.
 
-You MUST respond in this EXACT structured format:
-VERDICT: [Trustworthy | Question It | Avoid]
-WHY: [2-3 sentences in plain English explaining why, mentioning specific ingredients]
-ALTERNATIVE: [One specific better product or DIY approach]
-GOAL NOTE: [One sentence specific to the user's health goal]
+You MUST respond in pure JSON format only, without any markdown formatting or \`\`\`json tags. 
 
-If the product is unknown, or if the image is unreadable/not a food label, return EXACTLY:
-VERDICT: Insufficient Data
-WHY: [Explain what data is missing or why it cannot be analyzed]
-SUGGESTION: Please upload a clear photo of the back of the pack showing the ingredient list.
-`;
+Use the following JSON schema:
+{
+  "verdict": "Trustworthy" | "Questionable" | "Avoid" | "Insufficient Data",
+  "why": "2-3 sentences explaining the verdict in plain English, mentioning specific ingredients.",
+  "suggestion": "General health finding or suggestion for better options.",
+  "goalNote": "One sentence specific to how this product aligns or conflicts with the user's health goal.",
+  "nutrition_facts": {
+    "sugar": { "value": "string (e.g. 2g)", "status": "Optimal" | "Moderate" | "High" },
+    "sodium": { "value": "string", "status": "Low" | "Moderate" | "High" },
+    "fiber": { "value": "string", "status": "Low" | "Moderate" | "High" },
+    "protein": { "value": "string", "status": "Low" | "Moderate" | "High" }
+  },
+  "ingredients": [
+    {
+      "name": "string",
+      "function": "string (e.g. Sweetener, Preservative)",
+      "safety_status": "Optimal" | "Caution" | "Avoid"
+    }
+  ],
+  "alternatives": [
+    {
+      "name": "string (Brand and Product)",
+      "reason": "Why is it better?",
+      "score": number (0-100)
+    }
+  ]
+}
+
+If the product is unknown, or if the image is unreadable/not a food label, return:
+{
+  "verdict": "Insufficient Data",
+  "why": "Explain what data is missing or why it cannot be analyzed.",
+  "suggestion": "Please upload a clear photo of the back of the pack showing the ingredient list.",
+  "goalNote": null,
+  "nutrition_facts": { "sugar": null, "sodium": null, "fiber": null, "protein": null },
+  "ingredients": [],
+  "alternatives": []
+}`;
 
 export const buildPrompt = (productName, goalId) => {
   const goalModifier = GOAL_PROMPT_MODIFIERS[goalId] || "";
   
-  return `${SYSTEM_INSTRUCTION}\n\n${goalModifier}\n\nPlease analyze this product: "${productName}"`;
+  return `${SYSTEM_INSTRUCTION}\n\nUser Health Goal: ${goalModifier}\n\nPlease analyze this product: "${productName}" and return ONLY valid JSON.`;
 };
 
 export const buildImagePrompt = (goalId) => {
   const goalModifier = GOAL_PROMPT_MODIFIERS[goalId] || "";
   
-  return `${SYSTEM_INSTRUCTION}\n\n${goalModifier}\n\nPlease analyze the food product label in the attached image.`;
+  return `${SYSTEM_INSTRUCTION}\n\nUser Health Goal: ${goalModifier}\n\nPlease analyze the food product label in the attached image and return ONLY valid JSON.`;
 };

@@ -6,6 +6,7 @@ import TopNavBar from './components/layout/TopNavBar';
 import SideNavBar from './components/layout/SideNavBar';
 import BottomNavBar from './components/layout/BottomNavBar';
 import { analyzeProduct, analyzeImage } from './services/geminiService';
+import { saveToHistory } from './services/storageService';
 
 function App() {
   const [productName, setProductName] = useState('');
@@ -73,7 +74,14 @@ function App() {
       } else {
         result = await analyzeProduct(productName, goal, handleRetryMessage);
       }
+      
       setVerdict(result);
+      
+      // Save successful analysis to local storage
+      if (result.verdict !== 'Insufficient Data') {
+        saveToHistory(productName || 'Scanned Label', imagePreview, result);
+      }
+      
     } catch (err) {
       console.error(err);
       

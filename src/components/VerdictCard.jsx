@@ -12,7 +12,7 @@ const VerdictCard = ({ verdictData }) => {
 
   if (!verdictData) return null;
 
-  const { verdict, why, alternative, goalNote, suggestion } = verdictData;
+  const { verdict, why, alternatives, goalNote, suggestion, nutrition_facts, ingredients } = verdictData;
 
   const getVerdictConfig = () => {
     switch (verdict) {
@@ -128,44 +128,36 @@ const VerdictCard = ({ verdictData }) => {
               </p>
               
               {/* Nutrition Blocks Grid */}
-              <div className="grid grid-cols-4 gap-4">
-                <div className="bg-gray-50 rounded-3xl p-5 border border-surface-variant/50">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Sugar</p>
-                  <p className="font-display font-bold text-2xl text-gray-900 mb-2">2g</p>
-                  <p className="text-xs font-bold text-green-600 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
-                    Optimal
-                  </p>
+              {nutrition_facts && (
+                <div className="grid grid-cols-4 gap-4">
+                  {Object.entries(nutrition_facts).map(([key, data]) => {
+                    if (!data || !data.value) return null;
+                    const isOptimal = data.status === 'Optimal' || data.status === 'Low';
+                    const isHigh = data.status === 'High';
+                    return (
+                      <div key={key} className="bg-gray-50 rounded-3xl p-5 border border-surface-variant/50">
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">{key}</p>
+                        <p className="font-display font-bold text-2xl text-gray-900 mb-2">{data.value}</p>
+                        <p className={`text-xs font-bold flex items-center gap-1 ${isOptimal ? 'text-green-600' : isHigh ? 'text-red-600' : 'text-gray-500'}`}>
+                          {isOptimal ? (
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                          ) : isHigh ? (
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+                          ) : (
+                            <span className="w-3 h-0.5 bg-gray-400 rounded-full"></span>
+                          )}
+                          {data.status}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="bg-gray-50 rounded-3xl p-5 border border-surface-variant/50">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Sodium</p>
-                  <p className="font-display font-bold text-2xl text-gray-900 mb-2">45mg</p>
-                  <p className="text-xs font-bold text-green-600 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                    Low
-                  </p>
-                </div>
-                <div className="bg-gray-50 rounded-3xl p-5 border border-surface-variant/50">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Fiber</p>
-                  <p className="font-display font-bold text-2xl text-gray-900 mb-2">8g</p>
-                  <p className="text-xs font-bold text-green-600 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
-                    High
-                  </p>
-                </div>
-                <div className="bg-gray-50 rounded-3xl p-5 border border-surface-variant/50">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Protein</p>
-                  <p className="font-display font-bold text-2xl text-gray-900 mb-2">12g</p>
-                  <p className="text-xs font-bold text-gray-500 flex items-center gap-1">
-                    <span className="w-3 h-0.5 bg-gray-400 rounded-full"></span>
-                    Moderate
-                  </p>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Ingredient Breakdown */}
-            <div>
+            {ingredients && ingredients.length > 0 && (
+              <div>
               <div className="flex justify-between items-end mb-4 px-2">
                 <h3 className="font-display font-bold text-2xl text-gray-900">Ingredient Breakdown</h3>
                 <button className="text-primary font-bold text-sm flex items-center gap-1 hover:underline">
@@ -184,43 +176,38 @@ const VerdictCard = ({ verdictData }) => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-surface-variant">
-                    <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-6 font-semibold text-gray-900">Organic Rolled Oats</td>
-                      <td className="py-4 px-6 text-gray-500 text-sm">Base / Dietary Fiber</td>
-                      <td className="py-4 px-6 text-right">
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-50 text-green-700 text-xs font-bold rounded-md">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                          Optimal
-                        </span>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-6 font-semibold text-gray-900">Chicory Root Extract</td>
-                      <td className="py-4 px-6 text-gray-500 text-sm">Prebiotic Fiber</td>
-                      <td className="py-4 px-6 text-right">
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-50 text-green-700 text-xs font-bold rounded-md">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                          Optimal
-                        </span>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-6 font-semibold text-gray-900 flex items-center gap-1">
-                        Erythritol
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      </td>
-                      <td className="py-4 px-6 text-gray-500 text-sm">Sweetener</td>
-                      <td className="py-4 px-6 text-right">
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-700 text-xs font-bold rounded-md">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                          Caution
-                        </span>
-                      </td>
-                    </tr>
+                    {ingredients.map((ing, idx) => (
+                      <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                        <td className="py-4 px-6 font-semibold text-gray-900 flex items-center gap-1">
+                          {ing.name}
+                          {ing.safety_status === 'Caution' || ing.safety_status === 'Avoid' ? (
+                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          ) : null}
+                        </td>
+                        <td className="py-4 px-6 text-gray-500 text-sm">{ing.function}</td>
+                        <td className="py-4 px-6 text-right">
+                          <span className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-md ${
+                            ing.safety_status === 'Optimal' ? 'bg-green-50 text-green-700' :
+                            ing.safety_status === 'Caution' ? 'bg-amber-50 text-amber-700' :
+                            'bg-red-50 text-red-700'
+                          }`}>
+                            {ing.safety_status === 'Optimal' ? (
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            ) : ing.safety_status === 'Caution' ? (
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                            ) : (
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            )}
+                            {ing.safety_status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
             </div>
+            )}
             
           </div>
 
@@ -229,7 +216,10 @@ const VerdictCard = ({ verdictData }) => {
             
             {/* Actions Card */}
             <div className="bg-[#f2f4f1] rounded-[40px] p-6 space-y-4">
-              <button className="w-full bg-[#002a1b] text-white py-3.5 rounded-pill font-bold flex items-center justify-center gap-2 hover:bg-black transition-colors">
+              <button 
+                onClick={() => window.print()}
+                className="w-full bg-[#002a1b] text-white py-3.5 rounded-pill font-bold flex items-center justify-center gap-2 hover:bg-black transition-colors"
+              >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                 Print Report
               </button>
@@ -241,43 +231,31 @@ const VerdictCard = ({ verdictData }) => {
                 Share Analysis
               </button>
               <div className="h-px w-full bg-gray-200 my-2"></div>
-              <button className="w-full text-[#006c49] py-2 font-bold flex items-center justify-center gap-2 hover:underline">
+              <button disabled className="w-full text-[#006c49] py-2 font-bold flex items-center justify-center gap-2 opacity-70">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" /></svg>
-                Save to History
+                Saved to History
               </button>
             </div>
 
             {/* Alternatives List */}
-            {alternative && (
+            {alternatives && alternatives.length > 0 && (
               <div>
                 <h3 className="font-display font-bold text-2xl text-gray-900 mb-6">Even Better Alternatives</h3>
                 <div className="space-y-4">
-                  {/* Mock Alt 1 */}
-                  <div className="bg-white rounded-4xl p-4 border border-surface-variant shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
-                    <div className="w-20 h-20 rounded-3xl bg-gray-100 overflow-hidden flex-shrink-0">
-                      <img src="https://images.unsplash.com/photo-1622484211148-7076a084dd88?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="PureOats" className="w-full h-full object-cover" />
+                  {alternatives.map((alt, idx) => (
+                    <div key={idx} className="bg-white rounded-4xl p-4 border border-surface-variant shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
+                      <div className="w-20 h-20 rounded-3xl bg-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center text-primary font-bold">
+                        Alt #{idx+1}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 mb-1">{alt.name}</h4>
+                        <p className="text-xs text-[#006c49] font-medium leading-tight flex items-start gap-1">
+                          <svg className="w-3 h-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                          {alt.reason}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">PureOats Raw Bar</h4>
-                      <p className="text-xs text-[#006c49] font-medium leading-tight flex items-start gap-1">
-                        <svg className="w-3 h-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                        Zero added sweeteners, higher protein.
-                      </p>
-                    </div>
-                  </div>
-                  {/* Mock Alt 2 */}
-                  <div className="bg-white rounded-4xl p-4 border border-surface-variant shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer">
-                    <div className="w-20 h-20 rounded-3xl bg-gray-100 overflow-hidden flex-shrink-0">
-                      <img src="https://images.unsplash.com/photo-1559839914-11aae62e1531?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Mix Nuts" className="w-full h-full object-cover" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Nature's Mix Nuts</h4>
-                      <p className="text-xs text-[#006c49] font-medium leading-tight flex items-start gap-1">
-                        <svg className="w-3 h-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                        Whole food ingredient base.
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -339,28 +317,22 @@ const VerdictCard = ({ verdictData }) => {
         </div>
 
         {/* Better Alternatives */}
-        {alternative && (
+        {alternatives && alternatives.length > 0 && (
           <div className="text-left mb-20">
             <h3 className="font-display font-bold text-lg text-gray-900 mb-1 ml-2">Better Alternatives</h3>
             <p className="text-sm text-gray-500 mb-4 ml-2">Products with cleaner ingredients.</p>
             
             <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar pl-2 pr-4 snap-x">
-              <div className="snap-start flex-none w-64 bg-white rounded-3xl overflow-hidden border border-surface-variant shadow-sm p-4">
-                <div className="h-32 bg-primary/10 rounded-2xl mb-3 flex items-center justify-center text-primary font-bold">
-                  Alternative #1
+              {alternatives.map((alt, idx) => (
+                <div key={idx} className="snap-start flex-none w-64 bg-white rounded-3xl overflow-hidden border border-surface-variant shadow-sm p-4">
+                  <div className="h-32 bg-primary/10 rounded-2xl mb-3 flex items-center justify-center text-primary font-bold">
+                    Alternative #{idx+1}
+                  </div>
+                  <span className="text-[10px] font-bold text-green-600 tracking-wider">{alt.score ? `${alt.score}/100 SCORE` : 'RECOMMENDED'}</span>
+                  <h4 className="font-bold text-gray-900 text-sm mt-1 mb-2 leading-tight line-clamp-1">{alt.name}</h4>
+                  <p className="text-xs text-gray-500 line-clamp-2">{alt.reason}</p>
                 </div>
-                <span className="text-[10px] font-bold text-green-600 tracking-wider">95/100 SCORE</span>
-                <h4 className="font-bold text-gray-900 text-sm mt-1 mb-2 leading-tight line-clamp-1">{alternative.split('.')[0] || "Healthier Option"}</h4>
-                <p className="text-xs text-gray-500 line-clamp-2">{alternative}</p>
-              </div>
-              <div className="snap-start flex-none w-64 bg-white rounded-3xl overflow-hidden border border-surface-variant shadow-sm p-4">
-                <div className="h-32 bg-primary/10 rounded-2xl mb-3 flex items-center justify-center text-primary font-bold">
-                  Alternative #2
-                </div>
-                <span className="text-[10px] font-bold text-green-600 tracking-wider">92/100 SCORE</span>
-                <h4 className="font-bold text-gray-900 text-sm mt-1 mb-2 leading-tight">Another Option</h4>
-                <p className="text-xs text-gray-500 line-clamp-2">A great secondary choice for your goals.</p>
-              </div>
+              ))}
             </div>
           </div>
         )}

@@ -13,8 +13,7 @@ const DashboardHome = ({
     <div className="w-full">
       {/* Mobile Header (Hidden on Desktop) */}
       <div className="lg:hidden flex items-center gap-2 mb-6 px-1">
-        <span className="text-2xl">🍃</span>
-        <span className="font-display font-bold text-xl text-primary tracking-tight">BeyondLabel</span>
+        <img src="/logo.png" alt="BeyondLabel" className="h-8 object-contain" />
       </div>
 
       {/* Desktop Welcome (Hidden on Mobile) */}

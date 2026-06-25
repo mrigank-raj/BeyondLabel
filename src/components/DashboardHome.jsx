@@ -13,13 +13,15 @@ const DashboardHome = ({
     <div className="w-full">
       {/* Mobile Header (Hidden on Desktop) */}
       <div className="lg:hidden flex items-center gap-2 mb-6 px-1">
-        <img src="/logo.png" alt="BeyondLabel" className="h-8 object-contain" />
+        <img src="/logo.png" alt="BeyondLabel" className="h-10 md:h-12 object-contain" />
       </div>
 
       {/* Desktop Welcome (Hidden on Mobile) */}
       <section className="hidden lg:block space-y-2 mb-10">
-        <h1 className="font-display text-4xl text-primary font-bold">Welcome to BeyondLabel.</h1>
-        <p className="text-lg text-gray-500 max-w-2xl">What are we eating today? Let's decode the labels and ensure they align with your health journey.</p>
+        <h1 className="font-display text-4xl text-gray-900 font-bold flex items-center gap-3">
+          Welcome to <img src="/logo.png" alt="BeyondLabel" className="h-12 object-contain translate-y-1" />
+        </h1>
+        <p className="text-lg text-gray-500 max-w-2xl mt-4">Unmasking misleading labels to empower your daily food choices and help you take back control of your health.</p>
       </section>
 
       {/* Mobile Search Bar (Hidden on Desktop because it's in TopNav) */}

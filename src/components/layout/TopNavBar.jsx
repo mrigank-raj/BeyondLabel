@@ -4,7 +4,7 @@ const TopNavBar = ({ currentTab, setCurrentTab }) => {
   return (
     <header className="hidden lg:flex fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-xl border-b border-surface-variant/50 shadow-sm justify-between items-center px-10 py-3">
       <div className="flex items-center gap-3 w-64">
-        <img src="/logo.png" alt="BeyondLabel" className="h-10 md:h-12 object-contain" />
+        <span className="font-display text-2xl font-bold text-primary tracking-tight">BeyondLabel</span>
       </div>
       
       <div className="flex items-center gap-8 text-[15px] font-semibold">

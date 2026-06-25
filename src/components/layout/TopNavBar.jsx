@@ -36,11 +36,6 @@ const TopNavBar = ({ currentTab, setCurrentTab }) => {
             className="bg-surface-variant/30 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary w-64 transition-all"
           />
         </div>
-        <button className="p-2 rounded-full hover:bg-surface-variant/50 transition-colors text-gray-500">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </button>
       </div>
     </header>
   );

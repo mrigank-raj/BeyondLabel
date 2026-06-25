@@ -4,15 +4,7 @@ const SideNavBar = ({ currentTab, setCurrentTab, onNewAnalysis }) => {
   return (
     <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-screen w-64 bg-surface-variant/20 border-r border-surface-variant/50 pt-[80px] pb-6 z-40">
       <div className="px-6 py-6 border-b border-surface-variant/50 mb-4">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
-            R
-          </div>
-          <div>
-            <h3 className="font-display font-bold text-primary text-lg leading-tight">Hi, Rohan</h3>
-            <p className="text-gray-500 text-xs font-medium uppercase tracking-wider">Premium Member</p>
-          </div>
-        </div>
+        <h3 className="font-display font-bold text-gray-900 text-sm uppercase tracking-widest mb-4 pl-2">Menu</h3>
         <button 
           onClick={onNewAnalysis}
           className="w-full bg-primary text-on-primary py-3 rounded-pill font-semibold hover:opacity-90 transition-opacity shadow-md flex items-center justify-center gap-2"

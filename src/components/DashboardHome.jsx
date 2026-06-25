@@ -18,7 +18,7 @@ const DashboardHome = ({
 
       {/* Desktop Welcome (Hidden on Mobile) */}
       <section className="hidden lg:block space-y-2 mb-10">
-        <h1 className="font-display text-4xl text-primary font-bold">Good Morning, Rohan.</h1>
+        <h1 className="font-display text-4xl text-primary font-bold">Welcome to BeyondLabel.</h1>
         <p className="text-lg text-gray-500 max-w-2xl">What are we eating today? Let's decode the labels and ensure they align with your health journey.</p>
       </section>
 

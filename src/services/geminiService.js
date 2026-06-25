@@ -51,6 +51,7 @@ const parseVerdict = (text) => {
       why: parsedData.why || 'No explanation provided.',
       suggestion: parsedData.suggestion || null,
       goalNote: parsedData.goalNote || null,
+      claims: parsedData.claims || [],
       nutrition_facts: parsedData.nutrition_facts || null,
       ingredients: parsedData.ingredients || [],
       alternatives: parsedData.alternatives || []
@@ -63,6 +64,7 @@ const parseVerdict = (text) => {
       why: 'Failed to parse AI response. The server may have returned malformed data.',
       suggestion: 'Please try again.',
       goalNote: null,
+      claims: [],
       nutrition_facts: null,
       ingredients: [],
       alternatives: []

@@ -12,7 +12,7 @@ const VerdictCard = ({ verdictData }) => {
 
   if (!verdictData) return null;
 
-  const { verdict, why, alternatives, goalNote, suggestion, nutrition_facts, ingredients } = verdictData;
+  const { verdict, why, alternatives, goalNote, suggestion, claims, nutrition_facts, ingredients } = verdictData;
 
   const getVerdictConfig = () => {
     switch (verdict) {
@@ -99,18 +99,31 @@ const VerdictCard = ({ verdictData }) => {
             </h2>
           </div>
           <div className="flex gap-3">
-            <div className="flex items-center gap-2 border border-white/30 rounded-pill px-4 py-2 bg-white/10 backdrop-blur-sm">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              <span className="text-sm font-bold leading-tight">100%<br/>Organic</span>
-            </div>
-            <div className="flex items-center gap-2 border border-white/30 rounded-pill px-4 py-2 bg-white/10 backdrop-blur-sm">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-sm font-bold leading-tight">No<br/>Additives</span>
-            </div>
+            {claims && claims.map((claim, idx) => (
+              <div key={idx} className={`flex items-center gap-2 border rounded-pill px-4 py-2 backdrop-blur-sm ${
+                claim.isPositive 
+                  ? 'border-white/30 bg-white/10' 
+                  : 'border-red-500/30 bg-red-500/10'
+              }`}>
+                {claim.isPositive ? (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                )}
+                <span className="text-sm font-bold leading-tight">
+                  {claim.text.split(' ').map((word, i, arr) => (
+                    <React.Fragment key={i}>
+                      {word}
+                      {i === 0 && arr.length > 1 ? <br/> : i < arr.length - 1 ? ' ' : ''}
+                    </React.Fragment>
+                  ))}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 

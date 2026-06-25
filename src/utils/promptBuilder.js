@@ -19,6 +19,9 @@ Use the following JSON schema:
   "why": "2-3 sentences explaining the verdict in plain English, mentioning specific ingredients.",
   "suggestion": "General health finding or suggestion for better options.",
   "goalNote": "One sentence specific to how this product aligns or conflicts with the user's health goal.",
+  "claims": [
+    { "text": "Short 2-3 word claim (e.g. 'High Sugar' or 'No Additives')", "isPositive": boolean }
+  ],
   "nutrition_facts": {
     "sugar": { "value": "string (e.g. 2g)", "status": "Optimal" | "Moderate" | "High" },
     "sodium": { "value": "string", "status": "Low" | "Moderate" | "High" },
@@ -47,6 +50,7 @@ If the product is unknown, or if the image is unreadable/not a food label, retur
   "why": "Explain what data is missing or why it cannot be analyzed.",
   "suggestion": "Please upload a clear photo of the back of the pack showing the ingredient list.",
   "goalNote": null,
+  "claims": [],
   "nutrition_facts": { "sugar": null, "sodium": null, "fiber": null, "protein": null },
   "ingredients": [],
   "alternatives": []

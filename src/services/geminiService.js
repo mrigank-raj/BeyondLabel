@@ -41,18 +41,23 @@ const parseVerdict = (text) => {
 
     // Sanitize verdict to one of the known values
     let verdict = parsedData.verdict || 'Insufficient Data';
-    if (verdict.includes('Trustworthy')) verdict = 'Trustworthy';
-    else if (verdict.includes('Questionable') || verdict.includes('Question It')) verdict = 'Questionable';
+    if (verdict.includes('Excellent')) verdict = 'Excellent';
+    else if (verdict.includes('Good')) verdict = 'Good';
+    else if (verdict.includes('Moderate')) verdict = 'Moderate';
+    else if (verdict.includes('Poor')) verdict = 'Poor';
     else if (verdict.includes('Avoid')) verdict = 'Avoid';
     else verdict = 'Insufficient Data';
 
     return {
       verdict,
+      healthScore: parsedData.healthScore ?? null,
       why: parsedData.why || 'No explanation provided.',
       suggestion: parsedData.suggestion || null,
       goalNote: parsedData.goalNote || null,
-      claims: parsedData.claims || [],
-      nutrition_facts: parsedData.nutrition_facts || null,
+      pros: parsedData.pros || [],
+      cons: parsedData.cons || [],
+      hiddenNasties: parsedData.hiddenNasties || [],
+      macros: parsedData.macros || null,
       ingredients: parsedData.ingredients || [],
       alternatives: parsedData.alternatives || []
     };
@@ -61,11 +66,14 @@ const parseVerdict = (text) => {
     // Fallback if parsing fails entirely
     return {
       verdict: 'Insufficient Data',
+      healthScore: 0,
       why: 'Failed to parse AI response. The server may have returned malformed data.',
       suggestion: 'Please try again.',
       goalNote: null,
-      claims: [],
-      nutrition_facts: null,
+      pros: [],
+      cons: [],
+      hiddenNasties: [],
+      macros: null,
       ingredients: [],
       alternatives: []
     };

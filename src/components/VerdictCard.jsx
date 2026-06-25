@@ -12,50 +12,22 @@ const VerdictCard = ({ verdictData }) => {
 
   if (!verdictData) return null;
 
-  const { verdict, why, alternatives, goalNote, suggestion, claims, nutrition_facts, ingredients } = verdictData;
+  const { verdict, healthScore, why, suggestion, goalNote, pros, cons, hiddenNasties, macros, ingredients, alternatives } = verdictData;
 
   const getVerdictConfig = () => {
     switch (verdict) {
-      case 'Trustworthy':
-        return {
-          bg: 'bg-green-50/80',
-          border: 'border-verdict-trust',
-          color: 'text-verdict-trust',
-          icon: '✅',
-          label: 'Trustworthy',
-          desktopBg: 'bg-[#006c49]',
-          desktopText: 'text-white'
-        };
-      case 'Questionable':
-        return {
-          bg: 'bg-amber-50/80',
-          border: 'border-verdict-question',
-          color: 'text-verdict-question',
-          icon: '⚠️',
-          label: 'Questionable',
-          desktopBg: 'bg-[#dd8d00]',
-          desktopText: 'text-white'
-        };
+      case 'Excellent':
+        return { bg: 'bg-green-100', border: 'border-green-500', color: 'text-green-800', icon: '🌟', label: 'Excellent', desktopBg: 'bg-[#006c49]', desktopText: 'text-white' };
+      case 'Good':
+        return { bg: 'bg-green-50', border: 'border-green-400', color: 'text-green-700', icon: '✅', label: 'Good', desktopBg: 'bg-[#188a5d]', desktopText: 'text-white' };
+      case 'Moderate':
+        return { bg: 'bg-amber-50/80', border: 'border-amber-400', color: 'text-amber-700', icon: '⚠️', label: 'Moderate', desktopBg: 'bg-[#dd8d00]', desktopText: 'text-white' };
+      case 'Poor':
+        return { bg: 'bg-orange-50', border: 'border-orange-400', color: 'text-orange-700', icon: '👎', label: 'Poor', desktopBg: 'bg-[#c56000]', desktopText: 'text-white' };
       case 'Avoid':
-        return {
-          bg: 'bg-red-50/80',
-          border: 'border-verdict-avoid',
-          color: 'text-verdict-avoid',
-          icon: '❌',
-          label: 'Avoid',
-          desktopBg: 'bg-[#ba1a1a]',
-          desktopText: 'text-white'
-        };
+        return { bg: 'bg-red-50/80', border: 'border-red-500', color: 'text-red-800', icon: '❌', label: 'Avoid', desktopBg: 'bg-[#ba1a1a]', desktopText: 'text-white' };
       default:
-        return {
-          bg: 'bg-gray-100',
-          border: 'border-gray-400',
-          color: 'text-gray-700',
-          icon: 'ℹ️',
-          label: verdict,
-          desktopBg: 'bg-gray-700',
-          desktopText: 'text-white'
-        };
+        return { bg: 'bg-gray-100', border: 'border-gray-400', color: 'text-gray-700', icon: 'ℹ️', label: verdict || 'Unknown', desktopBg: 'bg-gray-700', desktopText: 'text-white' };
     }
   };
 
@@ -91,37 +63,33 @@ const VerdictCard = ({ verdictData }) => {
       {/* ------------------------------------------------------------------ */}
       <div className="hidden lg:block">
         {/* Top Header Banner */}
-        <div className={`${config.desktopBg} ${config.desktopText} rounded-full py-6 px-10 flex items-center justify-between shadow-floating mb-8`}>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-white/70 mb-1">Final Analysis</p>
-            <h2 className="text-4xl font-display font-extrabold uppercase tracking-wide">
-              {config.label}
-            </h2>
+        <div className={`${config.desktopBg} ${config.desktopText} rounded-[40px] py-6 px-10 flex flex-col md:flex-row items-start md:items-center justify-between shadow-floating mb-8 gap-6`}>
+          <div className="flex items-center gap-6">
+            {healthScore !== undefined && healthScore !== null && (
+              <div className="relative w-20 h-20 flex-shrink-0 flex items-center justify-center rounded-full border-4 border-white/20 bg-white/10 shadow-inner">
+                <span className="text-2xl font-black">{healthScore}</span>
+                <span className="absolute -bottom-3 bg-white text-gray-900 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">Score</span>
+              </div>
+            )}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-white/70 mb-1">Final Analysis</p>
+              <h2 className="text-4xl font-display font-extrabold uppercase tracking-wide">
+                {config.label}
+              </h2>
+            </div>
           </div>
-          <div className="flex gap-3">
-            {claims && claims.map((claim, idx) => (
-              <div key={idx} className={`flex items-center gap-2 border rounded-pill px-4 py-2 backdrop-blur-sm ${
-                claim.isPositive 
-                  ? 'border-white/30 bg-white/10' 
-                  : 'border-red-500/30 bg-red-500/10'
-              }`}>
-                {claim.isPositive ? (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                )}
-                <span className="text-sm font-bold leading-tight">
-                  {claim.text.split(' ').map((word, i, arr) => (
-                    <React.Fragment key={i}>
-                      {word}
-                      {i === 0 && arr.length > 1 ? <br/> : i < arr.length - 1 ? ' ' : ''}
-                    </React.Fragment>
-                  ))}
-                </span>
+          
+          <div className="flex flex-wrap gap-2 justify-end w-full md:w-auto">
+            {pros && pros.map((pro, idx) => (
+              <div key={`pro-${idx}`} className="flex items-center gap-1.5 border border-white/30 bg-white/10 rounded-pill px-3 py-1.5 backdrop-blur-sm">
+                <svg className="w-4 h-4 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                <span className="text-sm font-bold">{pro}</span>
+              </div>
+            ))}
+            {cons && cons.map((con, idx) => (
+              <div key={`con-${idx}`} className="flex items-center gap-1.5 border border-white/30 bg-black/20 rounded-pill px-3 py-1.5 backdrop-blur-sm">
+                <svg className="w-4 h-4 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+                <span className="text-sm font-bold">{con}</span>
               </div>
             ))}
           </div>
@@ -140,24 +108,39 @@ const VerdictCard = ({ verdictData }) => {
                 {goalNote || why}
               </p>
               
+              {/* Hidden Nasties */}
+              {hiddenNasties && hiddenNasties.length > 0 && (
+                <div className="mb-8 bg-red-50 border border-red-200 rounded-3xl p-5">
+                  <h4 className="font-bold text-red-800 flex items-center gap-2 mb-3">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    Hidden Nasties Detected
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {hiddenNasties.map((nasty, idx) => (
+                      <span key={idx} className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-sm font-semibold border border-red-200">{nasty}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
               {/* Nutrition Blocks Grid */}
-              {nutrition_facts && (
-                <div className="grid grid-cols-4 gap-4">
-                  {Object.entries(nutrition_facts).map(([key, data]) => {
+              {macros && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {Object.entries(macros).map(([key, data]) => {
                     if (!data || !data.value) return null;
                     const isOptimal = data.status === 'Optimal' || data.status === 'Low';
                     const isHigh = data.status === 'High';
                     return (
-                      <div key={key} className="bg-gray-50 rounded-3xl p-5 border border-surface-variant/50">
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">{key}</p>
-                        <p className="font-display font-bold text-2xl text-gray-900 mb-2">{data.value}</p>
-                        <p className={`text-xs font-bold flex items-center gap-1 ${isOptimal ? 'text-green-600' : isHigh ? 'text-red-600' : 'text-gray-500'}`}>
+                      <div key={key} className="bg-gray-50 rounded-3xl p-4 border border-surface-variant/50">
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">{key}</p>
+                        <p className="font-display font-bold text-xl text-gray-900 mb-1">{data.value}</p>
+                        <p className={`text-xs font-bold flex items-center gap-1 ${isOptimal ? 'text-green-600' : isHigh ? 'text-red-600' : 'text-amber-600'}`}>
                           {isOptimal ? (
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                           ) : isHigh ? (
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
                           ) : (
-                            <span className="w-3 h-0.5 bg-gray-400 rounded-full"></span>
+                            <span className="w-3 h-0.5 bg-amber-400 rounded-full"></span>
                           )}
                           {data.status}
                         </p>

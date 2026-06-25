@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 
-const ImageUpload = ({ imageFile, imagePreview, onUpload }) => {
+const ImageUpload = ({ imageFile, imagePreview, onUpload, variant = "desktop-card" }) => {
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
   const videoRef = useRef(null);
@@ -139,24 +139,22 @@ const ImageUpload = ({ imageFile, imagePreview, onUpload }) => {
   }, [cameraStream]);
 
   return (
-    <div className="w-full mb-6">
-      <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">
-        Or upload a label photo
-      </label>
-      
-      <div 
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={() => !imagePreview && fileInputRef.current?.click()}
-        className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-xl transition-all duration-300 cursor-pointer ${
-          imagePreview 
-            ? 'border-primary bg-green-50/60' 
-            : isDragOver 
-              ? 'border-primary bg-green-50 scale-[1.01] shadow-md' 
-              : 'border-gray-300 hover:border-primary-lighter hover:bg-gray-50'
-        }`}
-      >
+    <div className="w-full">
+      {/* Drag & Drop Zone — Shown on Desktop, or when an image IS previewed on Mobile so they can see/remove it */}
+      {(variant === 'desktop-card' || imagePreview) && (
+        <div 
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => !imagePreview && fileInputRef.current?.click()}
+          className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-2xl transition-all duration-300 cursor-pointer ${
+            imagePreview 
+              ? 'border-primary bg-primary-lighter/10' 
+              : isDragOver 
+                ? 'border-primary bg-primary-lighter/10 scale-[1.01] shadow-md' 
+                : 'border-surface-variant hover:border-primary-lighter hover:bg-surface-variant/30'
+          }`}
+        >
         <div className="space-y-1 text-center w-full">
           {imagePreview ? (
             <div className="flex flex-col items-center animate-fade-in">
@@ -174,8 +172,8 @@ const ImageUpload = ({ imageFile, imagePreview, onUpload }) => {
             </div>
           ) : (
             <>
-              <div className="mx-auto h-12 w-12 rounded-xl bg-green-50 flex items-center justify-center">
-                <svg className="h-6 w-6 text-primary-lighter" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+              <div className="mx-auto h-12 w-12 rounded-2xl bg-primary-lighter/20 flex items-center justify-center">
+                <svg className="h-6 w-6 text-primary" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -191,13 +189,14 @@ const ImageUpload = ({ imageFile, imagePreview, onUpload }) => {
           )}
         </div>
       </div>
+      )}
 
       {/* Camera Capture Button — shown when no image is uploaded */}
-      {!imagePreview && (
+      {!imagePreview && variant === 'desktop-card' && (
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); handleCameraClick(); }}
-          className="mt-3 w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-gray-200 bg-white text-gray-700 font-semibold text-sm hover:border-primary hover:text-primary hover:bg-green-50/50 active:scale-[0.98] transition-all duration-200"
+          className="mt-3 w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-pill border-2 border-surface-variant bg-surface text-gray-700 font-semibold text-sm hover:border-primary hover:text-primary hover:bg-primary-lighter/10 active:scale-[0.98] transition-all duration-200"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -205,6 +204,23 @@ const ImageUpload = ({ imageFile, imagePreview, onUpload }) => {
           </svg>
           📸 Take Photo with Camera
         </button>
+      )}
+
+      {/* Mobile Card Variant Button */}
+      {!imagePreview && variant === 'mobile-card' && (
+        <div 
+          onClick={handleCameraClick}
+          className="bg-primary rounded-4xl p-8 flex flex-col items-center justify-center text-center shadow-floating min-h-[220px] cursor-pointer hover:bg-primary-light transition-colors w-full"
+        >
+          <div className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center mb-4 text-white hover:scale-105 transition-transform">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h2 className="font-display text-white text-2xl font-bold mb-1">Analyze a Product</h2>
+          <p className="text-primary-lighter text-sm">Take a photo of any nutrition label</p>
+        </div>
       )}
 
       {/* Hidden native camera input for mobile */}
@@ -230,8 +246,8 @@ const ImageUpload = ({ imageFile, imagePreview, onUpload }) => {
 
       {/* Live Viewfinder Overlay (Desktop) */}
       {showViewfinder && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="relative bg-gray-900 rounded-2xl overflow-hidden shadow-2xl max-w-lg w-full">
+        <div className="fixed inset-0 z-50 glass flex items-center justify-center p-4 animate-fade-in">
+          <div className="relative bg-gray-900 rounded-3xl overflow-hidden shadow-floating max-w-lg w-full">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 bg-gray-800">
               <span className="text-white text-sm font-semibold flex items-center gap-2">

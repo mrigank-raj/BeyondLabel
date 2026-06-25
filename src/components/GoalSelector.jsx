@@ -10,11 +10,8 @@ const GOAL_ICONS = {
 
 const GoalSelector = ({ selectedGoal, onSelect }) => {
   return (
-    <div className="w-full mb-6">
-      <label className="block text-sm font-semibold text-gray-700 mb-3 text-left">
-        Select your health goal <span className="text-red-500">*</span>
-      </label>
-      <div className="grid grid-cols-2 gap-3 stagger-children">
+    <div className="w-full">
+      <div className="flex overflow-x-auto pb-4 gap-3 no-scrollbar snap-x">
         {HEALTH_GOALS.map((goal) => {
           const isSelected = selectedGoal === goal.id;
           return (
@@ -22,16 +19,16 @@ const GoalSelector = ({ selectedGoal, onSelect }) => {
               key={goal.id}
               type="button"
               onClick={() => onSelect(goal.id)}
-              className={`relative py-3.5 px-4 rounded-xl border-2 text-sm font-semibold transition-all duration-200 flex items-center gap-2.5 ${
+              className={`flex-none snap-start relative py-2.5 px-5 rounded-pill border text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${
                 isSelected
-                  ? 'bg-primary text-white border-primary shadow-md scale-[1.02]'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-primary-lighter hover:bg-green-50/50 hover:shadow-sm'
+                  ? 'bg-primary/5 text-primary border-primary shadow-sm scale-[1.02]'
+                  : 'bg-white text-gray-700 border-surface-variant hover:border-primary-lighter hover:bg-surface-variant/30 hover:shadow-sm'
               }`}
             >
-              <span className="text-lg">{GOAL_ICONS[goal.id]}</span>
+              <span className="text-base">{GOAL_ICONS[goal.id]}</span>
               {goal.label}
               {isSelected && (
-                <svg className="w-4 h-4 ml-auto flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 ml-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               )}

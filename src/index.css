@@ -83,15 +83,15 @@ body {
 
 /* ─── Glassmorphism ─────────────────────────────── */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(0, 38, 27, 0.1);
 }
 
 /* ─── Gradient Text ─────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 40%, #40916C 100%);
+  background: linear-gradient(135deg, #00261b 0%, #006c49 40%, #4edea3 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

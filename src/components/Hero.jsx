@@ -4,7 +4,7 @@ const Hero = () => {
   return (
     <section className="text-center py-10 md:py-16 px-4 max-w-3xl mx-auto animate-fade-in">
       {/* Decorative badge */}
-      <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-primary-light text-xs font-semibold px-4 py-1.5 rounded-full mb-6 animate-slide-down">
+      <div className="inline-flex items-center gap-2 bg-secondary-container/20 border border-secondary-container/50 text-secondary text-xs font-bold px-4 py-1.5 rounded-pill mb-6 animate-slide-down">
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-lighter opacity-60"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -12,7 +12,7 @@ const Hero = () => {
         AI-Powered Label Analysis
       </div>
 
-      <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-5 gradient-text leading-tight">
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight mb-5 gradient-text leading-[1.1]">
         What's really in your food?
       </h1>
 

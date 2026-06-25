@@ -7,31 +7,40 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#1B4332',
-        'primary-light': '#2D6A4F',
-        'primary-lighter': '#40916C',
-        background: '#F9FAFB',
-        surface: '#FFFFFF',
+        primary: '#00261b', // Deep Forest Green
+        'primary-container': '#0b3d2e',
+        'on-primary': '#ffffff',
+        'primary-light': '#005236',
+        'primary-lighter': '#4edea3',
+        secondary: '#006c49',
+        'secondary-container': '#6cf8bb',
+        background: '#f7f9fb', // Slate Tint off-white
+        surface: '#ffffff',
+        'surface-variant': '#e0e3e5',
         verdict: {
-          avoid: '#DC2626',
-          'avoid-bg': '#FEF2F2',
-          question: '#D97706',
-          'question-bg': '#FFFBEB',
-          trust: '#16A34A',
-          'trust-bg': '#F0FDF4',
+          avoid: '#ba1a1a', // Soft Coral / Error
+          'avoid-bg': '#ffdad6',
+          question: '#dd8d00', // Warm Amber
+          'question-bg': '#ffddb8',
+          trust: '#006c49', // Emerald Green Success
+          'trust-bg': '#6cf8bb',
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'], // Body
+        display: ['Outfit', 'system-ui', 'sans-serif'], // Headings
       },
       boxShadow: {
-        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 4px 16px -2px rgba(0, 0, 0, 0.06)',
-        'card-hover': '0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 8px 24px -4px rgba(0, 0, 0, 0.1)',
+        'card': '0 4px 20px -5px rgba(0, 0, 0, 0.05)', // Level 2
+        'card-hover': '0 8px 30px -5px rgba(0, 0, 0, 0.08)',
+        'floating': '0 12px 40px -8px rgba(0, 0, 0, 0.15)', // Level 3
         'verdict': '0 8px 32px -4px rgba(0, 0, 0, 0.12), 0 2px 8px -2px rgba(0, 0, 0, 0.06)',
       },
       borderRadius: {
         '2xl': '1rem',
-        '3xl': '1.25rem',
+        '3xl': '1.5rem',
+        '4xl': '2rem',
+        'pill': '9999px',
       },
     },
   },

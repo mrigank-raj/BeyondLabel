@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Hero from './components/Hero';
-import AnalysisForm from './components/AnalysisForm';
+import DashboardHome from './components/DashboardHome';
+import DashboardHistory from './components/DashboardHistory';
 import VerdictCard from './components/VerdictCard';
-import Footer from './components/Footer';
+import TopNavBar from './components/layout/TopNavBar';
+import SideNavBar from './components/layout/SideNavBar';
+import BottomNavBar from './components/layout/BottomNavBar';
 import { analyzeProduct, analyzeImage } from './services/geminiService';
 
 function App() {
@@ -11,10 +13,21 @@ function App() {
   const [imagePreview, setImagePreview] = useState(null);
   const [goal, setGoal] = useState('');
   
+  // App routing state
+  const [currentTab, setCurrentTab] = useState('home'); // 'home', 'history', 'goals', 'profile'
+  
   const [verdict, setVerdict] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('');
   const [error, setError] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({});
+
+  const validate = () => {
+    const errors = {};
+    if (!goal) errors.goal = "Please select a health goal.";
+    if (!productName && !imageFile) errors.input = "Enter a product name or upload a photo.";
+    return errors;
+  };
 
   // Generate preview URL when image changes
   useEffect(() => {
@@ -35,13 +48,13 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goal, productName, imageFile]);
 
-  const handleAnalyze = async () => {
-    if (!goal) {
-      setError("Please select a health goal.");
-      return;
-    }
-    if (!productName && !imageFile) {
-      setError("Please enter a product name or upload a photo.");
+  const handleAnalyze = async (e) => {
+    if (e) e.preventDefault();
+    
+    const errors = validate();
+    setValidationErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
@@ -89,9 +102,51 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-background">
-      <main className="flex-grow container mx-auto px-4 sm:px-6 py-6 md:py-8 max-w-4xl">
-        <Hero />
+    <div className="min-h-screen flex font-sans text-on-background bg-background lg:pt-[72px]">
+      <TopNavBar currentTab={currentTab} setCurrentTab={setCurrentTab} />
+      <SideNavBar 
+        currentTab={currentTab} 
+        setCurrentTab={setCurrentTab}
+        onNewAnalysis={() => {
+          setVerdict(null);
+          setCurrentTab('home');
+        }} 
+      />
+      
+      <main className="flex-grow w-full lg:ml-64 p-5 md:p-8 pb-24 lg:pb-10 max-w-[1200px] mx-auto overflow-y-auto">
+        {!verdict && currentTab === 'home' && (
+          <DashboardHome 
+            productName={productName}
+            handleProductNameChange={(val) => {
+              setProductName(val);
+              if (validationErrors.input) setValidationErrors(prev => ({ ...prev, input: null }));
+            }}
+            imageFile={imageFile}
+            imagePreview={imagePreview}
+            handleImageUpload={(file) => {
+              setImageFile(file);
+              if (validationErrors.input) setValidationErrors(prev => ({ ...prev, input: null }));
+            }}
+            goal={goal}
+            handleGoalSelect={(g) => {
+              setGoal(g);
+              if (validationErrors.goal) setValidationErrors(prev => ({ ...prev, goal: null }));
+            }}
+            isLoading={isLoading}
+            loadingStatus={loadingStatus}
+            handleSubmit={handleAnalyze}
+            validationErrors={validationErrors}
+          />
+        )}
+
+        {!verdict && currentTab === 'history' && (
+          <DashboardHistory 
+            onAnalyzeNew={() => {
+              setCurrentTab('home');
+              setVerdict(null);
+            }} 
+          />
+        )}
         
         {/* Dismissable Error Banner */}
         {error && (
@@ -117,24 +172,13 @@ function App() {
             </div>
           </div>
         )}
+        {/* Main Application Logic */}
+        {/* Removed old AnalysisForm */}
 
-        <AnalysisForm 
-          productName={productName}
-          setProductName={setProductName}
-          imageFile={imageFile}
-          imagePreview={imagePreview}
-          setImageFile={setImageFile}
-          goal={goal}
-          setGoal={setGoal}
-          onSubmit={handleAnalyze}
-          isLoading={isLoading}
-          loadingStatus={loadingStatus}
-        />
-
-        <VerdictCard verdictData={verdict} />
+        {verdict && <VerdictCard verdictData={verdict} />}
       </main>
 
-      <Footer />
+      <BottomNavBar currentTab={currentTab} setCurrentTab={setCurrentTab} />
     </div>
   );
 }

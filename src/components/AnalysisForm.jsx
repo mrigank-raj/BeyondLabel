@@ -64,7 +64,7 @@ const AnalysisForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`w-full max-w-xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-card border border-gray-100 animate-slide-up ${
+      className={`w-full max-w-xl mx-auto bg-surface p-6 md:p-10 rounded-4xl shadow-card border border-surface-variant animate-slide-up ${
         shouldShake ? 'animate-shake' : ''
       }`}
     >
@@ -130,12 +130,12 @@ const AnalysisForm = ({
       <button
         type="submit"
         disabled={isLoading}
-        className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 mt-2 ${
+        className={`w-full py-4 px-6 rounded-pill font-bold text-lg transition-all duration-300 mt-2 ${
           isLoading
             ? 'bg-primary/80 text-white/90 cursor-wait'
             : (!productName && !imageFile) || !goal
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              : 'bg-primary text-white shadow-md hover:shadow-card-hover hover:bg-primary-light active:scale-[0.98]'
+              : 'bg-primary text-on-primary shadow-md hover:shadow-card-hover hover:bg-primary-light active:scale-[0.98]'
         }`}
       >
         {isLoading ? (

@@ -25,28 +25,27 @@ const parseVerdict = (text) => {
   try {
     console.log("Raw AI Response:", text); // Debug logging
 
-    // Remove markdown code blocks if the AI accidentally added them
-    let cleanText = text.trim();
-    if (cleanText.startsWith('```json')) {
-      cleanText = cleanText.substring(7);
-    } else if (cleanText.startsWith('```')) {
-      cleanText = cleanText.substring(3);
+    // Extract the JSON object using curly braces to avoid markdown or conversational text
+    let cleanText = text;
+    const firstBrace = cleanText.indexOf('{');
+    const lastBrace = cleanText.lastIndexOf('}');
+    
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace >= firstBrace) {
+      cleanText = cleanText.substring(firstBrace, lastBrace + 1);
+    } else {
+      throw new Error("No JSON object found in response");
     }
-    if (cleanText.endsWith('```')) {
-      cleanText = cleanText.substring(0, cleanText.length - 3);
-    }
-    cleanText = cleanText.trim();
 
     const parsedData = JSON.parse(cleanText);
 
     // Sanitize verdict to one of the known values
-    let verdict = parsedData.verdict || 'Insufficient Data';
-    if (verdict.includes('Excellent')) verdict = 'Excellent';
-    else if (verdict.includes('Good')) verdict = 'Good';
-    else if (verdict.includes('Moderate')) verdict = 'Moderate';
-    else if (verdict.includes('Poor')) verdict = 'Poor';
-    else if (verdict.includes('Avoid')) verdict = 'Avoid';
-    else verdict = 'Insufficient Data';
+    let verdictStr = String(parsedData.verdict || 'Insufficient Data');
+    let verdict = 'Insufficient Data';
+    if (verdictStr.includes('Excellent')) verdict = 'Excellent';
+    else if (verdictStr.includes('Good')) verdict = 'Good';
+    else if (verdictStr.includes('Moderate')) verdict = 'Moderate';
+    else if (verdictStr.includes('Poor')) verdict = 'Poor';
+    else if (verdictStr.includes('Avoid')) verdict = 'Avoid';
 
     return {
       verdict,

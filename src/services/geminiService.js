@@ -154,7 +154,7 @@ export const analyzeProduct = async (productName, goalId, onRetry = null) => {
             model: model,
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.3,
-            max_tokens: 1024,
+            max_tokens: 4096,
             response_format: { type: "json_object" }
           })
         },
@@ -261,7 +261,7 @@ export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
             ],
             generationConfig: {
               temperature: 0.3,
-              maxOutputTokens: 1024,
+              maxOutputTokens: 4096,
               responseMimeType: "application/json"
             }
           })

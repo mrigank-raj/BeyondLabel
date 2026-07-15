@@ -96,9 +96,8 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1500, onRetry =
       const jitter = Math.random() * 600 - 300;
       const finalDelay = Math.max(500, delay + jitter);
       
-      const seconds = Math.round(finalDelay / 1000);
-      const statusText = `AI busy, retrying in ${seconds}s...`;
-      console.warn(`API responded with ${response.status}. ${statusText} (${retries} attempts left)`);
+      const statusText = `Taking a little longer than usual, hold tight...`;
+      console.warn(`API responded with ${response.status}. Retrying... (${retries} attempts left)`);
       
       if (onRetry) {
         onRetry(statusText);
@@ -114,9 +113,8 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1500, onRetry =
       const jitter = Math.random() * 600 - 300;
       const finalDelay = Math.max(500, delay + jitter);
       
-      const seconds = Math.round(finalDelay / 1000);
-      const statusText = `Connection issue, retrying in ${seconds}s...`;
-      console.warn(`Fetch error: ${error.message}. ${statusText} (${retries} attempts left)`);
+      const statusText = `Still analyzing your label, almost there...`;
+      console.warn(`Fetch error: ${error.message}. Retrying... (${retries} attempts left)`);
       
       if (onRetry) {
         onRetry(statusText);
@@ -187,6 +185,50 @@ export const analyzeProduct = async (productName, goalId, onRetry = null) => {
 };
 
 /**
+ * Compresses an image before sending to the API. 
+ * Drastically reduces payload size and upload time for mobile photos.
+ */
+const compressImage = async (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        const MAX_DIMENSION = 1200;
+        
+        if (width > height && width > MAX_DIMENSION) {
+          height = Math.round(height * (MAX_DIMENSION / width));
+          width = MAX_DIMENSION;
+        } else if (height > MAX_DIMENSION) {
+          width = Math.round(width * (MAX_DIMENSION / height));
+          height = MAX_DIMENSION;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Compress as JPEG
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        resolve({
+          base64: dataUrl.split(',')[1],
+          mimeType: 'image/jpeg'
+        });
+      };
+      img.onerror = reject;
+    };
+    reader.onerror = reject;
+  });
+};
+
+/**
  * Analyzes an uploaded label image using Google Gemini API's native vision/multimodal capabilities.
  */
 export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
@@ -194,14 +236,8 @@ export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
     throw new Error('Gemini API Key is missing. Please check your .env file.');
   }
 
-  const base64Image = await new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(imageFile);
-  });
-
-  const mimeType = imageFile.type;
+  // Compress image to speed up upload and AI processing time
+  const { base64: base64Image, mimeType } = await compressImage(imageFile);
   const prompt = buildImagePrompt(goalId);
   const models = ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.0-flash-lite'];
   let lastError = null;

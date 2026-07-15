@@ -66,7 +66,7 @@ const parseVerdict = (text) => {
     return {
       verdict: 'Insufficient Data',
       healthScore: 0,
-      why: 'Failed to parse AI response. The server may have returned malformed data.',
+      why: `Failed to parse AI response. Error: ${e.message}. Raw: ${text.substring(0, 100)}...`,
       suggestion: 'Please try again.',
       goalNote: null,
       pros: [],

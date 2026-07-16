@@ -19,24 +19,103 @@ const cleanMarkdown = (text) => {
 };
 
 /**
+ * Attempts to repair truncated JSON by closing open brackets and braces.
+ */
+const repairTruncatedJSON = (text) => {
+  let openBraces = 0;
+  let openBrackets = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (escaped) { escaped = false; continue; }
+    if (ch === '\\') { escaped = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === '{') openBraces++;
+    else if (ch === '}') openBraces--;
+    else if (ch === '[') openBrackets++;
+    else if (ch === ']') openBrackets--;
+  }
+
+  // If we're still inside a string, close it
+  if (inString) text += '"';
+
+  // Remove any trailing comma before we close
+  text = text.replace(/,\s*$/, '');
+
+  // Close any open brackets and braces
+  while (openBrackets > 0) { text += ']'; openBrackets--; }
+  while (openBraces > 0) { text += '}'; openBraces--; }
+
+  return text;
+};
+
+/**
  * Parses the structured JSON response into a verdict object.
+ * Handles truncated JSON, safety-blocked responses, and edge cases.
  */
 const parseVerdict = (text) => {
+  const fallback = {
+    verdict: 'Insufficient Data',
+    healthScore: 0,
+    why: 'Failed to parse AI response. The server may have returned malformed data.',
+    suggestion: 'Please try again.',
+    goalNote: null,
+    pros: [],
+    cons: [],
+    hiddenNasties: [],
+    macros: null,
+    ingredients: [],
+    alternatives: []
+  };
+
+  if (!text || typeof text !== 'string' || text.trim().length === 0) {
+    console.error("parseVerdict received empty or non-string input:", text);
+    fallback.why = 'AI returned an empty response. This may be due to content safety filters. Please try a different image.';
+    return fallback;
+  }
+
   try {
     console.log("Raw AI Response:", text); // Debug logging
 
     // Extract the JSON object using curly braces to avoid markdown or conversational text
-    let cleanText = text;
+    let cleanText = text.trim();
+
+    // Remove markdown code fences if present
+    cleanText = cleanText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+
     const firstBrace = cleanText.indexOf('{');
-    const lastBrace = cleanText.lastIndexOf('}');
-    
-    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace >= firstBrace) {
-      cleanText = cleanText.substring(firstBrace, lastBrace + 1);
-    } else {
+    if (firstBrace === -1) {
       throw new Error("No JSON object found in response");
     }
 
-    const parsedData = JSON.parse(cleanText);
+    cleanText = cleanText.substring(firstBrace);
+
+    // First attempt: direct parse
+    let parsedData;
+    try {
+      parsedData = JSON.parse(cleanText);
+    } catch (directParseError) {
+      // Second attempt: try to find the last valid closing brace
+      const lastBrace = cleanText.lastIndexOf('}');
+      if (lastBrace !== -1) {
+        try {
+          parsedData = JSON.parse(cleanText.substring(0, lastBrace + 1));
+        } catch (_) {
+          // Third attempt: repair truncated JSON
+          console.warn("JSON truncated, attempting repair...");
+          const repaired = repairTruncatedJSON(cleanText);
+          parsedData = JSON.parse(repaired);
+        }
+      } else {
+        // No closing brace at all — try repair
+        console.warn("No closing brace found, attempting repair...");
+        const repaired = repairTruncatedJSON(cleanText);
+        parsedData = JSON.parse(repaired);
+      }
+    }
 
     // Sanitize verdict to one of the known values
     let verdictStr = String(parsedData.verdict || 'Insufficient Data');
@@ -53,29 +132,17 @@ const parseVerdict = (text) => {
       why: parsedData.why || 'No explanation provided.',
       suggestion: parsedData.suggestion || null,
       goalNote: parsedData.goalNote || null,
-      pros: parsedData.pros || [],
-      cons: parsedData.cons || [],
-      hiddenNasties: parsedData.hiddenNasties || [],
+      pros: Array.isArray(parsedData.pros) ? parsedData.pros : [],
+      cons: Array.isArray(parsedData.cons) ? parsedData.cons : [],
+      hiddenNasties: Array.isArray(parsedData.hiddenNasties) ? parsedData.hiddenNasties : [],
       macros: parsedData.macros || null,
-      ingredients: parsedData.ingredients || [],
-      alternatives: parsedData.alternatives || []
+      ingredients: Array.isArray(parsedData.ingredients) ? parsedData.ingredients : [],
+      alternatives: Array.isArray(parsedData.alternatives) ? parsedData.alternatives : []
     };
   } catch (e) {
-    console.error("Parse error:", e);
-    // Fallback if parsing fails entirely
-    return {
-      verdict: 'Insufficient Data',
-      healthScore: 0,
-      why: `Failed to parse AI response. Error: ${e.message}. Raw: ${text.substring(0, 100)}...`,
-      suggestion: 'Please try again.',
-      goalNote: null,
-      pros: [],
-      cons: [],
-      hiddenNasties: [],
-      macros: null,
-      ingredients: [],
-      alternatives: []
-    };
+    console.error("Parse error:", e, "\nRaw text:", text.substring(0, 500));
+    fallback.why = `Failed to parse AI response. Please try again or use a clearer image.`;
+    return fallback;
   }
 };
 
@@ -282,9 +349,27 @@ export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
       }
 
       const data = await response.json();
-      const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
       
-      if (!rawText) throw new Error('Received empty response from Gemini.');
+      // Check for safety blocks or empty candidates
+      const candidate = data.candidates?.[0];
+      if (!candidate) {
+        const blockReason = data.promptFeedback?.blockReason || 'Unknown';
+        console.warn(`Gemini blocked response. Reason: ${blockReason}`, data);
+        throw new Error(`AI response was blocked (reason: ${blockReason}). Try a clearer photo.`);
+      }
+      
+      const finishReason = candidate.finishReason;
+      if (finishReason === 'SAFETY') {
+        console.warn('Gemini response blocked by safety filters.', candidate.safetyRatings);
+        throw new Error('AI response was blocked by safety filters. Try a different image.');
+      }
+
+      const rawText = candidate.content?.parts?.[0]?.text;
+      
+      if (!rawText || rawText.trim().length === 0) {
+        console.warn('Gemini returned empty text. Finish reason:', finishReason);
+        throw new Error(`Received empty response from Gemini (finishReason: ${finishReason}).`);
+      }
 
       return parseVerdict(rawText);
     } catch (err) {

@@ -34,8 +34,12 @@ const VerdictCard = ({ verdictData }) => {
   const config = getVerdictConfig();
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`BeyondLabel Verdict: ${verdict}\n\n${why}\n\nAlternative: ${alternative || 'N/A'}`);
+    navigator.clipboard.writeText(`🚨 BeyondLabel just analyzed my food... \nVerdict: ${config.label} ${config.icon}\n\n${why}\n\nCheck your own food here: https://beyondlabel.vercel.app`);
     setCopied(true);
+    // Track share event for gamification
+    localStorage.setItem('beyondlabel_has_shared', 'true');
+    window.dispatchEvent(new Event('beyondlabel_share'));
+    
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -44,9 +48,12 @@ const VerdictCard = ({ verdictData }) => {
       try {
         await navigator.share({
           title: 'BeyondLabel Verdict',
-          text: `Check out this product analysis: ${verdict}\n${why}`,
-          url: window.location.href,
+          text: `🚨 BeyondLabel just analyzed my food... \nVerdict: ${config.label} ${config.icon}\n\n${why}\n\nCheck your own food here:`,
+          url: 'https://beyondlabel.vercel.app',
         });
+        // Track share event for gamification
+        localStorage.setItem('beyondlabel_has_shared', 'true');
+        window.dispatchEvent(new Event('beyondlabel_share'));
       } catch (err) {
         console.log('Error sharing:', err);
       }

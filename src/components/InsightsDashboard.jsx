@@ -4,12 +4,20 @@ import { useAuth } from '../contexts/AuthContext';
 
 const InsightsDashboard = () => {
   const [history, setHistory] = useState([]);
+  const [hasShared, setHasShared] = useState(false);
   const { user } = useAuth();
   
   useEffect(() => {
     // In a full implementation, this would fetch from Supabase.
     // For now, we use the local cache which stays in sync with Supabase.
     setHistory(getHistory());
+    
+    // Check share status
+    setHasShared(localStorage.getItem('beyondlabel_has_shared') === 'true');
+    
+    const handleShare = () => setHasShared(true);
+    window.addEventListener('beyondlabel_share', handleShare);
+    return () => window.removeEventListener('beyondlabel_share', handleShare);
   }, []);
 
   const calculateStreak = () => {
@@ -131,7 +139,13 @@ const InsightsDashboard = () => {
       {/* Badges / Achievements */}
       <section className="bg-white rounded-4xl p-6 md:p-8 shadow-sm border border-surface-variant">
         <h2 className="font-display font-bold text-xl text-gray-900 mb-6">Achievements</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          
+          <div className={`p-4 rounded-2xl border-2 text-center transition-colors ${hasShared ? 'border-blue-400 bg-blue-50' : 'border-gray-100 bg-gray-50 opacity-60'}`}>
+            <div className="text-3xl mb-2">{hasShared ? '📢' : '🔒'}</div>
+            <h3 className="font-bold text-gray-900 text-sm">Advocate</h3>
+            <p className="text-xs text-gray-500 mt-1">Share an analysis</p>
+          </div>
           
           <div className={`p-4 rounded-2xl border-2 text-center transition-colors ${stats.total >= 1 ? 'border-amber-400 bg-amber-50' : 'border-gray-100 bg-gray-50 opacity-60'}`}>
             <div className="text-3xl mb-2">{stats.total >= 1 ? '🥚' : '🔒'}</div>

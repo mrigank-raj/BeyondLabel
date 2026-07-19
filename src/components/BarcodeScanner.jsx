@@ -10,40 +10,63 @@ const BarcodeScanner = ({ onScanSuccess, onScanError, onClose }) => {
 
     const startScanner = async () => {
       try {
+        // Explicitly request camera permissions first. 
+        // This forces the browser to show the permission dialog.
+        const cameras = await Html5Qrcode.getCameras();
+        if (!cameras || cameras.length === 0) {
+          throw new Error('No cameras found.');
+        }
+
         // Stop any existing streams just in case
         if (html5Qrcode.isScanning) {
           await html5Qrcode.stop();
         }
 
+        const config = {
+          fps: 10, 
+          qrbox: { width: 250, height: 150 },
+          aspectRatio: 1.0,
+          formatsToSupport: [
+            Html5Qrcode.formats.EAN_13,
+            Html5Qrcode.formats.EAN_8,
+            Html5Qrcode.formats.UPC_A,
+            Html5Qrcode.formats.UPC_E,
+            Html5Qrcode.formats.QR_CODE
+          ]
+        };
+
+        const onSuccess = (decodedText) => {
+          html5Qrcode.stop().catch(console.error);
+          setIsScanning(false);
+          if (onScanSuccess) onScanSuccess(decodedText);
+        };
+
+        const onError = (errorMessage) => {
+          if (onScanError) onScanError(errorMessage);
+        };
+
         setIsScanning(true);
-        await html5Qrcode.start(
-          { facingMode: 'environment' }, // Prefer back camera
-          {
-            fps: 10, 
-            qrbox: { width: 250, height: 150 },
-            aspectRatio: 1.0,
-            formatsToSupport: [
-              Html5Qrcode.formats.EAN_13,
-              Html5Qrcode.formats.EAN_8,
-              Html5Qrcode.formats.UPC_A,
-              Html5Qrcode.formats.UPC_E,
-              Html5Qrcode.formats.QR_CODE
-            ]
-          },
-          (decodedText) => {
-            // Success callback
-            html5Qrcode.stop().catch(console.error);
-            setIsScanning(false);
-            if (onScanSuccess) onScanSuccess(decodedText);
-          },
-          (errorMessage) => {
-            // Continuous scanning errors (usually just means no barcode in frame)
-            if (onScanError) onScanError(errorMessage);
-          }
-        );
+
+        try {
+          // First attempt: use environment facing mode
+          await html5Qrcode.start({ facingMode: 'environment' }, config, onSuccess, onError);
+        } catch (e) {
+          console.warn('facingMode: environment failed, falling back to cameraId', e);
+          // Fallback: use the last camera in the list (usually the back camera on Android)
+          const backCamera = cameras.find(c => c.label.toLowerCase().includes('back') || c.label.toLowerCase().includes('environment')) || cameras[cameras.length - 1];
+          await html5Qrcode.start(backCamera.id, config, onSuccess, onError);
+        }
+
       } catch (err) {
-        console.error('Failed to start scanner', err);
-        setInitError('Could not access the camera. Please check your permissions.');
+        console.error('Failed to start scanner:', err);
+        // Provide a more detailed error message based on the error name if possible
+        const msg = err?.name === 'NotAllowedError' 
+          ? 'Camera access was denied. Please enable it in your browser settings.'
+          : err?.name === 'NotFoundError'
+          ? 'No camera found on this device.'
+          : 'Could not access the camera. Please check your permissions.';
+        
+        setInitError(msg);
         setIsScanning(false);
       }
     };

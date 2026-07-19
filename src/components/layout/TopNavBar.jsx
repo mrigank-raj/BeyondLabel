@@ -20,8 +20,11 @@ const TopNavBar = ({ currentTab, setCurrentTab }) => {
         >
           History
         </button>
-        <button className="pb-1 border-b-2 border-transparent text-gray-500 hover:text-gray-900 transition-colors">
-          Health Goals
+        <button 
+          onClick={() => setCurrentTab('insights')}
+          className={`pb-1 border-b-2 transition-colors ${currentTab === 'insights' ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+        >
+          Insights
         </button>
       </div>
 

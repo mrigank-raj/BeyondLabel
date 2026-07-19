@@ -18,7 +18,7 @@ function App() {
   const [productName, setProductName] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [goal, setGoal] = useState('');
+  const [goal, setGoal] = useState('General Health');
   
   // App routing state
   const [currentTab, setCurrentTab] = useState('home'); // 'home', 'history', 'goals', 'profile'
@@ -214,7 +214,7 @@ function App() {
         )}
         
         {!verdict && currentTab === 'profile' && (
-          <ProfilePage />
+          <ProfilePage goal={goal} setGoal={setGoal} />
         )}
         
         {!verdict && currentTab === 'insights' && (

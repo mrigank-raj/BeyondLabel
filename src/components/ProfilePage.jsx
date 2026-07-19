@@ -1,7 +1,8 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import GoalSelector from './GoalSelector';
 
-const ProfilePage = () => {
+const ProfilePage = ({ goal, setGoal }) => {
   const { user, isGuest, guestId, signInWithGoogle, signOut } = useAuth();
 
   return (
@@ -65,18 +66,12 @@ const ProfilePage = () => {
       <div className="bg-white rounded-4xl p-6 md:p-8 shadow-sm border border-surface-variant">
         <h2 className="font-display font-bold text-xl text-gray-900 mb-6">Preferences</h2>
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+          <div className="flex flex-col gap-2">
             <div>
-              <p className="font-bold text-gray-900">Default Goal</p>
-              <p className="text-sm text-gray-500">Automatically applied to new scans</p>
+              <p className="font-bold text-gray-900">Health Goal</p>
+              <p className="text-sm text-gray-500 mb-4">Select the dietary lens you want the AI to use.</p>
             </div>
-            <select className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-              <option value="">None</option>
-              <option value="heart-health">Heart Health</option>
-              <option value="weight-loss">Weight Loss</option>
-              <option value="muscle-gain">Muscle Gain</option>
-              <option value="blood-sugar">Blood Sugar</option>
-            </select>
+            <GoalSelector selectedGoal={goal} onSelect={setGoal} />
           </div>
         </div>
       </div>

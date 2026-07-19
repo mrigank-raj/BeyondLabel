@@ -1,110 +1,58 @@
-import React from 'react';
-import GoalSelector from './GoalSelector';
+import React, { useState } from 'react';
 import ImageUpload from './ImageUpload';
 
 const DashboardHome = ({ 
   productName, handleProductNameChange, 
   imageFile, imagePreview, handleImageUpload,
-  goal, handleGoalSelect,
   isLoading, handleSubmit, loadingStatus,
   validationErrors,
   onOpenScanner
 }) => {
+  const [showManual, setShowManual] = useState(false);
+
   return (
-    <div className="w-full">
-      {/* Mobile Header (Hidden on Desktop) */}
-      <div className="lg:hidden flex items-center gap-2 mb-6 px-1">
-        <span className="font-display text-3xl font-bold text-primary tracking-tight">BeyondLabel</span>
-      </div>
-
-      {/* Desktop Welcome (Hidden on Mobile) */}
-      <section className="hidden lg:block space-y-2 mb-10">
-        <h1 className="font-display text-4xl text-gray-900 font-bold">
-          Welcome to BeyondLabel
-        </h1>
-        <p className="text-lg text-gray-500 max-w-2xl mt-4">Unmasking misleading labels to empower your daily food choices and help you take back control of your health.</p>
-      </section>
-
-      {/* Mobile Search Bar (Hidden on Desktop because it's in TopNav) */}
-      <div className="lg:hidden relative w-full mb-6 flex gap-2">
-        <div className="relative flex-grow">
-          <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input 
-            type="text" 
-            value={productName}
-            onChange={(e) => handleProductNameChange(e.target.value)}
-            placeholder="Search product or barcode..." 
-            className="w-full bg-surface-variant/20 border border-surface-variant/50 rounded-pill py-3.5 pl-12 pr-12 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm"
-          />
-          <button 
-            onClick={handleSubmit}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface-variant/50 flex items-center justify-center text-gray-600"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    <div className="w-full flex flex-col items-center justify-center min-h-[70vh] animate-fade-in text-center px-4">
+      
+      {/* Hero Section */}
+      <div className="max-w-xl w-full mx-auto space-y-8 flex flex-col items-center">
+        
+        <div className="space-y-4">
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
             </svg>
-          </button>
+          </div>
+          <h1 className="font-display text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
+            Know what you eat.
+          </h1>
+          <p className="text-gray-500 text-lg md:text-xl">
+            Scan any product label to see if it's actually healthy.
+          </p>
         </div>
+
+        {/* Massive Primary CTA */}
         <button 
           onClick={onOpenScanner}
-          className="flex-shrink-0 w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center"
+          className="w-full max-w-sm aspect-square md:aspect-auto md:h-24 bg-primary text-white rounded-[40px] md:rounded-full shadow-floating hover:bg-primary-light active:scale-95 transition-all flex flex-col md:flex-row items-center justify-center gap-4 group"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+          <svg className="w-12 h-12 md:w-8 md:h-8 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
           </svg>
+          <span className="font-display font-bold text-2xl">Tap to Scan</span>
         </button>
-      </div>
 
-      {/* Bento Grid layout for core actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 mb-10">
-        
-        {/* Analyze Product Card (Mobile uses this as primary CTA, Desktop uses ImageUpload) */}
-        <div className="lg:hidden w-full">
-          <ImageUpload 
-            imageFile={imageFile} 
-            imagePreview={imagePreview} 
-            onUpload={handleImageUpload} 
-            variant="mobile-card"
-          />
-        </div>
-
-        {/* Desktop Upload Card */}
-        <div className="hidden lg:flex bg-primary rounded-4xl p-8 flex-col items-center justify-center text-center shadow-floating min-h-[220px]">
-          <div className="w-16 h-16 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center mb-4">
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </div>
-          <h2 className="font-display text-white text-xl font-bold mb-1">Analyze a Product</h2>
-          <p className="text-primary-lighter text-sm mb-4">Take a photo of any nutrition label</p>
-          
-          <div className="w-full bg-white/10 rounded-2xl p-2">
-            <ImageUpload 
-              imageFile={imageFile} 
-              imagePreview={imagePreview} 
-              onUpload={handleImageUpload} 
-              variant="desktop-card"
-            />
-          </div>
-        </div>
-
-        {/* Quick Search Card (Desktop only - mobile search is at top) */}
-        <div className="hidden lg:flex bg-surface rounded-4xl p-8 flex-col justify-center shadow-card border border-surface-variant min-h-[220px]">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-full bg-surface-variant/50 text-gray-700 flex items-center justify-center">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <h2 className="font-display text-primary text-xl font-bold">Quick Search</h2>
-          </div>
-          <p className="text-gray-500 text-sm mb-6">Type a product name or scan a barcode directly.</p>
-          
-          <div className="relative w-full flex gap-2">
-            <div className="relative flex-grow">
+        {/* Secondary Options Toggle */}
+        {!showManual ? (
+          <button 
+            onClick={() => setShowManual(true)}
+            className="text-gray-400 font-semibold hover:text-gray-600 transition-colors text-sm pt-4"
+          >
+            Or search manually
+          </button>
+        ) : (
+          <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-sm border border-surface-variant/50 animate-slide-down space-y-4">
+            
+            <div className="relative w-full">
               <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -112,111 +60,55 @@ const DashboardHome = ({
                 type="text" 
                 value={productName}
                 onChange={(e) => handleProductNameChange(e.target.value)}
-                placeholder="Enter product or barcode..." 
-                className="w-full bg-white border-2 border-surface-variant rounded-pill py-4 pl-12 pr-12 text-base focus:outline-none focus:border-primary transition-colors shadow-sm"
+                placeholder="Type product name..." 
+                className="w-full bg-gray-50 border border-gray-200 rounded-pill py-3 pl-12 pr-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               />
-              <button 
-                onClick={handleSubmit}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white rounded-full p-2 hover:bg-primary-light transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </button>
             </div>
-            <button 
-              onClick={onOpenScanner}
-              className="flex-shrink-0 w-[60px] h-[60px] bg-primary text-white rounded-xl flex items-center justify-center hover:bg-primary-light transition-colors"
+
+            <div className="flex items-center gap-4">
+              <div className="h-px bg-gray-200 flex-1"></div>
+              <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">OR</span>
+              <div className="h-px bg-gray-200 flex-1"></div>
+            </div>
+
+            <div className="w-full text-left">
+              <ImageUpload 
+                imageFile={imageFile} 
+                imagePreview={imagePreview} 
+                onUpload={handleImageUpload} 
+                variant="mobile-card"
+              />
+            </div>
+
+            <button
+              onClick={handleSubmit}
+              disabled={isLoading || (!productName && !imageFile)}
+              className={`w-full py-3.5 rounded-pill font-bold text-sm transition-all duration-300 shadow-sm mt-4 ${
+                isLoading || (!productName && !imageFile)
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-900 text-white hover:bg-black active:scale-95'
+              }`}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-              </svg>
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {loadingStatus || "Analyzing..."}
+                </span>
+              ) : (
+                "Analyze Now"
+              )}
             </button>
+            {validationErrors?.input && (
+              <p className="text-xs text-red-500 mt-2 text-center font-medium">
+                {validationErrors.input}
+              </p>
+            )}
           </div>
-          {validationErrors?.input && (
-            <p className="text-xs text-red-500 mt-2 text-left font-medium">
-              {validationErrors.input}
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Goals Section */}
-      <div className="mb-10">
-        <div className="flex justify-between items-end mb-4">
-          <h3 className="font-display text-lg font-bold text-gray-900">My Goals</h3>
-          <button className="text-primary text-sm font-semibold hover:underline lg:hidden">Edit</button>
-        </div>
-        <GoalSelector 
-          selectedGoal={goal} 
-          onSelect={handleGoalSelect} 
-        />
-        {validationErrors?.goal && (
-          <p className="text-xs text-red-500 mt-2 text-left font-medium">
-            {validationErrors.goal}
-          </p>
         )}
-      </div>
 
-      {/* Recent Scans Placeholder */}
-      <section className="mb-8">
-        <div className="flex justify-between items-end mb-4">
-          <h3 className="font-display text-lg font-bold text-gray-900">Recent Scans</h3>
-          <button className="text-sm font-semibold hover:underline">View All</button>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border border-surface-variant/50 hover:shadow-md transition-shadow">
-            <div className="w-14 h-14 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
-              <img src="https://images.unsplash.com/photo-1622484211148-7076a084dd88?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Oat Milk Bar" className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <h4 className="font-bold text-gray-900">Oat Milk Bar</h4>
-              <div className="flex items-center gap-1.5 mt-1">
-                <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                <span className="text-xs text-gray-500 font-medium">High Sugar</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border border-surface-variant/50 hover:shadow-md transition-shadow">
-            <div className="w-14 h-14 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
-              <img src="https://images.unsplash.com/photo-1559839914-11aae62e1531?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Bread" className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <h4 className="font-bold text-gray-900">Whole Wheat Bread</h4>
-              <div className="flex items-center gap-1.5 mt-1">
-                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                <span className="text-xs text-gray-500 font-medium">Perfect Match</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      {/* Mobile Submission Buttons (Hidden on desktop since they are in cards) */}
-      <div className="lg:hidden w-full mb-8">
-        <button
-          onClick={handleSubmit}
-          disabled={isLoading}
-          className={`w-full py-4 px-6 rounded-pill font-bold text-lg transition-all duration-300 shadow-md ${
-            isLoading
-              ? 'bg-primary/80 text-white/90 cursor-wait'
-              : 'bg-primary text-on-primary hover:shadow-floating active:scale-[0.98]'
-          }`}
-        >
-          {isLoading ? (
-            <span className="flex items-center justify-center gap-3">
-              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              {loadingStatus || "Analyzing..."}
-            </span>
-          ) : (
-            "Analyze Product"
-          )}
-        </button>
       </div>
 
     </div>

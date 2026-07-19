@@ -17,13 +17,13 @@ const VerdictCard = ({ verdictData }) => {
   const getVerdictConfig = () => {
     switch (verdict) {
       case 'Excellent':
-        return { bg: 'bg-green-100', border: 'border-green-500', color: 'text-green-800', icon: '🌟', label: 'Excellent', desktopBg: 'bg-[#006c49]', desktopText: 'text-white' };
+        return { bg: 'bg-green-100', border: 'border-green-500', color: 'text-green-800', icon: '🌟', label: 'Great Choice!', desktopBg: 'bg-[#006c49]', desktopText: 'text-white' };
       case 'Good':
-        return { bg: 'bg-green-50', border: 'border-green-400', color: 'text-green-700', icon: '✅', label: 'Good', desktopBg: 'bg-[#188a5d]', desktopText: 'text-white' };
+        return { bg: 'bg-green-50', border: 'border-green-400', color: 'text-green-700', icon: '✅', label: 'Good Choice', desktopBg: 'bg-[#188a5d]', desktopText: 'text-white' };
       case 'Moderate':
-        return { bg: 'bg-amber-50/80', border: 'border-amber-400', color: 'text-amber-700', icon: '⚠️', label: 'Moderate', desktopBg: 'bg-[#dd8d00]', desktopText: 'text-white' };
+        return { bg: 'bg-amber-50/80', border: 'border-amber-400', color: 'text-amber-700', icon: '⚠️', label: 'Eat in Moderation', desktopBg: 'bg-[#dd8d00]', desktopText: 'text-white' };
       case 'Poor':
-        return { bg: 'bg-orange-50', border: 'border-orange-400', color: 'text-orange-700', icon: '👎', label: 'Poor', desktopBg: 'bg-[#c56000]', desktopText: 'text-white' };
+        return { bg: 'bg-orange-50', border: 'border-orange-400', color: 'text-orange-700', icon: '👎', label: 'Think Twice', desktopBg: 'bg-[#c56000]', desktopText: 'text-white' };
       case 'Avoid':
         return { bg: 'bg-red-50/80', border: 'border-red-500', color: 'text-red-800', icon: '❌', label: 'Avoid', desktopBg: 'bg-[#ba1a1a]', desktopText: 'text-white' };
       default:
@@ -123,46 +123,52 @@ const VerdictCard = ({ verdictData }) => {
                 </div>
               )}
               
-              {/* Nutrition Blocks Grid */}
+              {/* Nutrition Blocks Grid (Hidden behind details) */}
               {macros && (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {Object.entries(macros).map(([key, data]) => {
-                    if (!data || !data.value) return null;
-                    const isOptimal = data.status === 'Optimal' || data.status === 'Low';
-                    const isHigh = data.status === 'High';
-                    return (
-                      <div key={key} className="bg-gray-50 rounded-3xl p-4 border border-surface-variant/50">
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">{key}</p>
-                        <p className="font-display font-bold text-xl text-gray-900 mb-1">{data.value}</p>
-                        <p className={`text-xs font-bold flex items-center gap-1 ${isOptimal ? 'text-green-600' : isHigh ? 'text-red-600' : 'text-amber-600'}`}>
-                          {isOptimal ? (
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                          ) : isHigh ? (
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
-                          ) : (
-                            <span className="w-3 h-0.5 bg-amber-400 rounded-full"></span>
-                          )}
-                          {data.status}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
+                <details className="mt-8 group cursor-pointer border border-gray-200 rounded-3xl bg-gray-50/50 open:bg-white transition-colors">
+                  <summary className="flex items-center justify-between p-6 font-bold text-gray-700 list-none">
+                    View Detailed Nutrition Facts
+                    <span className="transition group-open:rotate-180">
+                      <svg fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24"><polyline points="6 9 12 15 18 9"/></svg>
+                    </span>
+                  </summary>
+                  <div className="p-6 pt-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 border-t border-gray-100">
+                    {Object.entries(macros).map(([key, data]) => {
+                      if (!data || !data.value) return null;
+                      const isOptimal = data.status === 'Optimal' || data.status === 'Low';
+                      const isHigh = data.status === 'High';
+                      return (
+                        <div key={key} className="bg-gray-50 rounded-2xl p-4 border border-surface-variant/50">
+                          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">{key}</p>
+                          <p className="font-display font-bold text-xl text-gray-900 mb-1">{data.value}</p>
+                          <p className={`text-xs font-bold flex items-center gap-1 ${isOptimal ? 'text-green-600' : isHigh ? 'text-red-600' : 'text-amber-600'}`}>
+                            {isOptimal ? (
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                            ) : isHigh ? (
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+                            ) : (
+                              <span className="w-3 h-0.5 bg-amber-400 rounded-full"></span>
+                            )}
+                            {data.status}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </details>
               )}
             </div>
 
-            {/* Ingredient Breakdown */}
+            {/* Ingredient Breakdown (Hidden behind details) */}
             {ingredients && ingredients.length > 0 && (
-              <div>
-              <div className="flex justify-between items-end mb-4 px-2">
-                <h3 className="font-display font-bold text-2xl text-gray-900">Ingredient Breakdown</h3>
-                <button className="text-primary font-bold text-sm flex items-center gap-1 hover:underline">
-                  View Full Glossary
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                </button>
-              </div>
-              
-              <div className="bg-white rounded-[32px] border border-surface-variant overflow-hidden shadow-sm">
+              <details className="group cursor-pointer bg-white rounded-[32px] border border-surface-variant overflow-hidden shadow-sm">
+                <summary className="flex items-center justify-between p-6 font-bold text-gray-700 list-none bg-gray-50/50 group-open:bg-white border-b border-transparent group-open:border-surface-variant transition-colors">
+                  View Full Ingredient Breakdown
+                  <span className="transition group-open:rotate-180">
+                    <svg fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </summary>
+                
                 <table className="w-full text-left">
                   <thead className="bg-gray-50/50 border-b border-surface-variant">
                     <tr>
@@ -201,8 +207,7 @@ const VerdictCard = ({ verdictData }) => {
                     ))}
                   </tbody>
                 </table>
-              </div>
-            </div>
+              </details>
             )}
             
           </div>
@@ -280,37 +285,51 @@ const VerdictCard = ({ verdictData }) => {
 
         {/* Alignment Analysis Section */}
         <div className="bg-white rounded-4xl p-6 shadow-sm border border-surface-variant text-left">
-          <div className="flex items-center gap-3 mb-6">
-            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            <h3 className="font-display font-bold text-lg text-gray-900">Alignment Analysis</h3>
+          <div className="flex items-center gap-3 mb-4">
+            <h3 className="font-display font-bold text-xl text-gray-900">The Bottom Line</h3>
           </div>
 
           <div className="space-y-4">
             <div className="flex gap-3">
-              <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
               <div>
-                <h4 className="font-semibold text-gray-900 text-[15px]">General Finding</h4>
-                <p className="text-sm text-gray-500 mt-0.5 leading-relaxed">{suggestion || "This product meets general health guidelines based on its label."}</p>
+                <p className="text-gray-700 leading-relaxed text-[16px]">{suggestion || "This product meets general health guidelines based on its label."}</p>
               </div>
             </div>
-            
-            {goalNote && (
-              <div className="flex gap-3">
-                <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div>
-                  <h4 className="font-semibold text-gray-900 text-[15px]">Goal Alignment</h4>
-                  <p className="text-sm text-gray-500 mt-0.5 leading-relaxed">{goalNote}</p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
+
+        {/* Detailed Data (Hidden on mobile by default) */}
+        {(macros || ingredients) && (
+          <details className="group cursor-pointer bg-white rounded-4xl p-6 border border-surface-variant shadow-sm text-left">
+            <summary className="flex items-center justify-between font-bold text-gray-900 list-none">
+              View Nutrition Facts
+              <span className="transition group-open:rotate-180 text-gray-500">
+                <svg fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </summary>
+            
+            <div className="pt-6 mt-4 border-t border-gray-100 space-y-6">
+              {macros && (
+                <div className="grid grid-cols-2 gap-3">
+                  {Object.entries(macros).map(([key, data]) => {
+                    if (!data || !data.value) return null;
+                    const isOptimal = data.status === 'Optimal' || data.status === 'Low';
+                    const isHigh = data.status === 'High';
+                    return (
+                      <div key={key} className="bg-gray-50 rounded-2xl p-4 border border-surface-variant/50">
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">{key}</p>
+                        <p className="font-display font-bold text-xl text-gray-900 mb-1">{data.value}</p>
+                        <p className={`text-xs font-bold flex items-center gap-1 ${isOptimal ? 'text-green-600' : isHigh ? 'text-red-600' : 'text-amber-600'}`}>
+                          {data.status}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </details>
+        )}
 
         {/* Better Alternatives */}
         {alternatives && alternatives.length > 0 && (

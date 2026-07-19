@@ -258,7 +258,7 @@ const compressImage = async (file) => {
         let width = img.width;
         let height = img.height;
         
-        const MAX_DIMENSION = 1200;
+        const MAX_DIMENSION = 800; // Reduced from 1200 to prevent Vercel 10s timeouts
         
         if (width > height && width > MAX_DIMENSION) {
           height = Math.round(height * (MAX_DIMENSION / width));
@@ -292,7 +292,7 @@ const compressImage = async (file) => {
 export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
   // Compress image to speed up upload and AI processing time
   const { base64: base64Image, mimeType } = await compressImage(imageFile);
-  const models = ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.0-flash-lite'];
+  const models = ['gemini-2.0-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash'];
   let lastError = null;
 
   for (const model of models) {

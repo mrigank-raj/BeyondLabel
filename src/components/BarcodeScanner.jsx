@@ -76,11 +76,17 @@ const BarcodeScanner = ({ onScanSuccess, onScanError, onClose }) => {
       </div>
 
       {initError ? (
-        <div className="flex flex-col items-center justify-center p-8 h-[300px] text-center bg-surfaceVariant text-on-surfaceVariant">
-          <svg className="w-12 h-12 mb-4 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex flex-col items-center justify-center p-8 h-[300px] text-center bg-[#1a1a1a] text-white">
+          <svg className="w-12 h-12 mb-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
-          <p>{initError}</p>
+          <p className="text-sm mb-6">{initError}</p>
+          <button 
+            onClick={onClose}
+            className="px-6 py-2.5 bg-primary text-white rounded-pill font-bold hover:bg-primary-light transition-colors"
+          >
+            Type Product Name Instead
+          </button>
         </div>
       ) : (
         <div id="barcode-reader" className="w-full h-full min-h-[300px]"></div>

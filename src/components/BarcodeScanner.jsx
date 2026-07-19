@@ -11,13 +11,6 @@ const BarcodeScanner = ({ onScanSuccess, onScanError, onClose }) => {
 
     const startScanner = async () => {
       try {
-        // Explicitly request camera permissions first. 
-        // This forces the browser to show the permission dialog.
-        const cameras = await Html5Qrcode.getCameras();
-        if (!cameras || cameras.length === 0) {
-          throw new Error('No cameras found.');
-        }
-
         // Stop any existing streams just in case
         if (html5Qrcode.isScanning) {
           await html5Qrcode.stop();
@@ -48,15 +41,8 @@ const BarcodeScanner = ({ onScanSuccess, onScanError, onClose }) => {
 
         setIsScanning(true);
 
-        try {
-          // First attempt: use environment facing mode
-          await html5Qrcode.start({ facingMode: 'environment' }, config, onSuccess, onError);
-        } catch (e) {
-          console.warn('facingMode: environment failed, falling back to cameraId', e);
-          // Fallback: use the last camera in the list (usually the back camera on Android)
-          const backCamera = cameras.find(c => c.label.toLowerCase().includes('back') || c.label.toLowerCase().includes('environment')) || cameras[cameras.length - 1];
-          await html5Qrcode.start(backCamera.id, config, onSuccess, onError);
-        }
+        // First attempt: use environment facing mode
+        await html5Qrcode.start({ facingMode: 'environment' }, config, onSuccess, onError);
 
       } catch (err) {
         console.error('Failed to start scanner:', err);

@@ -7,26 +7,7 @@ const TopNavBar = ({ currentTab, setCurrentTab }) => {
         <span className="font-display text-2xl font-bold text-primary tracking-tight">BeyondLabel</span>
       </div>
       
-      <div className="flex items-center gap-8 text-[15px] font-semibold">
-        <button 
-          onClick={() => setCurrentTab('home')}
-          className={`pb-1 border-b-2 transition-colors ${currentTab === 'home' ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
-        >
-          Home
-        </button>
-        <button 
-          onClick={() => setCurrentTab('history')}
-          className={`pb-1 border-b-2 transition-colors ${currentTab === 'history' ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
-        >
-          History
-        </button>
-        <button 
-          onClick={() => setCurrentTab('insights')}
-          className={`pb-1 border-b-2 transition-colors ${currentTab === 'insights' ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
-        >
-          Insights
-        </button>
-      </div>
+
 
       <div className="flex items-center gap-4 w-64 justify-end">
         <div className="relative">

@@ -1,7 +1,9 @@
+import { supabase } from '../lib/supabase';
+
 const HISTORY_KEY = 'beyondlabel_history';
 const GOALS_KEY = 'beyondlabel_goals';
 
-export const saveToHistory = (productName, imageUrl, verdictData) => {
+export const saveToHistory = async (productName, imageUrl, verdictData) => {
   try {
     const history = getHistory();
     const newItem = {
@@ -14,6 +16,26 @@ export const saveToHistory = (productName, imageUrl, verdictData) => {
     
     const updatedHistory = [newItem, ...history];
     localStorage.setItem(HISTORY_KEY, JSON.stringify(updatedHistory));
+
+    // Try to sync to Supabase if available
+    if (supabase) {
+      const guestId = localStorage.getItem('beyondlabel_guest_id');
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const userId = session?.user?.id || null;
+      
+      supabase.from('analyses').insert({
+        user_id: userId,
+        guest_id: guestId,
+        product_name: newItem.productName,
+        image_url: newItem.imageUrl,
+        goal_id: 'unknown', // Could extract from verdictData if we stored it
+        verdict: verdictData
+      }).then(({ error }) => {
+        if (error) console.error('Supabase sync error:', error);
+      });
+    }
+
     return newItem;
   } catch (error) {
     console.error('Failed to save to history:', error);
@@ -43,12 +65,14 @@ export const getWeeklyInsights = () => {
   let flagged = 0;
 
   history.forEach(item => {
-    if (item.verdictData?.verdict === 'Trustworthy') {
+    const verdict = item.verdictData?.verdict;
+    // New Taxonomy: Excellent, Good, Moderate, Poor, Avoid
+    if (verdict === 'Excellent' || verdict === 'Good') {
       goalAligned++;
-    } else if (item.verdictData?.verdict === 'Avoid') {
+    } else if (verdict === 'Poor' || verdict === 'Avoid') {
       flagged++;
-    } else if (item.verdictData?.verdict === 'Questionable') {
-      flagged++;
+    } else if (verdict === 'Moderate') {
+      // Could count as neutral, or flagged depending on strictness. Let's say flagged for strict users, but for now we won't count it in 'safe'
     }
   });
 

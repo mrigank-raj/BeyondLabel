@@ -1,10 +1,9 @@
 import { buildPrompt, buildImagePrompt } from '../utils/promptBuilder';
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
-
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+// We now call our local Vercel Serverless Functions to protect API keys.
+// In development with Vite, you should run the app using `npx vercel dev` 
+// so that the `/api` routes are served alongside the frontend.
+const API_BASE = '/api';
 
 /**
  * Strips markdown bold/italic markers from text.
@@ -195,34 +194,26 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1500, onRetry =
 };
 
 /**
- * Analyzes a text product name using Groq (Llama 3.1) for high-speed, rate-limit free queries.
+ * Analyzes a text product name using the backend API proxy.
  */
 export const analyzeProduct = async (productName, goalId, onRetry = null) => {
-  if (!GROQ_API_KEY) {
-    throw new Error('Groq API Key is missing. Please add VITE_GROQ_API_KEY to your .env file.');
-  }
-
-  const prompt = buildPrompt(productName, goalId);
   const models = ['llama-3.1-70b-versatile', 'llama3-70b-8192', 'llama-3.1-8b-instant'];
   let lastError = null;
 
   for (const model of models) {
     try {
-      console.log(`Sending text query to Groq using model: ${model}`);
+      console.log(`Sending text query to backend API using model: ${model}`);
       const response = await fetchWithRetry(
-        GROQ_API_URL,
+        `${API_BASE}/analyze`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${GROQ_API_KEY}`
           },
           body: JSON.stringify({
-            model: model,
-            messages: [{ role: 'user', content: prompt }],
-            temperature: 0.3,
-            max_tokens: 4096,
-            response_format: { type: "json_object" }
+            productName,
+            goalId,
+            model
           })
         },
         2, // 2 retries per model before trying fallback model
@@ -237,9 +228,9 @@ export const analyzeProduct = async (productName, goalId, onRetry = null) => {
       }
 
       const data = await response.json();
-      const rawText = data.choices?.[0]?.message?.content;
+      const rawText = data.result;
       
-      if (!rawText) throw new Error('Received empty response from Groq.');
+      if (!rawText) throw new Error('Received empty response from API.');
 
       return parseVerdict(rawText);
     } catch (err) {
@@ -296,41 +287,27 @@ const compressImage = async (file) => {
 };
 
 /**
- * Analyzes an uploaded label image using Google Gemini API's native vision/multimodal capabilities.
+ * Analyzes an uploaded label image using the backend API proxy.
  */
 export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
-  if (!API_KEY) {
-    throw new Error('Gemini API Key is missing. Please check your .env file.');
-  }
-
   // Compress image to speed up upload and AI processing time
   const { base64: base64Image, mimeType } = await compressImage(imageFile);
-  const prompt = buildImagePrompt(goalId);
   const models = ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.0-flash-lite'];
   let lastError = null;
 
   for (const model of models) {
     try {
-      console.log(`Sending image query to Gemini using model: ${model}`);
+      console.log(`Sending image query to backend API using model: ${model}`);
       const response = await fetchWithRetry(
-        `${API_URL}/${model}:generateContent?key=${API_KEY}`,
+        `${API_BASE}/analyze-image`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  { inlineData: { mimeType, data: base64Image } },
-                  { text: prompt }
-                ]
-              }
-            ],
-            generationConfig: {
-              temperature: 0.3,
-              maxOutputTokens: 4096,
-              responseMimeType: "application/json"
-            }
+            base64Image,
+            mimeType,
+            goalId,
+            model
           })
         },
         2, // 2 retries per model before trying fallback model
@@ -350,25 +327,10 @@ export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
 
       const data = await response.json();
       
-      // Check for safety blocks or empty candidates
-      const candidate = data.candidates?.[0];
-      if (!candidate) {
-        const blockReason = data.promptFeedback?.blockReason || 'Unknown';
-        console.warn(`Gemini blocked response. Reason: ${blockReason}`, data);
-        throw new Error(`AI response was blocked (reason: ${blockReason}). Try a clearer photo.`);
-      }
-      
-      const finishReason = candidate.finishReason;
-      if (finishReason === 'SAFETY') {
-        console.warn('Gemini response blocked by safety filters.', candidate.safetyRatings);
-        throw new Error('AI response was blocked by safety filters. Try a different image.');
-      }
-
-      const rawText = candidate.content?.parts?.[0]?.text;
+      const rawText = data.result;
       
       if (!rawText || rawText.trim().length === 0) {
-        console.warn('Gemini returned empty text. Finish reason:', finishReason);
-        throw new Error(`Received empty response from Gemini (finishReason: ${finishReason}).`);
+        throw new Error(`Received empty response from API.`);
       }
 
       return parseVerdict(rawText);

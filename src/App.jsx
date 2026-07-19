@@ -5,8 +5,14 @@ import VerdictCard from './components/VerdictCard';
 import TopNavBar from './components/layout/TopNavBar';
 import SideNavBar from './components/layout/SideNavBar';
 import BottomNavBar from './components/layout/BottomNavBar';
+import BarcodeScanner from './components/BarcodeScanner';
+import ProfilePage from './components/ProfilePage';
+import InsightsDashboard from './components/InsightsDashboard';
 import { analyzeProduct, analyzeImage } from './services/geminiService';
 import { saveToHistory } from './services/storageService';
+import { lookupBarcode } from './services/barcodeService';
+import { trackEvent, identifyUser } from './lib/analytics';
+import { useAuth } from './contexts/AuthContext';
 
 function App() {
   const [productName, setProductName] = useState('');
@@ -22,6 +28,17 @@ function App() {
   const [loadingStatus, setLoadingStatus] = useState('');
   const [error, setError] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
+
+  const { user, guestId } = useAuth();
+
+  // Identify user in analytics when they load
+  useEffect(() => {
+    if (user?.id) {
+      identifyUser(user.id, { email: user.email, name: user.user_metadata?.full_name });
+    } else if (guestId) {
+      identifyUser(guestId, { is_guest: true });
+    }
+  }, [user, guestId]);
 
   const validate = () => {
     const errors = {};
@@ -49,6 +66,25 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goal, productName, imageFile]);
 
+  const handleScanSuccess = async (barcode) => {
+    // Show a loading state while we look up the barcode
+    setLoadingStatus('Looking up product...');
+    setCurrentTab('home'); // Close scanner by going back to home
+    
+    // Attempt lookup
+    const result = await lookupBarcode(barcode);
+    setLoadingStatus(''); // Clear lookup status
+    
+    if (result && result.found && result.fullName) {
+      setProductName(result.fullName);
+      if (validationErrors.input) setValidationErrors(prev => ({ ...prev, input: null }));
+      trackEvent('scan_completed', { type: 'barcode', status: 'success', product: result.fullName });
+    } else {
+      trackEvent('scan_completed', { type: 'barcode', status: 'not_found' });
+      alert('Product not found in database. Please try searching by name or take a photo of the label.');
+    }
+  };
+
   const handleAnalyze = async (e) => {
     if (e) e.preventDefault();
     
@@ -67,6 +103,11 @@ function App() {
       setLoadingStatus(message);
     };
 
+    trackEvent('analysis_started', {
+      type: imageFile ? 'image' : 'text',
+      goal: goal
+    });
+
     try {
       let result;
       if (imageFile) {
@@ -77,6 +118,12 @@ function App() {
       
       setVerdict(result);
       
+      trackEvent('analysis_completed', {
+        type: imageFile ? 'image' : 'text',
+        goal: goal,
+        verdict: result.verdict
+      });
+
       // Save successful analysis to local storage
       if (result.verdict !== 'Insufficient Data') {
         saveToHistory(productName || 'Scanned Label', imagePreview, result);
@@ -144,7 +191,17 @@ function App() {
             loadingStatus={loadingStatus}
             handleSubmit={handleAnalyze}
             validationErrors={validationErrors}
+            onOpenScanner={() => setCurrentTab('scan')}
           />
+        )}
+
+        {currentTab === 'scan' && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+            <BarcodeScanner 
+              onScanSuccess={handleScanSuccess} 
+              onClose={() => setCurrentTab('home')} 
+            />
+          </div>
         )}
 
         {!verdict && currentTab === 'history' && (
@@ -156,6 +213,14 @@ function App() {
           />
         )}
         
+        {!verdict && currentTab === 'profile' && (
+          <ProfilePage />
+        )}
+        
+        {!verdict && currentTab === 'insights' && (
+          <InsightsDashboard />
+        )}
+
         {/* Dismissable Error Banner */}
         {error && (
           <div className="max-w-xl mx-auto mb-6 bg-red-50 border border-red-200 p-4 rounded-xl shadow-sm animate-slide-down">

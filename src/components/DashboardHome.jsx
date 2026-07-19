@@ -7,7 +7,8 @@ const DashboardHome = ({
   imageFile, imagePreview, handleImageUpload,
   goal, handleGoalSelect,
   isLoading, handleSubmit, loadingStatus,
-  validationErrors
+  validationErrors,
+  onOpenScanner
 }) => {
   return (
     <div className="w-full">
@@ -25,23 +26,33 @@ const DashboardHome = ({
       </section>
 
       {/* Mobile Search Bar (Hidden on Desktop because it's in TopNav) */}
-      <div className="lg:hidden relative w-full mb-6">
-        <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <input 
-          type="text" 
-          value={productName}
-          onChange={(e) => handleProductNameChange(e.target.value)}
-          placeholder="Search product or barcode..." 
-          className="w-full bg-surface-variant/20 border border-surface-variant/50 rounded-pill py-3.5 pl-12 pr-12 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm"
-        />
+      <div className="lg:hidden relative w-full mb-6 flex gap-2">
+        <div className="relative flex-grow">
+          <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input 
+            type="text" 
+            value={productName}
+            onChange={(e) => handleProductNameChange(e.target.value)}
+            placeholder="Search product or barcode..." 
+            className="w-full bg-surface-variant/20 border border-surface-variant/50 rounded-pill py-3.5 pl-12 pr-12 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm"
+          />
+          <button 
+            onClick={handleSubmit}
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface-variant/50 flex items-center justify-center text-gray-600"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
         <button 
-          onClick={handleSubmit}
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface-variant/50 flex items-center justify-center text-gray-600"
+          onClick={onOpenScanner}
+          className="flex-shrink-0 w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
           </svg>
         </button>
       </div>
@@ -92,23 +103,33 @@ const DashboardHome = ({
           </div>
           <p className="text-gray-500 text-sm mb-6">Type a product name or scan a barcode directly.</p>
           
-          <div className="relative w-full">
-            <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input 
-              type="text" 
-              value={productName}
-              onChange={(e) => handleProductNameChange(e.target.value)}
-              placeholder="Enter product or barcode..." 
-              className="w-full bg-white border-2 border-surface-variant rounded-pill py-4 pl-12 pr-12 text-base focus:outline-none focus:border-primary transition-colors shadow-sm"
-            />
+          <div className="relative w-full flex gap-2">
+            <div className="relative flex-grow">
+              <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input 
+                type="text" 
+                value={productName}
+                onChange={(e) => handleProductNameChange(e.target.value)}
+                placeholder="Enter product or barcode..." 
+                className="w-full bg-white border-2 border-surface-variant rounded-pill py-4 pl-12 pr-12 text-base focus:outline-none focus:border-primary transition-colors shadow-sm"
+              />
+              <button 
+                onClick={handleSubmit}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white rounded-full p-2 hover:bg-primary-light transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </button>
+            </div>
             <button 
-              onClick={handleSubmit}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white rounded-full p-2 hover:bg-primary-light transition-colors"
+              onClick={onOpenScanner}
+              className="flex-shrink-0 w-[60px] h-[60px] bg-primary text-white rounded-xl flex items-center justify-center hover:bg-primary-light transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
               </svg>
             </button>
           </div>

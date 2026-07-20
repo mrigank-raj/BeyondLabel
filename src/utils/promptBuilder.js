@@ -1,4 +1,4 @@
-import { GOAL_PROMPT_MODIFIERS } from '../constants/goals';
+import { GOAL_PROMPT_MODIFIERS } from '../constants/goals.js';
 
 const SYSTEM_INSTRUCTION = `You are an expert, highly rigorous Indian nutritionist and food safety analyst. Your job is to analyze packaged foods critically and give honest, plain-English verdicts. You do not fall for marketing gimmicks.
 

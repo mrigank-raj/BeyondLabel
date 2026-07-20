@@ -224,7 +224,9 @@ export const analyzeProduct = async (productName, goalId, onRetry = null) => {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error(`Groq API Error (${model}):`, response.status, errorData);
-        throw new Error(errorData.error?.message || response.statusText || 'Failed to connect to Groq');
+        
+        const errorMessage = errorData.error?.message || (typeof errorData.error === 'string' ? errorData.error : null) || response.statusText || 'Failed to connect to Groq';
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -322,7 +324,9 @@ export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
         if (response.status === 404) {
           throw new Error(`Model ${model} is not supported or not found (404)`);
         }
-        throw new Error(errorData.error?.message || response.statusText || 'Failed to connect to Gemini');
+        
+        const errorMessage = errorData.error?.message || (typeof errorData.error === 'string' ? errorData.error : null) || response.statusText || 'Failed to connect to Gemini';
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();

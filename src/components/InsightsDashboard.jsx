@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const InsightsDashboard = () => {
   const [history, setHistory] = useState([]);
-  const [hasShared, setHasShared] = useState(false);
+  const [shareCount, setShareCount] = useState(0);
   const { user } = useAuth();
   
   useEffect(() => {
@@ -13,9 +13,14 @@ const InsightsDashboard = () => {
     setHistory(getHistory());
     
     // Check share status
-    setHasShared(localStorage.getItem('beyondlabel_has_shared') === 'true');
+    const count = parseInt(localStorage.getItem('beyondlabel_share_count') || '0', 10);
+    // Legacy support: if boolean 'true' exists but no count, treat as 1
+    const legacyShared = localStorage.getItem('beyondlabel_has_shared') === 'true';
+    setShareCount(count > 0 ? count : (legacyShared ? 1 : 0));
     
-    const handleShare = () => setHasShared(true);
+    const handleShare = () => {
+      setShareCount(prev => prev + 1);
+    };
     window.addEventListener('beyondlabel_share', handleShare);
     return () => window.removeEventListener('beyondlabel_share', handleShare);
   }, []);
@@ -139,12 +144,18 @@ const InsightsDashboard = () => {
       {/* Badges / Achievements */}
       <section className="bg-white rounded-4xl p-6 md:p-8 shadow-sm border border-surface-variant">
         <h2 className="font-display font-bold text-xl text-gray-900 mb-6">Achievements</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           
-          <div className={`p-4 rounded-2xl border-2 text-center transition-colors ${hasShared ? 'border-blue-400 bg-blue-50' : 'border-gray-100 bg-gray-50 opacity-60'}`}>
-            <div className="text-3xl mb-2">{hasShared ? '📢' : '🔒'}</div>
+          <div className={`p-4 rounded-2xl border-2 text-center transition-colors ${shareCount >= 1 ? 'border-blue-400 bg-blue-50' : 'border-gray-100 bg-gray-50 opacity-60'}`}>
+            <div className="text-3xl mb-2">{shareCount >= 1 ? '📢' : '🔒'}</div>
             <h3 className="font-bold text-gray-900 text-sm">Advocate</h3>
             <p className="text-xs text-gray-500 mt-1">Share an analysis</p>
+          </div>
+          
+          <div className={`p-4 rounded-2xl border-2 text-center transition-colors ${shareCount >= 5 ? 'border-indigo-400 bg-indigo-50' : 'border-gray-100 bg-gray-50 opacity-60'}`}>
+            <div className="text-3xl mb-2">{shareCount >= 5 ? '🚀' : '🔒'}</div>
+            <h3 className="font-bold text-gray-900 text-sm">Trendsetter</h3>
+            <p className="text-xs text-gray-500 mt-1">Share 5 times</p>
           </div>
           
           <div className={`p-4 rounded-2xl border-2 text-center transition-colors ${stats.total >= 1 ? 'border-amber-400 bg-amber-50' : 'border-gray-100 bg-gray-50 opacity-60'}`}>

@@ -75,6 +75,38 @@ const ProfilePage = ({ goal, setGoal }) => {
           </div>
         </div>
       </div>
+
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-4xl p-6 md:p-8 shadow-sm border border-indigo-100 text-center md:text-left flex flex-col md:flex-row items-center gap-6">
+        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm flex-shrink-0">
+          🎁
+        </div>
+        <div className="flex-1">
+          <h2 className="font-display font-bold text-xl text-gray-900 mb-2">Invite a Friend</h2>
+          <p className="text-gray-600 text-sm mb-0">Help your friends make healthier choices. Share BeyondLabel and unlock exclusive referral badges!</p>
+        </div>
+        <button 
+          onClick={async () => {
+            const shareText = "I use BeyondLabel to scan my groceries and see what's really inside them. Check it out: https://beyondlabel.vercel.app";
+            if (navigator.share) {
+              try {
+                await navigator.share({ title: 'BeyondLabel', text: shareText, url: 'https://beyondlabel.vercel.app' });
+                const currentCount = parseInt(localStorage.getItem('beyondlabel_share_count') || '0', 10);
+                localStorage.setItem('beyondlabel_share_count', (currentCount + 1).toString());
+                window.dispatchEvent(new Event('beyondlabel_share'));
+              } catch (e) {}
+            } else {
+              navigator.clipboard.writeText(shareText);
+              const currentCount = parseInt(localStorage.getItem('beyondlabel_share_count') || '0', 10);
+              localStorage.setItem('beyondlabel_share_count', (currentCount + 1).toString());
+              window.dispatchEvent(new Event('beyondlabel_share'));
+              alert('Invite link copied to clipboard!');
+            }
+          }}
+          className="px-6 py-3 bg-indigo-600 text-white rounded-pill font-bold shadow-sm hover:bg-indigo-700 transition-colors w-full md:w-auto whitespace-nowrap"
+        >
+          Share App Link
+        </button>
+      </div>
     </div>
   );
 };

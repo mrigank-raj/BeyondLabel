@@ -5,6 +5,9 @@ import { buildPrompt, buildImagePrompt } from '../utils/promptBuilder';
 // so that the `/api` routes are served alongside the frontend.
 const API_BASE = '/api';
 
+const IMAGE_CACHE_KEY = 'beyondlabel_image_cache';
+const MAX_CACHE_SIZE = 30; // Keep last 30 results
+
 /**
  * Strips markdown bold/italic markers from text.
  */
@@ -245,8 +248,65 @@ export const analyzeProduct = async (productName, goalId, onRetry = null) => {
 };
 
 /**
+ * Generates a simple hash from a base64 string for cache keying.
+ * Uses a fast djb2-style hash — not cryptographic, but perfect for dedup.
+ */
+const hashBase64 = (str) => {
+  let hash = 5381;
+  const sample = str.substring(0, 2000) + str.substring(str.length - 2000);
+  for (let i = 0; i < sample.length; i++) {
+    hash = ((hash << 5) + hash) + sample.charCodeAt(i);
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return 'img_' + Math.abs(hash).toString(36);
+};
+
+/**
+ * Retrieves a cached result for a given image hash + goal combination.
+ */
+const getCachedResult = (imageHash, goalId) => {
+  try {
+    const cache = JSON.parse(localStorage.getItem(IMAGE_CACHE_KEY) || '{}');
+    const key = `${imageHash}_${goalId}`;
+    const entry = cache[key];
+    if (entry && entry.timestamp) {
+      // Cache entries expire after 7 days
+      const age = Date.now() - entry.timestamp;
+      if (age < 7 * 24 * 60 * 60 * 1000) {
+        return entry.result;
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Saves an analysis result to the local cache.
+ */
+const setCachedResult = (imageHash, goalId, result) => {
+  try {
+    const cache = JSON.parse(localStorage.getItem(IMAGE_CACHE_KEY) || '{}');
+    const key = `${imageHash}_${goalId}`;
+    cache[key] = { result, timestamp: Date.now() };
+
+    // Evict oldest entries if cache exceeds max size
+    const keys = Object.keys(cache);
+    if (keys.length > MAX_CACHE_SIZE) {
+      const sorted = keys.sort((a, b) => (cache[a].timestamp || 0) - (cache[b].timestamp || 0));
+      sorted.slice(0, keys.length - MAX_CACHE_SIZE).forEach(k => delete cache[k]);
+    }
+
+    localStorage.setItem(IMAGE_CACHE_KEY, JSON.stringify(cache));
+  } catch {
+    // Silently fail — cache is best-effort
+  }
+};
+
+/**
  * Compresses an image before sending to the API. 
- * Drastically reduces payload size and upload time for mobile photos.
+ * Aggressively reduces payload size for fast uploads and lower AI latency.
  */
 const compressImage = async (file) => {
   return new Promise((resolve, reject) => {
@@ -260,7 +320,7 @@ const compressImage = async (file) => {
         let width = img.width;
         let height = img.height;
         
-        const MAX_DIMENSION = 800; // Reduced from 1200 to prevent Vercel 10s timeouts
+        const MAX_DIMENSION = 600; // Aggressive: 600px is enough for label text readability
         
         if (width > height && width > MAX_DIMENSION) {
           height = Math.round(height * (MAX_DIMENSION / width));
@@ -275,8 +335,8 @@ const compressImage = async (file) => {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Compress as JPEG
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        // Aggressive JPEG compression — 50% quality keeps text readable
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
         resolve({
           base64: dataUrl.split(',')[1],
           mimeType: 'image/jpeg'
@@ -290,15 +350,30 @@ const compressImage = async (file) => {
 
 /**
  * Analyzes an uploaded label image using the backend API proxy.
+ * Includes local caching to instantly return results for repeat scans.
  */
 export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
-  // Compress image to speed up upload and AI processing time
+  // Stage 1: Compress image
+  if (onRetry) onRetry('Compressing image...');
   const { base64: base64Image, mimeType } = await compressImage(imageFile);
+
+  // Stage 2: Check cache for instant results
+  const imageHash = hashBase64(base64Image);
+  const cachedResult = getCachedResult(imageHash, goalId);
+  if (cachedResult) {
+    console.log('Cache hit — returning instant result');
+    if (onRetry) onRetry('Found in history — instant result!');
+    return cachedResult;
+  }
+
+  // Stage 3: Upload and analyze
+  if (onRetry) onRetry('Uploading to AI...');
   const models = ['gemini-2.0-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash'];
   let lastError = null;
 
   for (const model of models) {
     try {
+      if (onRetry) onRetry('Analyzing ingredients...');
       console.log(`Sending image query to backend API using model: ${model}`);
       const response = await fetchWithRetry(
         `${API_BASE}/analyze-image`,
@@ -314,13 +389,14 @@ export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
         },
         2, // 2 retries per model before trying fallback model
         1500,
-        onRetry
+        (msg) => {
+          if (onRetry) onRetry(msg);
+        }
       );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error(`Gemini Vision API Error (${model}):`, response.status, errorData);
-        // If the model does not exist or isn't supported, proceed to next model immediately (no retry benefit)
         if (response.status === 404) {
           throw new Error(`Model ${model} is not supported or not found (404)`);
         }
@@ -329,6 +405,7 @@ export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
         throw new Error(errorMessage);
       }
 
+      if (onRetry) onRetry('Generating verdict...');
       const data = await response.json();
       
       const rawText = data.result;
@@ -337,7 +414,14 @@ export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
         throw new Error(`Received empty response from API.`);
       }
 
-      return parseVerdict(rawText);
+      const result = parseVerdict(rawText);
+      
+      // Cache successful results for instant repeats
+      if (result.verdict !== 'Insufficient Data') {
+        setCachedResult(imageHash, goalId, result);
+      }
+
+      return result;
     } catch (err) {
       console.warn(`Gemini model ${model} failed, trying fallback model. Error: ${err.message}`);
       lastError = err;

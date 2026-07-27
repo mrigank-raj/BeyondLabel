@@ -31,3 +31,6 @@ dist-ssr
 .env.production.local
 
 .vercel
+
+# Temporary working documents
+solution.md

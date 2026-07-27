@@ -97,8 +97,8 @@ function App() {
 
     setError(null);
     setIsLoading(true);
-    setLoadingStatus('Analyzing label...');
-
+    setLoadingStatus('Preparing analysis...');
+    
     const handleRetryMessage = (message) => {
       setLoadingStatus(message);
     };

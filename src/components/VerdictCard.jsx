@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
+import * as htmlToImage from 'html-to-image';
 
 const VerdictCard = ({ verdictData }) => {
   const [copied, setCopied] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const cardRef = useRef(null);
 
   useEffect(() => {
@@ -45,22 +47,50 @@ const VerdictCard = ({ verdictData }) => {
   };
 
   const handleShare = async () => {
-    if (navigator.share) {
-      try {
+    setIsGeneratingImage(true);
+    try {
+      const element = cardRef.current;
+      if (!element) throw new Error("Card element not found");
+      
+      // Generate image blob
+      const blob = await htmlToImage.toBlob(element, { backgroundColor: '#ffffff' });
+      if (!blob) throw new Error("Failed to generate image blob");
+      
+      const file = new File([blob], `beyondlabel-${Date.now()}.png`, { type: 'image/png' });
+      
+      // Try to use native share with files
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           title: 'BeyondLabel Verdict',
-          text: `🚨 BeyondLabel just analyzed my food... \nVerdict: ${config.label} ${config.icon}\n\n${why}\n\nCheck your own food here:`,
-          url: 'https://beyondlabel.vercel.app',
+          text: `🚨 BeyondLabel just analyzed my food... \nVerdict: ${config.label} ${config.icon}\n\nCheck your own food here: https://beyondlabel.vercel.app`,
+          files: [file]
         });
-        // Track share event for gamification
-        const currentCount = parseInt(localStorage.getItem('beyondlabel_share_count') || '0', 10);
-        localStorage.setItem('beyondlabel_share_count', (currentCount + 1).toString());
-        window.dispatchEvent(new Event('beyondlabel_share'));
-      } catch (err) {
-        console.log('Error sharing:', err);
+      } else {
+        // Fallback: download the image
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        handleCopy();
+        alert('Image saved! Text copied to clipboard. You can now share it with friends.');
       }
-    } else {
+      
+      // Track share event for gamification
+      const currentCount = parseInt(localStorage.getItem('beyondlabel_share_count') || '0', 10);
+      localStorage.setItem('beyondlabel_share_count', (currentCount + 1).toString());
+      window.dispatchEvent(new Event('beyondlabel_share'));
+      
+    } catch (err) {
+      console.error('Error sharing image:', err);
+      // Fallback to text share if image generation fails
       handleCopy();
+    } finally {
+      setIsGeneratingImage(false);
     }
   };
 
@@ -235,10 +265,15 @@ const VerdictCard = ({ verdictData }) => {
               </button>
               <button 
                 onClick={handleShare}
-                className="w-full bg-white text-gray-900 border border-surface-variant py-3.5 rounded-pill font-bold flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+                disabled={isGeneratingImage}
+                className="w-full bg-white text-gray-900 border border-surface-variant py-3.5 rounded-pill font-bold flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors disabled:opacity-50"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                Share Analysis
+                {isGeneratingImage ? (
+                  <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                )}
+                {isGeneratingImage ? 'Generating...' : 'Share Analysis'}
               </button>
               <div className="h-px w-full bg-gray-200 my-2"></div>
               <button disabled className="w-full text-[#006c49] py-2 font-bold flex items-center justify-center gap-2 opacity-70">
@@ -365,11 +400,14 @@ const VerdictCard = ({ verdictData }) => {
         <div className="fixed bottom-0 left-0 w-full bg-white border-t border-surface-variant p-4 flex gap-3 z-40 mb-16">
           <button 
             onClick={handleShare}
-            className="flex-1 py-3.5 px-4 rounded-pill border-2 border-surface-variant text-gray-700 font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+            disabled={isGeneratingImage}
+            className="flex-1 py-3.5 px-4 rounded-pill border-2 border-surface-variant text-gray-700 font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
+            {isGeneratingImage ? (
+              <svg className="animate-spin h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+            )}
             Share
           </button>
           <button 

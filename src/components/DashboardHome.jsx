@@ -11,34 +11,47 @@ const DashboardHome = ({
   const [showManual, setShowManual] = useState(false);
 
   return (
-    <div className="w-full flex flex-col items-center justify-center min-h-[70vh] animate-fade-in text-center px-4">
+    <div className="w-full flex flex-col items-center justify-center min-h-[70vh] animate-fade-in text-center px-4 relative">
+      
+      {/* Background Decor */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-full max-h-[500px] bg-gradient-to-tr from-green-300/20 via-teal-100/30 to-emerald-200/20 rounded-full blur-3xl -z-10 animate-gradient pointer-events-none"></div>
       
       {/* Hero Section */}
       <div className="max-w-xl w-full mx-auto space-y-8 flex flex-col items-center">
         
-        <div className="space-y-4">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            </svg>
+        <div className="space-y-6 flex flex-col items-center">
+          
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-surface-variant shadow-sm text-xs font-bold text-[#006c49] animate-fade-in uppercase tracking-wider">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            Vision AI Label Scanning
           </div>
-          <h1 className="font-display text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
-            Know what you eat.
+
+          <h1 className="font-display text-5xl md:text-6xl font-black tracking-tight leading-tight">
+            <span className="gradient-text drop-shadow-sm">Know what</span>
+            <br />
+            <span className="text-gray-900">you eat.</span>
           </h1>
-          <p className="text-gray-500 text-lg md:text-xl">
-            Scan any product label to see if it's actually healthy.
+          
+          <p className="text-gray-500 text-lg md:text-xl max-w-sm">
+            Scan any product label to instantly reveal hidden nasties and personalized health insights.
           </p>
         </div>
 
         {/* Massive Primary CTA */}
         <button 
           onClick={onOpenScanner}
-          className="w-full max-w-sm aspect-square md:aspect-auto md:h-24 bg-primary text-white rounded-[40px] md:rounded-full shadow-floating hover:bg-primary-light active:scale-95 transition-all flex flex-col md:flex-row items-center justify-center gap-4 group"
+          className="relative w-full max-w-sm aspect-square md:aspect-auto md:h-24 bg-primary text-white rounded-[40px] md:rounded-full shadow-floating hover:bg-primary-light active:scale-95 transition-all flex flex-col md:flex-row items-center justify-center gap-4 group animate-pulse-ring"
         >
-          <svg className="w-12 h-12 md:w-8 md:h-8 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* Internal Glow */}
+          <div className="absolute inset-0 rounded-[40px] md:rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          
+          <svg className="w-12 h-12 md:w-8 md:h-8 group-hover:scale-110 transition-transform drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
           </svg>
-          <span className="font-display font-bold text-2xl">Tap to Scan</span>
+          <span className="font-display font-bold text-2xl drop-shadow-sm">Tap to Scan</span>
         </button>
 
         {/* Secondary Options Toggle */}

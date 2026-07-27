@@ -1,6 +1,6 @@
 import { buildImagePrompt } from '../src/utils/promptBuilder.js';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 export default async function handler(req, res) {

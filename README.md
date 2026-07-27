@@ -1,121 +1,69 @@
-# 🍃 BeyondLabel
+# BeyondLabel
 
-**AI-powered food label analyzer for Indian consumers.**
+> **Scan any product label to instantly reveal hidden nasties and personalized health insights.**
 
----
+BeyondLabel is an AI-powered Progressive Web App (PWA) designed to demystify complex nutrition labels. By leveraging Google's Gemini Vision AI and Groq's blazing-fast inference, BeyondLabel reads ingredient lists and provides clear, actionable verdicts on whether a product aligns with your health goals.
 
-## What It Does
+## ✨ Features
 
-BeyondLabel helps Indian consumers see through misleading food labels. Users type a product name, upload a food label photo, or **snap a picture directly from their camera** — select their health goal — **Muscle Gain**, **Fat Loss**, **General Health**, or **Diabetes Management** — and receive an instant AI-powered verdict:
+- **📷 AI Label Scanning**: Just snap a picture of an ingredient label or nutrition facts panel. 
+- **🔍 Ingredient Breakdown**: Instantly identifies "hidden nasties," artificial preservatives, and controversial additives.
+- **🎯 Personalized Goals**: Set your dietary lens (e.g., Weight Loss, Heart Health, Vegan, Gluten-Free) and get personalized alignment scores.
+- **⚡ Blazing Fast UX**: Built on a modern serverless edge architecture with streaming responses so you never wait for results.
+- **🎮 Gamification & Growth**: Track your healthy choices, build streaks, and unlock tiered badges ("Advocate", "Trendsetter") by sharing the app with friends.
+- **📱 PWA Ready**: Installable on iOS and Android for a native app-like experience without the app store friction.
 
-- ✅ **Trustworthy** — The product is what it claims to be.
-- ⚠️ **Question It** — There are concerns worth knowing about.
-- ❌ **Avoid** — The product is misleading or harmful for your goal.
+## 🛠️ Tech Stack
 
-Each verdict comes with a **plain-English explanation** of why the product received that rating, a **specific better alternative**, and a **note personalized to your health goal**.
+- **Frontend**: React (Vite), Tailwind CSS
+- **AI/LLM Models**: 
+  - Vision/Extraction: Google Gemini 2.0 Flash
+  - Fast Inference/Reasoning: Groq (Llama 3)
+- **Backend / API**: Vercel Serverless Functions
+- **Storage**: Supabase, LocalStorage for offline-first caching
+- **Social Sharing**: Web Share API + `html-to-image` for rich graphic generation
 
----
+## 🚀 Getting Started
 
-## Why It Exists
+### Prerequisites
+- Node.js v18+
+- API Keys for Google Gemini and Groq
 
-FSSAI regulations in India are too weak to enforce honest labeling. Brands routinely manipulate labels using tactics like:
+### Installation
 
-- **Soy protein inflation** — Listing soy protein to inflate protein numbers instead of whey.
-- **Jaggery marketed as "no refined sugar"** — It's still sugar, just rebranded.
-- **Serving size deception** — Printing unrealistically small serving sizes to make nutrition numbers look better.
-- **"Added Whey" claims** — When whey is last in the ingredient list (minimal actual quantity).
-- **Maltodextrin as "complex carb"** — A misleading classification.
-- **"0% Trans Fat"** — When the product contains partially hydrogenated oils.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/mrigank-raj/BeyondLabel.git
+   cd BeyondLabel
+   ```
 
-BeyondLabel catches these tricks and explains them in plain English, personalized to your health goal.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
----
+3. Configure Environment Variables:
+   Create a `.env` file in the root directory and add your keys:
+   ```env
+   VITE_GEMINI_API_KEY=your_gemini_api_key_here
+   VITE_GROQ_API_KEY=your_groq_api_key_here
+   ```
 
-## Tech Stack
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-| Layer | Technology |
-|---|---|
-| Frontend | React (Vite) |
-| Styling | Tailwind CSS |
-| Text Analysis AI | Groq API (Llama 3.1) |
-| Image Analysis AI | Google Gemini API (Vision) |
-| Hosting | Vercel |
+## 🤝 Contributing
 
-> **No backend required.** All AI calls are made directly from the frontend for this MVP.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
----
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'feat: add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## How to Run Locally
+## 📄 License
 
-```bash
-# 1. Clone the repository
-git clone https://github.com/mrigank-raj/BeyondLabel.git
-cd BeyondLabel
-
-# 2. Install dependencies
-npm install
-
-# 3. Create your environment file
-cp .env.example .env
-
-# 4. Add your API keys to .env
-#    Get a free Groq key: https://console.groq.com/keys
-#    Get a free Gemini key: https://aistudio.google.com/app/apikey
-
-# 5. Start the development server
-npm run dev
-```
-
-The app will be available at `http://localhost:5173`.
-
----
-
-## Project Structure
-
-```
-BeyondLabel/
-├── docs/
-│   ├── product/            # Product documentation (PRD, user stories, etc.)
-│   └── technical/          # Technical documentation (architecture, API guide, etc.)
-├── src/
-│   ├── components/         # React UI components
-│   │   ├── Hero.jsx        # Landing headline + status badge
-│   │   ├── AnalysisForm.jsx# Product input + goal selector + submit
-│   │   ├── GoalSelector.jsx# Health goal selection with icons
-│   │   ├── ImageUpload.jsx # Label photo upload with drag-and-drop
-│   │   ├── VerdictCard.jsx # Verdict display with copy/share
-│   │   └── Footer.jsx     # Disclaimer + branding
-│   ├── services/
-│   │   └── geminiService.js# Groq (text) + Gemini (image) API integration
-│   ├── utils/
-│   │   └── promptBuilder.js# Prompt engineering for AI analysis
-│   ├── constants/
-│   │   └── goals.js        # Health goal definitions + prompt modifiers
-│   ├── App.jsx             # Root component + state orchestration
-│   ├── main.jsx            # React DOM entry point
-│   └── index.css           # Tailwind + custom animations
-├── .env.example            # Environment variable template
-├── .gitignore
-├── index.html              # HTML entry point with SEO meta tags
-├── tailwind.config.js
-├── vite.config.js
-└── package.json
-```
-
----
-
-## Live Demo
-
-🔗 **[beyondlabel.vercel.app](https://beyondlabel.vercel.app)**
-
----
-
-## Built By
-
-**Mrigank Raj Chouhan** — PM Portfolio Project
-
----
-
-## License
-
-This project is for portfolio and educational purposes.
+This project is licensed under the MIT License - see the LICENSE file for details.

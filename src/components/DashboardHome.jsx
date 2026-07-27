@@ -13,8 +13,17 @@ const DashboardHome = ({
   return (
     <div className="w-full flex flex-col items-center justify-center min-h-[70vh] animate-fade-in text-center px-4 relative">
       
-      {/* Background Decor */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-full max-h-[500px] bg-gradient-to-tr from-green-300/20 via-teal-100/30 to-emerald-200/20 rounded-full blur-3xl -z-10 animate-gradient pointer-events-none"></div>
+      {/* Background Decor & Floating Icons */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full max-h-[600px] pointer-events-none -z-10 flex items-center justify-center">
+        {/* Soft Mesh Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-green-300/20 via-teal-100/30 to-emerald-200/20 rounded-full blur-3xl animate-gradient"></div>
+        
+        {/* Floating Icons */}
+        <div className="absolute top-10 left-10 md:left-20 text-4xl animate-float opacity-50 drop-shadow-sm">🥑</div>
+        <div className="absolute bottom-20 left-16 md:left-32 text-3xl animate-float-reverse opacity-40 drop-shadow-sm">🧐</div>
+        <div className="absolute top-1/4 right-8 md:right-24 text-4xl animate-float-fast opacity-60 drop-shadow-sm">🔍</div>
+        <div className="absolute bottom-1/4 right-16 md:right-32 text-3xl animate-float opacity-50 drop-shadow-sm">🛒</div>
+      </div>
       
       {/* Hero Section */}
       <div className="max-w-xl w-full mx-auto space-y-8 flex flex-col items-center">

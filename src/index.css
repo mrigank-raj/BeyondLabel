@@ -45,6 +45,16 @@ body {
   100% { background-position: 0% 50%; }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+@keyframes floatReverse {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(15px) rotate(-5deg); }
+}
+
 @keyframes borderDash {
   to { stroke-dashoffset: 0; }
 }
@@ -73,6 +83,18 @@ body {
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradientShift 4s ease infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 7s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float 4.5s ease-in-out infinite;
 }
 
 /* Stagger children animations */

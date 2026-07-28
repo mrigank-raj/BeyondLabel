@@ -251,7 +251,11 @@ function App() {
         {verdict && <VerdictCard verdictData={verdict} />}
       </main>
 
-      <BottomNavBar currentTab={currentTab} setCurrentTab={setCurrentTab} />
+      <BottomNavBar currentTab={currentTab} setCurrentTab={(tab) => {
+        setVerdict(null);  // Clear verdict so target page renders
+        setError(null);
+        setCurrentTab(tab);
+      }} />
     </div>
   );
 }

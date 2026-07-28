@@ -95,7 +95,7 @@ const VerdictCard = ({ verdictData }) => {
   };
 
   return (
-    <div ref={cardRef} className="w-full mt-4 md:mt-8 animate-fade-in space-y-6">
+    <div ref={cardRef} className="w-full mt-4 md:mt-8 pb-24 animate-fade-in space-y-6">
       
       {/* ------------------------------------------------------------------ */}
       {/* DESKTOP LAYOUT (>= 1024px) */}
@@ -377,7 +377,7 @@ const VerdictCard = ({ verdictData }) => {
 
         {/* Better Alternatives */}
         {alternatives && alternatives.length > 0 && (
-          <div className="text-left mb-20">
+          <div className="text-left">
             <h3 className="font-display font-bold text-lg text-gray-900 mb-1 ml-2">Better Alternatives</h3>
             <p className="text-sm text-gray-500 mb-4 ml-2">Products with cleaner ingredients.</p>
             
@@ -396,8 +396,8 @@ const VerdictCard = ({ verdictData }) => {
           </div>
         )}
 
-        {/* Floating Bottom Action Bar */}
-        <div className="fixed bottom-0 left-0 w-full bg-white border-t border-surface-variant p-4 flex gap-3 z-40 mb-16">
+        {/* Action Bar (Normal Flow) */}
+        <div className="mt-6 flex gap-3 w-full">
           <button 
             onClick={handleShare}
             disabled={isGeneratingImage}

@@ -8,13 +8,35 @@ import BottomNavBar from './components/layout/BottomNavBar';
 import BarcodeScanner from './components/BarcodeScanner';
 import ProfilePage from './components/ProfilePage';
 import InsightsDashboard from './components/InsightsDashboard';
+import DesktopLandingPage from './components/DesktopLandingPage';
 import { analyzeProduct, analyzeImage } from './services/geminiService';
 import { saveToHistory } from './services/storageService';
 import { lookupBarcode } from './services/barcodeService';
 import { trackEvent, identifyUser } from './lib/analytics';
 import { useAuth } from './contexts/AuthContext';
 
+/**
+ * Hook to detect desktop (≥ 1024px) vs mobile layout.
+ * Returns true on desktop, false on mobile/tablet.
+ */
+const useIsDesktop = () => {
+  const [isDesktop, setIsDesktop] = useState(() => 
+    typeof window !== 'undefined' ? window.innerWidth >= 1024 : false
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const handler = (e) => setIsDesktop(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  return isDesktop;
+};
+
 function App() {
+  const isDesktop = useIsDesktop();
+
   const [productName, setProductName] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -156,19 +178,16 @@ function App() {
     }
   };
 
+  // ─── Desktop: Show Landing Page ───
+  if (isDesktop) {
+    return <DesktopLandingPage />;
+  }
+
+  // ─── Mobile: Show Full App ───
   return (
-    <div className="min-h-screen flex font-sans text-on-background bg-background lg:pt-[72px]">
-      <TopNavBar currentTab={currentTab} setCurrentTab={setCurrentTab} />
-      <SideNavBar 
-        currentTab={currentTab} 
-        setCurrentTab={setCurrentTab}
-        onNewAnalysis={() => {
-          setVerdict(null);
-          setCurrentTab('home');
-        }} 
-      />
+    <div className="min-h-screen flex flex-col font-sans text-on-background bg-background">
       
-      <main className="flex-grow w-full lg:ml-64 p-5 md:p-8 pb-24 lg:pb-10 max-w-[1200px] mx-auto overflow-y-auto">
+      <main className="flex-grow w-full p-5 pb-24 max-w-[600px] mx-auto overflow-y-auto">
         {!verdict && currentTab === 'home' && (
           <DashboardHome 
             productName={productName}
@@ -245,14 +264,12 @@ function App() {
             </div>
           </div>
         )}
-        {/* Main Application Logic */}
-        {/* Removed old AnalysisForm */}
 
         {verdict && <VerdictCard verdictData={verdict} />}
       </main>
 
       <BottomNavBar currentTab={currentTab} setCurrentTab={(tab) => {
-        setVerdict(null);  // Clear verdict so target page renders
+        setVerdict(null);
         setError(null);
         setCurrentTab(tab);
       }} />
@@ -261,3 +278,4 @@ function App() {
 }
 
 export default App;
+

@@ -339,24 +339,47 @@ const DesktopLandingPage = () => {
       </section>
 
       {/* ─── CTA ─── */}
-      <section className="py-28 px-10 bg-primary relative overflow-hidden">
+      <section className="py-20 px-10 bg-primary relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.03%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] pointer-events-none"></div>
         
-        <div className="max-w-2xl mx-auto text-center relative z-10">
-          <h2 className="font-display text-[2.8rem] font-black text-white mb-5 leading-tight tracking-tight">
-            Ready to know what's<br />really in your food?
-          </h2>
-          <p className="text-white/50 text-[17px] mb-10 max-w-md mx-auto leading-relaxed">
-            Open BeyondLabel on your phone to scan labels, get instant AI verdicts, and make healthier choices.
-          </p>
-          <a
-            href="https://beyondlabel.vercel.app"
-            className="inline-flex items-center gap-2 bg-white text-primary px-8 py-4 rounded-2xl font-bold text-[17px] hover:bg-gray-50 transition-colors shadow-lg"
-          >
-            Open on your phone
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-          </a>
-          <p className="text-white/30 text-[13px] mt-5">No download required. Works in any mobile browser.</p>
+        <div className="max-w-[1100px] mx-auto flex items-center justify-between gap-16 relative z-10">
+          {/* Left — Text */}
+          <div className="flex-1 max-w-lg">
+            <h2 className="font-display text-[2.5rem] font-black text-white mb-4 leading-tight tracking-tight">
+              Ready to know what's<br />really in your food?
+            </h2>
+            <p className="text-white/50 text-[16px] leading-relaxed mb-6">
+              Scan the QR code with your phone camera to open BeyondLabel instantly. Get AI-powered label analysis, hidden nasties alerts, and healthier alternatives — no download required.
+            </p>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-white/30 text-[13px]">
+                <svg className="w-4 h-4 text-emerald-400/60" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                Works instantly
+              </div>
+              <div className="flex items-center gap-2 text-white/30 text-[13px]">
+                <svg className="w-4 h-4 text-emerald-400/60" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                Any mobile browser
+              </div>
+              <div className="flex items-center gap-2 text-white/30 text-[13px]">
+                <svg className="w-4 h-4 text-emerald-400/60" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                No app store
+              </div>
+            </div>
+          </div>
+
+          {/* Right — QR Code */}
+          <div className="flex-shrink-0 flex flex-col items-center">
+            <div className="bg-white rounded-3xl p-5 shadow-[0_8px_40px_-10px_rgba(0,0,0,0.3)]">
+              <img 
+                src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fbeyondlabel.vercel.app&color=00261b&bgcolor=ffffff&margin=0" 
+                alt="Scan to open BeyondLabel"
+                width="180"
+                height="180"
+                className="rounded-xl"
+              />
+            </div>
+            <p className="text-white/25 text-[11px] font-medium mt-3 text-center">Scan with your phone camera</p>
+          </div>
         </div>
       </section>
 

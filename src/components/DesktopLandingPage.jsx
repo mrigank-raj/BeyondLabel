@@ -259,19 +259,19 @@ const DesktopLandingPage = () => {
       )}
 
       {/* ═══ 3. Trust Ticker Strip ═══ */}
-      <div className="bg-primary py-4 border-y border-outline/20 overflow-hidden">
-        <div className="ticker-wrap flex">
-          <div className="ticker flex w-max items-center gap-12 px-6 flex-nowrap">
-            {[...Array(2)].map((_, rep) => (
-              <div key={rep} className="flex items-center gap-12 text-label-caps text-surface-variant/80 whitespace-nowrap uppercase tracking-widest flex-nowrap flex-shrink-0">
-                <span className="flex items-center gap-2"><Icon name="database" className="text-secondary" /> 50,000+ Ingredients Analyzed</span>
-                <span>•</span>
-                <span className="flex items-center gap-2"><Icon name="verified_user" className="text-secondary" /> 1M+ Scans This Month</span>
-                <span>•</span>
-                <span className="flex items-center gap-2"><Icon name="shield" className="text-secondary" /> Clinically Backed Data</span>
-                <span>•</span>
-                <span className="flex items-center gap-2"><Icon name="auto_awesome" className="text-secondary" /> AI-Driven Insights</span>
-                <span>•</span>
+      <div className="bg-primary py-4 border-y border-outline/20">
+        <div className="ticker-wrap w-full overflow-hidden whitespace-nowrap block">
+          <div className="ticker inline-flex flex-row flex-nowrap items-center gap-12 px-6 w-max">
+            {[0, 1].map((rep) => (
+              <div key={rep} className="inline-flex flex-row flex-nowrap items-center gap-12 text-label-caps text-surface-variant/80 whitespace-nowrap uppercase tracking-widest flex-shrink-0">
+                <span className="inline-flex items-center gap-2 flex-shrink-0"><Icon name="database" className="text-secondary" /> 50,000+ Ingredients Analyzed</span>
+                <span className="flex-shrink-0">•</span>
+                <span className="inline-flex items-center gap-2 flex-shrink-0"><Icon name="verified_user" className="text-secondary" /> 1M+ Scans This Month</span>
+                <span className="flex-shrink-0">•</span>
+                <span className="inline-flex items-center gap-2 flex-shrink-0"><Icon name="shield" className="text-secondary" /> Clinically Backed Data</span>
+                <span className="flex-shrink-0">•</span>
+                <span className="inline-flex items-center gap-2 flex-shrink-0"><Icon name="auto_awesome" className="text-secondary" /> AI-Driven Insights</span>
+                <span className="flex-shrink-0">•</span>
               </div>
             ))}
           </div>

@@ -45,10 +45,14 @@ body {
   width: 100%;
   overflow: hidden;
   white-space: nowrap;
+  display: block !important;
 }
 
 .ticker {
-  display: inline-block;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  width: max-content !important;
   animation: ticker 30s linear infinite;
 }
 

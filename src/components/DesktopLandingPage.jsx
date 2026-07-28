@@ -259,11 +259,11 @@ const DesktopLandingPage = () => {
       )}
 
       {/* ═══ 3. Trust Ticker Strip ═══ */}
-      <div className="bg-primary py-4 border-y border-outline/20">
+      <div className="bg-primary py-4 border-y border-outline/20 overflow-hidden">
         <div className="ticker-wrap flex">
-          <div className="ticker flex items-center gap-12 px-6">
+          <div className="ticker flex w-max items-center gap-12 px-6 flex-nowrap">
             {[...Array(2)].map((_, rep) => (
-              <div key={rep} className="flex items-center gap-12 text-label-caps text-surface-variant/80 whitespace-nowrap uppercase tracking-widest">
+              <div key={rep} className="flex items-center gap-12 text-label-caps text-surface-variant/80 whitespace-nowrap uppercase tracking-widest flex-nowrap flex-shrink-0">
                 <span className="flex items-center gap-2"><Icon name="database" className="text-secondary" /> 50,000+ Ingredients Analyzed</span>
                 <span>•</span>
                 <span className="flex items-center gap-2"><Icon name="verified_user" className="text-secondary" /> 1M+ Scans This Month</span>
@@ -271,6 +271,7 @@ const DesktopLandingPage = () => {
                 <span className="flex items-center gap-2"><Icon name="shield" className="text-secondary" /> Clinically Backed Data</span>
                 <span>•</span>
                 <span className="flex items-center gap-2"><Icon name="auto_awesome" className="text-secondary" /> AI-Driven Insights</span>
+                <span>•</span>
               </div>
             ))}
           </div>
@@ -318,26 +319,27 @@ const DesktopLandingPage = () => {
             <p className="text-body-lg text-on-surface-variant max-w-xl">Everything you need to make informed choices, packed into one powerful interface.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ gridAutoRows: '380px' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ gridAutoRows: '400px' }}>
             {/* Card 1: Hidden Nasties */}
             <div className="bg-surface-container-lowest rounded-[2rem] p-8 border border-outline-variant/30 overflow-hidden relative group">
               <div className="z-10 relative">
                 <h3 className="font-display text-headline-md text-primary mb-2">Hidden Additives Detected</h3>
                 <p className="text-body-md text-on-surface-variant max-w-sm">We highlight preservatives, artificial colors, and hidden sugars instantly.</p>
               </div>
-              <div className="absolute md:w-3/4 glass-card rounded-2xl p-6 shadow-xl bottom-8 right-8 w-[85%] overflow-hidden">
-                <div className="flex flex-col gap-3 relative z-10">
+              <div className="absolute bottom-6 left-6 right-6 max-w-[340px] mx-auto glass-card rounded-2xl p-5 shadow-xl overflow-hidden">
+                <div className="absolute inset-0 bg-transparent shimmer-effect z-0 opacity-30"></div>
+                <div className="flex flex-col gap-2.5 relative z-10">
                   {['Palm Oil', 'E635 (Flavor Enhancer)', 'Red 40'].map((nasty, i) => (
                     <div
                       key={i}
-                      className={`${i < 2 ? 'bg-error-container/50' : 'bg-surface-variant'} px-4 py-3 rounded-lg flex items-center justify-between transition-all duration-500`}
+                      className={`${i < 2 ? 'bg-error-container/50' : 'bg-surface-variant'} px-3.5 py-2.5 rounded-lg flex items-center justify-between transition-all duration-500`}
                       style={{
                         opacity: featuresVisible ? 1 : 0,
                         transform: featuresVisible ? 'translateY(0)' : 'translateY(10px)',
                         transitionDelay: `${i * 200}ms`
                       }}
                     >
-                      <span className={`font-semibold text-sm ${i < 2 ? 'text-on-error-container' : 'text-on-surface-variant'}`}>{nasty}</span>
+                      <span className={`font-semibold text-xs sm:text-sm ${i < 2 ? 'text-on-error-container' : 'text-on-surface-variant'}`}>{nasty}</span>
                       <Icon name={i < 2 ? 'warning' : 'info'} className={`text-sm ${i < 2 ? 'text-error' : 'text-outline'}`} />
                     </div>
                   ))}
@@ -345,26 +347,38 @@ const DesktopLandingPage = () => {
               </div>
             </div>
 
-            {/* Card 2: Personalized Goals (Dark) */}
+            {/* Card 2: Personalized Goals (Dark with Cursor Click & Ripple Animation) */}
             <div className="bg-primary rounded-[2rem] p-8 border border-primary overflow-hidden relative group text-on-primary">
               <div className="z-10 relative">
                 <h3 className="font-display text-headline-md mb-2">Personalized Goals</h3>
                 <p className="text-body-md text-on-primary/80 max-w-sm">Set dietary preferences like vegan, gluten-free, or low-FODMAP.</p>
               </div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 w-full px-8 flex flex-wrap gap-3 justify-center">
-                {goals.map((goal, i) => (
-                  <div
-                    key={i}
-                    className={`px-4 py-2 rounded-full text-label-caps text-xs flex items-center gap-1 transition-all duration-500 ${
-                      activeGoal === i
-                        ? 'bg-secondary text-white shadow-lg'
-                        : 'bg-surface-variant/20 text-on-primary'
-                    }`}
-                  >
-                    <Icon name={activeGoal === i ? 'check' : 'add'} className="text-sm" />
-                    {goal}
-                  </div>
-                ))}
+                {goals.map((goal, i) => {
+                  const isActive = activeGoal === i;
+                  return (
+                    <div
+                      key={i}
+                      className={`relative px-4 py-2 rounded-full text-label-caps text-xs flex items-center gap-1.5 transition-all duration-500 ${
+                        isActive
+                          ? 'bg-secondary text-white shadow-lg goal-pulse'
+                          : 'bg-surface-variant/20 text-on-primary'
+                      }`}
+                    >
+                      <Icon name={isActive ? 'check' : 'add'} className="text-sm" />
+                      {goal}
+                      {/* Animated Cursor hitting active chip */}
+                      {isActive && (
+                        <>
+                          <div className="absolute -right-2 top-0 z-30 text-white drop-shadow-xl cursor-animate pointer-events-none">
+                            <Icon name="near_me" fill className="text-2xl text-white" />
+                          </div>
+                          <div className="ripple-effect" />
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -379,7 +393,7 @@ const DesktopLandingPage = () => {
                 </div>
               </div>
               <div className="absolute bottom-8 right-8 flex items-center justify-center">
-                <div className="relative w-40 h-40">
+                <div className="relative w-36 h-36 sm:w-40 sm:h-40">
                   <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                     <path
                       className="text-surface-variant"
@@ -402,24 +416,25 @@ const DesktopLandingPage = () => {
               </div>
             </div>
 
-            {/* Card 4: Share Insights */}
+            {/* Card 4: Share Insights (Fixed width & padding so text is never cut off) */}
             <div className="bg-surface-container-lowest rounded-[2rem] p-8 border border-outline-variant/30 overflow-hidden relative group">
               <div className="z-10 relative">
                 <h3 className="font-display text-headline-md text-primary mb-2">Share Insights</h3>
                 <p className="text-body-md text-on-surface-variant max-w-sm">Warn friends about harmful products or share great finds.</p>
               </div>
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[85%] bg-white rounded-xl p-4 shadow-xl border border-surface-variant float-anim transition-all duration-500">
+              <div className="absolute bottom-6 left-6 right-6 max-w-[280px] mx-auto bg-white rounded-xl p-4 shadow-xl border border-surface-variant float-anim transition-all duration-500">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-secondary-fixed/30 rounded-full flex items-center justify-center">
+                  <div className="w-9 h-9 bg-secondary-fixed/30 rounded-full flex items-center justify-center flex-shrink-0">
                     <Icon name="person" className="text-secondary" />
                   </div>
-                  <div>
-                    <div className="text-sm font-bold text-on-surface">Shared by Alex</div>
-                    <div className="text-xs text-on-surface-variant">"Check out this clean alternative!"</div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-on-surface truncate">Shared by Alex</div>
+                    <div className="text-xs text-on-surface-variant truncate">"Check out this clean alternative!"</div>
                   </div>
                 </div>
-                <button className="w-full bg-surface-container-high py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 text-on-surface">
-                  <Icon name="ios_share" className="text-sm" /> Share Discovery
+                <button className="w-full bg-surface-container-high py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 text-on-surface whitespace-nowrap overflow-hidden">
+                  <Icon name="ios_share" className="text-sm flex-shrink-0" />
+                  <span className="truncate">Share Discovery</span>
                 </button>
               </div>
             </div>

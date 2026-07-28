@@ -72,16 +72,16 @@ const DesktopLandingPage = () => {
         <div className="absolute top-0 right-0 w-[60%] h-full bg-gradient-to-bl from-emerald-50/80 via-teal-50/30 to-transparent pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-green-100/40 to-transparent rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="max-w-[1400px] mx-auto px-10 w-full grid grid-cols-2 gap-20 items-center">
+        <div className="max-w-[1400px] mx-auto px-10 w-full grid grid-cols-[1fr_auto] gap-12 items-center">
           
           {/* Left — Copy */}
-          <div className="space-y-8 max-w-xl">
+          <div className="space-y-5 max-w-xl">
             <div className="flex items-center gap-3">
               <div className="h-px w-8 bg-primary/40"></div>
               <span className="text-[11px] font-semibold text-primary/70 uppercase tracking-[0.2em]">AI-Powered Label Intelligence</span>
             </div>
 
-            <h1 className="font-display text-[clamp(2.8rem,4.5vw,4.5rem)] font-black leading-[1.05] tracking-[-0.03em] text-gray-900">
+            <h1 className="font-display text-[clamp(2.2rem,3.5vw,3.8rem)] font-black leading-[1.08] tracking-[-0.03em] text-gray-900">
               Know what's
               <br />
               <span className="text-primary">really</span> in
@@ -89,7 +89,7 @@ const DesktopLandingPage = () => {
               your food.
             </h1>
 
-            <p className="text-[17px] text-gray-500 leading-[1.7] max-w-md">
+            <p className="text-[15px] text-gray-500 leading-[1.65] max-w-md">
               Point your phone camera at any product label. Our AI reads every ingredient, flags hidden nasties, and tells you if it's actually worth eating.
             </p>
 
@@ -104,13 +104,13 @@ const DesktopLandingPage = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Try &quot;Maggi Noodles&quot; or &quot;Coca Cola&quot;"
-                  className="w-full bg-white border border-gray-200 rounded-xl py-3.5 pl-11 pr-4 text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/[0.06] transition-all shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+                  className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-[14px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/[0.06] transition-all shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
                 />
               </div>
               <button
                 type="submit"
                 disabled={isLoading || !searchQuery.trim()}
-                className="bg-primary text-white px-6 py-3.5 rounded-xl font-semibold text-[15px] hover:bg-primary-light active:scale-[0.98] transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
+                className="bg-primary text-white px-5 py-3 rounded-xl font-semibold text-[14px] hover:bg-primary-light active:scale-[0.98] transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
               >
                 {isLoading ? (
                   <>
@@ -121,7 +121,7 @@ const DesktopLandingPage = () => {
               </button>
             </form>
 
-            <div className="flex items-center gap-5 pt-2">
+            <div className="flex items-center gap-5">
               <div className="flex items-center gap-2 text-[13px] text-gray-400">
                 <svg className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                 <span>100% free</span>
@@ -141,20 +141,20 @@ const DesktopLandingPage = () => {
           <div className="flex items-center justify-center relative">
             {/* Phone */}
             <div className="relative z-10">
-              <div className="w-[280px] h-[560px] bg-[#1a1a1a] rounded-[2.8rem] p-[10px] shadow-[0_25px_80px_-20px_rgba(0,0,0,0.25)] ring-1 ring-white/10">
+              <div className="w-[220px] h-[440px] bg-[#1a1a1a] rounded-[2.2rem] p-2 shadow-[0_25px_80px_-20px_rgba(0,0,0,0.25)] ring-1 ring-white/10">
                 {/* Dynamic Island */}
-                <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-24 h-[22px] bg-[#1a1a1a] rounded-full z-20"></div>
+                <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-20 h-[18px] bg-[#1a1a1a] rounded-full z-20"></div>
                 {/* Screen */}
-                <div className="w-full h-full bg-gradient-to-b from-[#f7f9fb] to-[#eef1ee] rounded-[2.2rem] overflow-hidden flex flex-col items-center justify-center text-center relative">
+                <div className="w-full h-full bg-gradient-to-b from-[#f7f9fb] to-[#eef1ee] rounded-[1.8rem] overflow-hidden flex flex-col items-center justify-center text-center relative">
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
-                    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                      <svg className="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                     </div>
-                    <p className="font-display font-bold text-gray-900 text-base mb-1">App Preview</p>
-                    <p className="text-[13px] text-gray-400 leading-relaxed">Video demo<br />coming soon</p>
+                    <p className="font-display font-bold text-gray-900 text-sm mb-1">App Preview</p>
+                    <p className="text-[11px] text-gray-400 leading-relaxed">Video demo<br />coming soon</p>
                   </div>
                 </div>
               </div>

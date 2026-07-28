@@ -138,7 +138,7 @@ const DesktopLandingPage = () => {
           </div>
 
           {/* Right — Phone Mockup */}
-          <div className="flex items-center justify-center relative">
+          <div className="flex items-center justify-center relative pr-16 pt-6">
             {/* Phone */}
             <div className="relative z-10">
               <div className="w-[220px] h-[440px] bg-[#1a1a1a] rounded-[2.2rem] p-2 shadow-[0_25px_80px_-20px_rgba(0,0,0,0.25)] ring-1 ring-white/10">
@@ -160,38 +160,38 @@ const DesktopLandingPage = () => {
               </div>
 
               {/* Floating Cards */}
-              <div className="absolute -top-3 -left-20 bg-white shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] rounded-2xl px-4 py-3 border border-black/[0.04] animate-float">
+              <div className="absolute -top-2 -left-16 bg-white shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] rounded-2xl px-3 py-2.5 border border-black/[0.04] animate-float">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center">
                     <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                   </div>
                   <div>
-                    <p className="text-[11px] text-gray-400 font-medium">Verdict</p>
-                    <p className="text-[13px] font-bold text-emerald-700">Great Choice</p>
+                    <p className="text-[10px] text-gray-400 font-medium">Verdict</p>
+                    <p className="text-[12px] font-bold text-emerald-700">Great Choice</p>
                   </div>
                 </div>
               </div>
 
-              <div className="absolute top-1/3 -right-24 bg-white shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] rounded-2xl px-4 py-3 border border-black/[0.04] animate-float-reverse">
+              <div className="absolute top-1/3 -right-14 bg-white shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] rounded-2xl px-3 py-2.5 border border-black/[0.04] animate-float-reverse">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center">
                     <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                   </div>
                   <div>
-                    <p className="text-[11px] text-gray-400 font-medium">Hidden</p>
-                    <p className="text-[13px] font-bold text-red-700">3 Nasties</p>
+                    <p className="text-[10px] text-gray-400 font-medium">Hidden</p>
+                    <p className="text-[12px] font-bold text-red-700">3 Nasties</p>
                   </div>
                 </div>
               </div>
 
-              <div className="absolute -bottom-2 -left-16 bg-white shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] rounded-2xl px-4 py-3 border border-black/[0.04] animate-float-fast">
+              <div className="absolute -bottom-2 -left-12 bg-white shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] rounded-2xl px-3 py-2.5 border border-black/[0.04] animate-float-fast">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center">
                     <span className="text-sm">🏆</span>
                   </div>
                   <div>
-                    <p className="text-[11px] text-gray-400 font-medium">Health Score</p>
-                    <p className="text-[13px] font-bold text-gray-900">82 / 100</p>
+                    <p className="text-[10px] text-gray-400 font-medium">Health Score</p>
+                    <p className="text-[12px] font-bold text-gray-900">82 / 100</p>
                   </div>
                 </div>
               </div>

@@ -7,40 +7,88 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#00261b', // Deep Forest Green
-        'primary-container': '#0b3d2e',
+        // ── Luminous Integrity Design System ──
+        primary: '#000b07',
+        'primary-container': '#00261b',
         'on-primary': '#ffffff',
+        'on-primary-container': '#6b9080',
         'primary-light': '#005236',
         'primary-lighter': '#4edea3',
+        'primary-fixed': '#c4ebd9',
+        'primary-fixed-dim': '#a8cfbe',
+        'inverse-primary': '#a8cfbe',
         secondary: '#006c49',
+        'on-secondary': '#ffffff',
         'secondary-container': '#6cf8bb',
-        background: '#f7f9fb', // Slate Tint off-white
-        surface: '#ffffff',
-        'surface-variant': '#e0e3e5',
+        'on-secondary-container': '#00714d',
+        'secondary-fixed': '#6ffbbe',
+        'secondary-fixed-dim': '#4edea3',
+        tertiary: '#110700',
+        'on-tertiary': '#ffffff',
+        'tertiary-container': '#311c00',
+        'on-tertiary-container': '#be7900',
+        'tertiary-fixed': '#ffddb8',
+        'tertiary-fixed-dim': '#ffb95f',
+        background: '#f8f9fa',
+        'on-background': '#191c1d',
+        surface: '#f8f9fa',
+        'surface-dim': '#d9dadb',
+        'surface-bright': '#f8f9fa',
+        'surface-container-lowest': '#ffffff',
+        'surface-container-low': '#f3f4f5',
+        'surface-container': '#edeeef',
+        'surface-container-high': '#e7e8e9',
+        'surface-container-highest': '#e1e3e4',
+        'on-surface': '#191c1d',
+        'on-surface-variant': '#414845',
+        'surface-variant': '#e1e3e4',
+        'surface-tint': '#426558',
+        'inverse-surface': '#2e3132',
+        'inverse-on-surface': '#f0f1f2',
+        outline: '#717974',
+        'outline-variant': '#c1c8c3',
+        error: '#ba1a1a',
+        'on-error': '#ffffff',
+        'error-container': '#ffdad6',
+        'on-error-container': '#93000a',
         verdict: {
-          avoid: '#ba1a1a', // Soft Coral / Error
+          avoid: '#ba1a1a',
           'avoid-bg': '#ffdad6',
-          question: '#dd8d00', // Warm Amber
+          question: '#dd8d00',
           'question-bg': '#ffddb8',
-          trust: '#006c49', // Emerald Green Success
+          trust: '#006c49',
           'trust-bg': '#6cf8bb',
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'], // Body
-        display: ['Outfit', 'system-ui', 'sans-serif'], // Headings
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Outfit', 'system-ui', 'sans-serif'],
+      },
+      fontSize: {
+        'display-lg': ['48px', { lineHeight: '56px', letterSpacing: '-0.04em', fontWeight: '900' }],
+        'display-lg-mobile': ['36px', { lineHeight: '42px', letterSpacing: '-0.03em', fontWeight: '900' }],
+        'headline-md': ['24px', { lineHeight: '32px', letterSpacing: '-0.02em', fontWeight: '800' }],
+        'body-lg': ['17px', { lineHeight: '1.7', letterSpacing: '0em', fontWeight: '400' }],
+        'body-md': ['15px', { lineHeight: '1.6', letterSpacing: '0em', fontWeight: '400' }],
+        'label-caps': ['12px', { lineHeight: '16px', letterSpacing: '0.1em', fontWeight: '700' }],
       },
       boxShadow: {
-        'card': '0 4px 20px -5px rgba(0, 0, 0, 0.05)', // Level 2
+        'card': '0 4px 20px -5px rgba(0, 0, 0, 0.05)',
         'card-hover': '0 8px 30px -5px rgba(0, 0, 0, 0.08)',
-        'floating': '0 12px 40px -8px rgba(0, 0, 0, 0.15)', // Level 3
+        'floating': '0 12px 40px -8px rgba(0, 0, 0, 0.15)',
         'verdict': '0 8px 32px -4px rgba(0, 0, 0, 0.12), 0 2px 8px -2px rgba(0, 0, 0, 0.06)',
+        'soft-ambient': '0 8px 30px rgba(0,0,0,0.04)',
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.05)',
       },
       borderRadius: {
         '2xl': '1rem',
         '3xl': '1.5rem',
         '4xl': '2rem',
         'pill': '9999px',
+      },
+      spacing: {
+        'section-py': '100px',
+        'container-max': '1200px',
       },
     },
   },

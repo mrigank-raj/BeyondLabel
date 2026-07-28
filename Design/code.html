@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BeyondLabel - AI-Powered Food Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-container": "#edeeef",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary-fixed": "#002117",
+                        "surface-variant": "#e1e3e4",
+                        "outline-variant": "#c1c8c3",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f8f9fa",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#6cf8bb",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-surface-variant": "#414845",
+                        "tertiary-fixed": "#ffddb8",
+                        "secondary-fixed": "#6ffbbe",
+                        "tertiary-container": "#311c00",
+                        "primary": "#000b07",
+                        "on-surface": "#191c1d",
+                        "background": "#f8f9fa",
+                        "primary-fixed": "#c4ebd9",
+                        "on-secondary-fixed": "#002113",
+                        "outline": "#717974",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#d9dadb",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f3f4f5",
+                        "on-secondary-fixed-variant": "#005236",
+                        "tertiary": "#110700",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-tertiary-container": "#be7900",
+                        "on-primary": "#ffffff",
+                        "on-background": "#191c1d",
+                        "on-primary-fixed-variant": "#2a4d40",
+                        "inverse-surface": "#2e3132",
+                        "on-secondary-container": "#00714d",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "primary-fixed-dim": "#a8cfbe",
+                        "inverse-primary": "#a8cfbe",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#006c49",
+                        "on-primary-container": "#6b9080",
+                        "surface-tint": "#426558",
+                        "on-tertiary-fixed": "#2a1700",
+                        "primary-container": "#00261b",
+                        "surface": "#f8f9fa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "unit": "8px",
+                        "container-max-width": "1200px",
+                        "gutter": "24px",
+                        "margin-desktop": "40px",
+                        "section-py": "100px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"],
+                        "display-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "display-lg-mobile": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.04em", "fontWeight": "900" }],
+                        "body-md": ["15px", { "lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "body-lg": ["17px", { "lineHeight": "1.7", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "display-lg-mobile": ["36px", { "lineHeight": "42px", "letterSpacing": "-0.03em", "fontWeight": "900" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+        .mesh-bg {
+            background-color: #f8f9fa;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(158,100%,92%,1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(158,100%,97%,1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(158,50%,90%,1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(158,60%,95%,1) 0px, transparent 50%);
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #006c49, #4edea3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .ticker {
+            display: inline-block;
+            animation: ticker 30s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+        }
+        .pulse-badge {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.3); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .float-anim {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Feature-Specific Animations */
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .shimmer-effect::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0.4) 50%,
+                rgba(255,255,255,0) 100%
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes pulse-highlight {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 108, 73, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0, 108, 73, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 108, 73, 0); }
+        }
+        .goal-pulse {
+            animation: pulse-highlight 2s infinite;
+        }
+
+        @keyframes fire-pulse {
+            0% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 0px #be7900); }
+            50% { transform: scale(1.2); opacity: 0.8; filter: drop-shadow(0 0 8px #be7900); }
+            100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 0px #be7900); }
+        }
+        .fire-pulse {
+            animation: fire-pulse 1.5s infinite ease-in-out;
+        }
+
+        /* Staggered Fade In for Nasties */
+        .nasty-pill { opacity: 0; transform: translateY(10px); transition: all 0.5s ease-out; }
+        .nasty-pill.visible { opacity: 1; transform: translateY(0); }
+
+        /* Cursor Animation */
+        @keyframes cursor-flow {
+            0% { transform: translate(50px, 50px); opacity: 0; }
+            30% { transform: translate(10px, 10px); opacity: 1; }
+            45% { transform: translate(0px, 0px) scale(0.9); opacity: 1; } /* Click */
+            55% { transform: translate(0px, 0px) scale(1); opacity: 1; } /* Release */
+            80% { transform: translate(-20px, 30px); opacity: 1; }
+            100% { transform: translate(-40px, 50px); opacity: 0; }
+        }
+        .cursor-animate {
+            animation: cursor-flow 4s ease-in-out infinite;
+            transform-origin: top left;
+        }
+        
+        @keyframes ripple {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        .ripple-effect {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: ripple 0.6s linear forwards;
+            pointer-events: none;
+            top: 50%;
+            left: 50%;
+            margin-top: -10px;
+            margin-left: -10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden selection:bg-secondary/20 selection:text-secondary">
+<!-- 1. TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-[0_8px_30px_rgba(0,0,0,0.04)] h-20 px-margin-mobile md:px-margin-desktop flex justify-between items-center transition-all duration-300" id="navbar">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1;">eco</span>
+<span class="font-headline-md text-headline-md text-primary tracking-tighter hidden sm:block">BeyondLabel</span>
+</div>
+<div class="hidden md:flex items-center gap-8 font-label-caps text-label-caps">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#how-it-works">How it works</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#features">Features</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#pricing">Try it</a>
+</div>
+<button class="bg-secondary text-white font-label-caps text-label-caps px-6 py-3 rounded-full hover:bg-on-secondary-fixed transition-colors flex items-center gap-2 shadow-sm">
+        Open App
+        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</nav>
+<!-- 2. Hero Section -->
+<section class="min-h-screen mesh-bg pt-32 pb-section-py px-margin-mobile md:px-margin-desktop relative overflow-hidden flex items-center reveal active">
+<div class="absolute top-1/4 -left-32 w-96 h-96 bg-secondary/10 rounded-full blur-3xl mix-blend-multiply"></div>
+<div class="absolute bottom-1/4 -right-32 w-96 h-96 bg-primary-fixed-dim/30 rounded-full blur-3xl mix-blend-multiply"></div>
+<div class="max-w-container-max-width mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10 w-full">
+<div class="flex flex-col gap-8 max-w-xl z-20">
+<div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-white/50 px-4 py-2 rounded-full self-start shadow-sm pulse-badge">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Live · AI-Powered Food Intelligence</span>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary tracking-tight">
+                Know what's <br/>
+<span class="text-gradient">really</span> in your food
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">
+                Instantly decode complex ingredient lists. Uncover hidden sugars, harmful additives, and discover cleaner alternatives with our AI-driven scanning engine.
+            </p>
+<div class="glass-card rounded-2xl p-2 flex items-center shadow-lg w-full max-w-lg mt-4 group focus-within:ring-2 focus-within:ring-secondary/50 transition-all">
+<span class="material-symbols-outlined text-outline ml-4">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-body-md text-on-surface placeholder:text-outline-variant px-4 py-3" placeholder="Search any food or ingredient..." type="text"/>
+<button class="bg-primary text-white rounded-xl px-6 py-3 font-label-caps text-label-caps hover:bg-surface-tint transition-colors">Analyze</button>
+</div>
+<div class="flex flex-wrap gap-2 mt-2">
+<span class="text-label-caps font-label-caps text-outline-variant mr-2 flex items-center">Trending:</span>
+<span class="bg-surface-container-high px-3 py-1 rounded-full text-xs font-medium text-on-surface-variant cursor-pointer hover:bg-secondary/10 transition">Maltodextrin</span>
+<span class="bg-surface-container-high px-3 py-1 rounded-full text-xs font-medium text-on-surface-variant cursor-pointer hover:bg-secondary/10 transition">E635</span>
+<span class="bg-surface-container-high px-3 py-1 rounded-full text-xs font-medium text-on-surface-variant cursor-pointer hover:bg-secondary/10 transition">Palm Oil</span>
+</div>
+</div>
+<div class="relative w-full h-[600px] flex justify-center items-center">
+<div class="absolute inset-0 bg-gradient-to-tr from-secondary/5 to-primary-fixed/20 rounded-full blur-3xl opacity-50"></div>
+<div class="relative z-10 w-[300px] h-[600px] bg-white rounded-[40px] shadow-2xl border-[8px] border-surface-container-highest overflow-hidden flex flex-col">
+<div class="absolute top-0 inset-x-0 h-7 flex justify-center z-20">
+<div class="w-32 h-6 bg-surface-container-highest rounded-b-2xl"></div>
+</div>
+<div class="flex-1 bg-surface flex flex-col relative">
+<div class="h-48 relative overflow-hidden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAHN_V9W8eWEkgEn8Zr8SkqKUebg3UcO0t7JJ3bWTegaE4kEgJZ10Dc7q7vC1IpCu0ZJrEIE9Z1wesq1xTNVI3savJGnYeNZJTB1enrcMbOCgeKjbctIQ_N87MOPdFAUksMcvAxCbqrSRfLxI5EGPYj4z6rAwzUg-sTzei7bgnzfB1TewxTWfmPiGMWcPp2WtVrxvaLqagbA6A-08aNqJwwo7iBSg-u-y47k2Vz6LKn2Qa7gg6kcSujSg'); background-size: cover; background-position: center;">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-surface"></div>
+</div>
+<div class="absolute top-36 inset-x-4 glass-card rounded-2xl p-4 shadow-sm flex items-center gap-4">
+<div class="w-16 h-16 rounded-full border-4 border-error flex items-center justify-center bg-white shadow-sm">
+<span class="font-headline-md text-xl text-error">42</span>
+</div>
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface">Poor Nutritional Profile</h3>
+<p class="text-xs text-on-surface-variant mt-1">High processing detected</p>
+</div>
+</div>
+<div class="mt-20 px-4 flex flex-col gap-3 pb-8">
+<div class="bg-error-container/30 border border-error-container p-3 rounded-xl flex items-start gap-3">
+<span class="material-symbols-outlined text-error text-lg mt-0.5">warning</span>
+<div>
+<span class="font-bold text-sm text-on-error-container">Red Flag: E635</span>
+<p class="text-xs text-on-surface-variant mt-0.5">Flavor enhancer linked to mild reactions.</p>
+</div>
+</div>
+<div class="bg-secondary-container/20 border border-secondary-container p-3 rounded-xl flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-lg mt-0.5">verified</span>
+<div>
+<span class="font-bold text-sm text-on-secondary-container">Green Alternative</span>
+<p class="text-xs text-on-surface-variant mt-0.5">Try 'Nature's Path Bar' instead. Score: 88.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute top-20 right-0 glass-card rounded-xl p-3 shadow-lg flex items-center gap-3 float-anim z-20 w-48">
+<div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm">science</span>
+</div>
+<div>
+<div class="text-[10px] font-label-caps text-outline uppercase">Additives</div>
+<div class="text-sm font-bold text-on-surface">3 Detected</div>
+</div>
+</div>
+<div class="absolute bottom-32 -left-12 glass-card rounded-xl p-3 shadow-lg flex items-center gap-3 float-anim z-20 w-48" style="animation-delay: -3s;">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed-dim/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-container text-sm">monitor_heart</span>
+</div>
+<div>
+<div class="text-[10px] font-label-caps text-outline uppercase">Sugar Spike</div>
+<div class="text-sm font-bold text-on-surface">High Risk</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. Trust Ticker Strip -->
+<div class="bg-primary py-4 border-y border-outline/20 reveal active">
+<div class="ticker-wrap flex">
+<div class="ticker flex items-center gap-12 px-6">
+<div class="flex items-center gap-12 font-label-caps text-label-caps text-surface-variant/80 whitespace-nowrap">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">database</span> 50,000+ INGREDIENTS ANALYZED</span>
+<span class="">•</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">verified_user</span> 1M+ SCANS THIS MONTH</span>
+<span class="">•</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">shield</span> CLINICALLY BACKED DATA</span>
+<span class="">•</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">auto_awesome</span> AI-DRIVEN INSIGHTS</span>
+</div>
+<div class="flex items-center gap-12 font-label-caps text-label-caps text-surface-variant/80 whitespace-nowrap">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">database</span> 50,000+ INGREDIENTS ANALYZED</span>
+<span class="">•</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">verified_user</span> 1M+ SCANS THIS MONTH</span>
+<span class="">•</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">shield</span> CLINICALLY BACKED DATA</span>
+<span class="">•</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">auto_awesome</span> AI-DRIVEN INSIGHTS</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 4. How it Works -->
+<section class="py-section-py px-margin-mobile md:px-margin-desktop bg-surface relative overflow-hidden reveal active" id="how-it-works">
+<div class="max-w-container-max-width mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-display-lg text-display-lg text-primary mb-4 tracking-tight">How it works</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">From shelf to healthy choice in three simple steps.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+<div class="glass-card rounded-[2rem] p-8 text-center relative group hover:scale-[1.02] transition-transform duration-300">
+<div class="w-20 h-20 mx-auto bg-primary-fixed/30 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-4xl text-primary">barcode_scanner</span>
+</div>
+<div class="absolute -top-4 -right-4 w-12 h-12 bg-surface text-secondary font-headline-md rounded-full flex items-center justify-center shadow-sm border border-outline-variant/30">1</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-3">Scan Label</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Simply scan any food label or ingredient list with your smartphone camera.</p>
+</div>
+<div class="glass-card rounded-[2rem] p-8 text-center relative group hover:scale-[1.02] transition-transform duration-300">
+<div class="w-20 h-20 mx-auto bg-secondary-fixed/30 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-secondary-fixed transition-colors">
+<span class="material-symbols-outlined text-4xl text-secondary">troubleshoot</span>
+</div>
+<div class="absolute -top-4 -right-4 w-12 h-12 bg-surface text-secondary font-headline-md rounded-full flex items-center justify-center shadow-sm border border-outline-variant/30">2</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-3">AI Analysis</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Our engine instantly cross-references ingredients against clinical databases.</p>
+</div>
+<div class="glass-card rounded-[2rem] p-8 text-center relative group hover:scale-[1.02] transition-transform duration-300">
+<div class="w-20 h-20 mx-auto bg-tertiary-fixed/30 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-tertiary-fixed transition-colors">
+<span class="material-symbols-outlined text-4xl text-tertiary-container">shopping_cart_checkout</span>
+</div>
+<div class="absolute -top-4 -right-4 w-12 h-12 bg-surface text-secondary font-headline-md rounded-full flex items-center justify-center shadow-sm border border-outline-variant/30">3</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-3">Shop Smart</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Get a clear health score and immediate recommendations for better alternatives.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. Features Bento Grid -->
+<section class="py-section-py px-margin-mobile md:px-margin-desktop bg-surface-container-low relative reveal active" id="features">
+<div class="max-w-container-max-width mx-auto">
+<div class="mb-16">
+<h2 class="font-display-lg text-display-lg text-primary mb-4 tracking-tight">Intelligence at your fingertips</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">Everything you need to make informed choices, packed into one powerful interface.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-[400px]">
+<!-- Card 1: Hidden Nasties Detection -->
+<div class="bg-surface rounded-[2rem] p-8 border border-outline-variant/30 overflow-hidden relative group">
+<div class="z-10 relative">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Hidden Additives Detected</h3>
+<p class="font-body-md text-on-surface-variant max-w-sm">We highlight preservatives, artificial colors, and hidden sugars instantly.</p>
+</div>
+<div class="absolute md:w-3/4 glass-card rounded-2xl p-6 shadow-xl transform transition-all duration-500 overflow-hidden bottom-8 right-8 w-[85%]" id="nasties-container">
+<div class="absolute inset-0 bg-transparent shimmer-effect z-0 opacity-30"></div>
+<div class="flex flex-col gap-3 relative z-10">
+<div class="bg-error-container/50 px-4 py-3 rounded-lg flex items-center justify-between nasty-pill visible" style="transition-delay: 0.1s">
+<span class="font-semibold text-on-error-container text-sm">Palm Oil</span>
+<span class="material-symbols-outlined text-error text-sm">warning</span>
+</div>
+<div class="bg-error-container/50 px-4 py-3 rounded-lg flex items-center justify-between nasty-pill visible" style="transition-delay: 0.3s">
+<span class="font-semibold text-on-error-container text-sm">E635 (Flavor Enhancer)</span>
+<span class="material-symbols-outlined text-error text-sm">warning</span>
+</div>
+<div class="bg-surface-variant px-4 py-3 rounded-lg flex items-center justify-between nasty-pill visible" style="transition-delay: 0.5s">
+<span class="font-semibold text-on-surface-variant text-sm">Red 40</span>
+<span class="material-symbols-outlined text-outline text-sm">info</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Personalized Health Goals -->
+<div class="bg-primary rounded-[2rem] p-8 border border-primary overflow-hidden relative group text-on-primary">
+<div class="z-10 relative">
+<h3 class="font-headline-md text-headline-md mb-2">Personalized Goals</h3>
+<p class="font-body-md text-on-primary/80 max-w-sm">Set dietary preferences like vegan, gluten-free, or low-FODMAP.</p>
+</div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 w-full px-8 flex flex-wrap gap-3 justify-center" id="goal-chips-container"><div class="chip-item px-4 py-2 rounded-full font-label-caps text-xs flex items-center gap-1 transition-all duration-500 bg-surface-variant/20 text-on-primary relative"><span class="material-symbols-outlined text-sm">add</span> General Health</div><div class="chip-item px-4 py-2 rounded-full font-label-caps text-xs flex items-center gap-1 transition-all duration-500 bg-surface-variant/20 text-on-primary relative"><span class="material-symbols-outlined text-sm">add</span> Fat Loss</div><div class="chip-item px-4 py-2 rounded-full font-label-caps text-xs flex items-center gap-1 transition-all duration-500 bg-surface-variant/20 text-on-primary relative"><span class="material-symbols-outlined text-sm">add</span> Diabetes</div><div class="chip-item px-4 py-2 rounded-full font-label-caps text-xs flex items-center gap-1 transition-all duration-500 bg-surface-variant/20 text-on-primary relative"><span class="material-symbols-outlined text-sm">add</span> Muscle Gain</div></div>
+</div>
+<!-- Card 3: Health Score & Streaks -->
+<div class="bg-secondary-fixed/20 rounded-[2rem] p-8 border border-secondary-fixed/50 overflow-hidden relative group md:col-span-2 lg:col-span-1">
+<div class="z-10 relative">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">BeyondLabel Score</h3>
+<p class="font-body-md text-on-surface-variant max-w-sm">A simple 0-100 score based on processing levels and nutritional value.</p>
+<div class="mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-container fire-pulse" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="text-sm font-bold text-on-surface-variant">12 Day Streak</span>
+</div>
+</div>
+<div class="absolute bottom-8 right-8 flex items-center justify-center">
+<div class="relative w-40 h-40">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-variant" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-width="3"></path>
+<path class="text-secondary transition-all duration-[2000ms] ease-out" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" id="score-gauge" stroke="currentColor" stroke-dasharray="82, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-display-lg text-4xl text-primary" id="score-number">82</span>
+<span class="text-[10px] font-label-caps text-secondary uppercase tracking-widest">Excellent</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 4: Share & Compare -->
+<div class="bg-surface rounded-[2rem] p-8 border border-outline-variant/30 overflow-hidden relative group">
+<div class="z-10 relative">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Share Insights</h3>
+<p class="font-body-md text-on-surface-variant max-w-sm">Warn friends about harmful products or share great finds.</p>
+</div>
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-[85%] bg-white rounded-xl p-4 shadow-xl border border-surface-variant float-anim transition-all duration-500">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 bg-secondary-fixed/30 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">person</span>
+</div>
+<div>
+<div class="text-sm font-bold text-on-surface">Shared by Alex</div>
+<div class="text-xs text-on-surface-variant">"Check out this clean alternative!"</div>
+</div>
+</div>
+<button class="w-full bg-surface-container-high py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-sm">ios_share</span> Share Discovery
+                    </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. CTA + QR Code -->
+<section class="py-section-py px-margin-mobile md:px-margin-desktop bg-primary relative overflow-hidden reveal active" id="pricing">
+<div class="absolute inset-0 mesh-bg opacity-10"></div>
+<div class="max-w-container-max-width mx-auto flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
+<div class="flex-1 text-center md:text-left">
+<h2 class="font-display-lg text-display-lg text-white mb-6 tracking-tight">Ready to eat better?</h2>
+<p class="font-body-lg text-body-lg text-surface-variant max-w-md mx-auto md:mx-0 mb-8">
+                Join over 1 million users making smarter, healthier choices every day. Scan the QR code to download the app instantly.
+            </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+<button class="bg-secondary text-white font-label-caps text-label-caps px-8 py-4 rounded-full hover:bg-on-secondary-fixed transition-colors shadow-lg flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+                    Get Started Now
+                </button>
+</div>
+</div>
+<div class="flex-shrink-0">
+<div class="glass-card rounded-[2rem] p-8 border-white/20 bg-white/5 backdrop-blur-2xl">
+<div class="bg-white p-4 rounded-xl mb-4 w-48 h-48 mx-auto flex items-center justify-center">
+<div class="grid grid-cols-6 grid-rows-6 gap-1 w-full h-full p-2">
+<div class="col-span-2 row-span-2 bg-primary rounded-sm border-2 border-white"></div>
+<div class="col-span-1 row-span-1 bg-primary rounded-sm col-start-4"></div>
+<div class="col-span-2 row-span-2 bg-primary rounded-sm col-start-5 border-2 border-white"></div>
+<div class="col-span-1 row-span-1 bg-primary rounded-sm row-start-3"></div>
+<div class="col-span-2 row-span-1 bg-primary rounded-sm row-start-3 col-start-3"></div>
+<div class="col-span-2 row-span-2 bg-primary rounded-sm row-start-5 border-2 border-white"></div>
+<div class="col-span-1 row-span-1 bg-primary rounded-sm row-start-5 col-start-4"></div>
+<div class="col-span-1 row-span-1 bg-primary rounded-sm row-start-6 col-start-5"></div>
+<div class="col-span-1 row-span-1 bg-primary rounded-sm row-start-6 col-start-6"></div>
+</div>
+</div>
+<p class="text-center text-surface-variant font-label-caps text-xs tracking-widest uppercase">Scan to download</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. Footer -->
+<footer class="bg-on-background py-12 px-margin-mobile md:px-margin-desktop border-t border-surface-variant/10 reveal active">
+<div class="max-w-container-max-width mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-2xl" style="font-variation-settings: 'FILL' 1;">eco</span>
+<span class="font-headline-md text-xl text-white tracking-tighter">BeyondLabel</span>
+</div>
+<div class="flex gap-6 text-sm text-surface-variant/60">
+<a class="hover:text-white transition-colors" href="#">Privacy</a>
+<a class="hover:text-white transition-colors" href="#">Terms</a>
+<a class="hover:text-white transition-colors" href="#">Contact</a>
+</div>
+<div class="text-sm text-surface-variant/60">
+            © 2024 BeyondLabel Inc.
+        </div>
+</div>
+</footer>
+<script>
+    // Intersection Observer for Reveal Animations
+    const observerOptions = {
+        threshold: 0.1
+    };
+
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                
+                // Specific feature animations trigger
+                if (entry.target.id === 'features') {
+                    startFeatureAnimations();
+                }
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // Feature Animations Controller
+    function startFeatureAnimations() {
+        // 1. Nasties Detection (Staggered Fade)
+        const nastyPills = document.querySelectorAll('.nasty-pill');
+        nastyPills.forEach((pill, i) => {
+            setTimeout(() => pill.classList.add('visible'), i * 300);
+        });
+
+        // 2. Goal Chips Sequence with Cursor Animation
+        const chips = document.querySelectorAll('.chip-item');
+        let currentChip = 0;
+        
+        const cycleChips = () => {
+            // Reset all chips
+            chips.forEach(c => {
+                c.classList.remove('bg-secondary', 'text-white', 'goal-pulse');
+                c.classList.add('bg-surface-variant/20', 'text-on-primary');
+                c.querySelector('span:first-child').textContent = 'add';
+                // Clean up any existing cursors/ripples
+                const oldCursor = c.querySelector('.cursor-mock');
+                const oldRipple = c.querySelector('.ripple-effect');
+                if(oldCursor) oldCursor.remove();
+                if(oldRipple) oldRipple.remove();
+            });
+            
+            const active = chips[currentChip];
+            
+            // Add animated cursor
+            const cursor = document.createElement('div');
+            cursor.className = 'cursor-mock absolute -right-2 top-0 z-30 text-white drop-shadow-xl cursor-animate pointer-events-none';
+            cursor.innerHTML = `<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">near_me</span>`;
+            active.appendChild(cursor);
+            
+            // Trigger state change halfway through cursor animation (click point)
+            setTimeout(() => {
+                // Add ripple
+                const ripple = document.createElement('div');
+                ripple.className = 'ripple-effect';
+                active.appendChild(ripple);
+                
+                // Toggle active state
+                active.classList.remove('bg-surface-variant/20', 'text-on-primary');
+                active.classList.add('bg-secondary', 'text-white', 'goal-pulse');
+                active.querySelector('span:first-child').textContent = 'check';
+            }, 1800); // 45% of 4s animation
+            
+            currentChip = (currentChip + 1) % chips.length;
+        };
+        
+        setInterval(cycleChips, 4000);
+        cycleChips();
+
+        // 3. Score Gauge Counter
+        const scoreTarget = 82;
+        const scoreNum = document.getElementById('score-number');
+        const scoreGauge = document.getElementById('score-gauge');
+        let currentScore = 0;
+        
+        const counter = setInterval(() => {
+            if (currentScore >= scoreTarget) {
+                clearInterval(counter);
+                return;
+            }
+            currentScore++;
+            scoreNum.textContent = currentScore;
+            scoreGauge.setAttribute('stroke-dasharray', `${currentScore}, 100`);
+        }, 30);
+    }
+
+    // Scroll Navbar logic
+    window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 20) {
+            navbar.classList.add('h-16', 'shadow-md');
+            navbar.classList.remove('h-20', 'shadow-[0_8px_30px_rgba(0,0,0,0.04)]');
+        } else {
+            navbar.classList.add('h-20', 'shadow-[0_8px_30px_rgba(0,0,0,0.04)]');
+            navbar.classList.remove('h-16', 'shadow-md');
+        }
+    });
+</script>
+</body></html>

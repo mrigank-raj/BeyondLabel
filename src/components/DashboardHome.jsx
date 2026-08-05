@@ -66,86 +66,83 @@ const DashboardHome = ({
           </p>
         </div>
 
-        {/* Demo Mode / Recruiter Section */}
-        <div className="w-full text-left space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display font-bold text-xl text-gray-900">Recruiter Demo</h2>
-            <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-md">Instant Verdicts</span>
-          </div>
-          <p className="text-sm text-gray-500">Tap a popular item below to instantly see how our verdict card works without needing an API key.</p>
-          
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            {DEMO_FOODS.map((food) => (
-              <button 
-                key={food.id}
-                onClick={() => onDemoSelect({
-                  ...food.verdictData,
-                  productName: food.name // Passing name for history if needed
-                })}
-                className="flex flex-col bg-white rounded-3xl p-3 border border-surface-variant shadow-sm hover:border-primary hover:shadow-md transition-all text-left group"
-              >
-                <div className="w-full aspect-square bg-gray-100 rounded-2xl mb-3 overflow-hidden">
-                  <img src={food.image} alt={food.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">{food.category}</span>
-                <h3 className="font-bold text-gray-900 text-sm leading-tight line-clamp-2">{food.name}</h3>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="w-full h-px bg-gray-200 my-4"></div>
-
-        {/* Manual Search / Upload Section */}
-        <div className="w-full text-left space-y-4">
-          <h2 className="font-display font-bold text-xl text-gray-900">Live AI Analysis</h2>
-          <p className="text-sm text-gray-500">Take a photo of a real nutrition label or search by name to use the live Gemini AI engine.</p>
-          
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-surface-variant/50 space-y-4">
+        {/* Main Analysis Section */}
+        <div className="w-full text-left">
+          <div className="bg-white rounded-[2rem] p-5 shadow-[0_8px_30px_-5px_rgba(0,0,0,0.08)] border border-surface-variant/50 space-y-5">
+            
+            {/* Search Input */}
             <div className="relative w-full">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">search</span>
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[22px]">search</span>
               <input 
                 type="text" 
                 value={productName}
                 onChange={(e) => handleProductNameChange(e.target.value)}
-                placeholder="Type product name..." 
-                className="w-full bg-gray-50 border border-gray-200 rounded-pill py-3 pl-12 pr-4 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                placeholder="Search for any food product..." 
+                className="w-full bg-gray-50 border border-gray-200 rounded-pill py-3.5 pl-12 pr-4 text-[15px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-gray-400"
               />
             </div>
 
-            <div className="flex items-center gap-4 py-2">
-              <div className="h-px bg-gray-200 flex-1"></div>
-              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">OR</span>
-              <div className="h-px bg-gray-200 flex-1"></div>
+            {/* Trending Searches (Demo Mode) */}
+            {!productName && !imageFile && (
+              <div className="animate-fade-in pt-1">
+                <div className="flex items-center gap-1.5 mb-3 px-1">
+                  <span className="material-symbols-outlined text-primary text-[18px]">trending_up</span>
+                  <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Trending Right Now</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {DEMO_FOODS.map((food) => (
+                    <button
+                      key={food.id}
+                      onClick={() => onDemoSelect({
+                        ...food.verdictData,
+                        productName: food.name
+                      })}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gray-50 hover:bg-primary/5 border border-gray-200 hover:border-primary/30 rounded-full text-sm font-medium text-gray-700 hover:text-primary transition-all active:scale-95 group"
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-gray-400 group-hover:text-primary/70 transition-colors">search</span>
+                      {food.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center gap-4 py-1">
+              <div className="h-px bg-gray-100 flex-1"></div>
+              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">OR UPLOAD LABEL</span>
+              <div className="h-px bg-gray-100 flex-1"></div>
             </div>
 
             <ImageUpload 
               imageFile={imageFile} 
               imagePreview={imagePreview} 
               onUpload={handleImageUpload} 
-              variant="mobile-card"
+              variant="desktop-card"
             />
 
             <button
               onClick={handleSubmit}
               disabled={isLoading || (!productName && !imageFile)}
-              className={`w-full py-3.5 rounded-pill font-bold text-sm transition-all duration-300 shadow-sm mt-4 ${
+              className={`w-full py-4 rounded-pill font-bold text-[15px] transition-all duration-300 mt-2 flex items-center justify-center gap-2 ${
                 isLoading || (!productName && !imageFile)
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-primary text-white hover:bg-primary-light active:scale-95'
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-primary text-white hover:bg-primary-light active:scale-95 shadow-md hover:shadow-lg'
               }`}
             >
               {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                <>
+                  <span className="material-symbols-outlined animate-spin text-[22px]">progress_activity</span>
                   {loadingStatus || "Analyzing..."}
-                </span>
+                </>
               ) : (
-                "Analyze with AI"
+                <>
+                  <span className="material-symbols-outlined text-[22px]">auto_awesome</span>
+                  Analyze with AI
+                </>
               )}
             </button>
             {validationErrors?.input && (
-              <p className="text-xs text-red-500 mt-2 text-center font-medium">
+              <p className="text-xs text-error mt-2 text-center font-medium bg-error/10 py-2.5 rounded-lg">
                 {validationErrors.input}
               </p>
             )}

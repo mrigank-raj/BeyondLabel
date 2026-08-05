@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getHistory } from '../services/storageService';
+import { getHistory, getStreak, getWeeklySummary } from '../services/storageService';
 import { useAuth } from '../contexts/AuthContext';
 
 const InsightsDashboard = () => {
@@ -86,8 +86,9 @@ const InsightsDashboard = () => {
     };
   };
 
-  const streak = calculateStreak();
+  const streak = getStreak().count || calculateStreak();
   const stats = getStats();
+  const weekly = getWeeklySummary();
 
   return (
     <div className="w-full animate-fade-in space-y-6 max-w-4xl mx-auto">
@@ -140,6 +141,31 @@ const InsightsDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Weekly Summary Card (7-Day Overview) */}
+      <section className="bg-gradient-to-r from-secondary-fixed/30 to-surface rounded-4xl p-6 md:p-8 border border-secondary/20 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <span className="text-label-caps font-bold text-secondary uppercase tracking-widest text-xs">7-Day Overview</span>
+            <h3 className="font-display font-bold text-xl text-primary">Your Weekly Summary</h3>
+          </div>
+          <span className="material-symbols-outlined text-3xl text-secondary">calendar_month</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
+          <div className="bg-white/80 rounded-2xl p-4 border border-outline-variant/30">
+            <p className="text-xs text-on-surface-variant font-medium">Scanned This Week</p>
+            <p className="font-display text-2xl font-bold text-primary mt-1">{weekly.totalScans} items</p>
+          </div>
+          <div className="bg-white/80 rounded-2xl p-4 border border-outline-variant/30">
+            <p className="text-xs text-on-surface-variant font-medium">Average Health Score</p>
+            <p className="font-display text-2xl font-bold text-secondary mt-1">{weekly.averageScore || '-'}/100</p>
+          </div>
+          <div className="bg-white/80 rounded-2xl p-4 border border-outline-variant/30">
+            <p className="text-xs text-on-surface-variant font-medium">Top Nasty Flagged</p>
+            <p className="font-display text-lg font-bold text-error mt-1 truncate">{weekly.mostCommonNasty || 'None'}</p>
+          </div>
+        </div>
+      </section>
 
       {/* Badges / Achievements */}
       <section className="bg-white rounded-4xl p-6 md:p-8 shadow-sm border border-surface-variant">

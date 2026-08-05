@@ -1,83 +1,109 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ImageUpload from './ImageUpload';
+import OnboardingModal from './OnboardingModal';
+import { getHistory } from '../services/storageService';
+import { DEMO_FOODS } from '../constants/mockData';
 
 const DashboardHome = ({ 
   productName, handleProductNameChange, 
   imageFile, imagePreview, handleImageUpload,
+  goal, handleGoalSelect,
   isLoading, handleSubmit, loadingStatus,
   validationErrors,
-  onOpenScanner
+  onDemoSelect
 }) => {
-  const [showManual, setShowManual] = useState(false);
+  const [showNudge, setShowNudge] = useState(false);
+
+  useEffect(() => {
+    const history = getHistory();
+    if (history.length > 0) {
+      const lastTs = new Date(history[0].timestamp || 0).getTime();
+      const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
+      if (Date.now() - lastTs > threeDaysMs) {
+        setShowNudge(true);
+      }
+    }
+  }, []);
 
   return (
-    <div className="w-full flex flex-col items-center justify-center min-h-[70vh] animate-fade-in text-center px-4 relative">
+    <div className="w-full flex flex-col items-center justify-start min-h-[70vh] animate-fade-in px-4 pb-12 pt-8 relative">
+      <OnboardingModal onSelectGoal={handleGoalSelect} />
       
-      {/* Background Decor & Floating Icons */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full max-h-[600px] pointer-events-none -z-10 flex items-center justify-center">
-        {/* Soft Mesh Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-green-300/20 via-teal-100/30 to-emerald-200/20 rounded-full blur-3xl animate-gradient"></div>
-        
-        {/* Floating Icons */}
-        <div className="absolute top-10 left-10 md:left-20 text-4xl animate-float opacity-50 drop-shadow-sm">🥑</div>
-        <div className="absolute bottom-20 left-16 md:left-32 text-3xl animate-float-reverse opacity-40 drop-shadow-sm">🧐</div>
-        <div className="absolute top-1/4 right-8 md:right-24 text-4xl animate-float-fast opacity-60 drop-shadow-sm">🔍</div>
-        <div className="absolute bottom-1/4 right-16 md:right-32 text-3xl animate-float opacity-50 drop-shadow-sm">🛒</div>
-      </div>
+      {/* Re-engagement Nudge Card */}
+      {showNudge && (
+        <div className="max-w-xl w-full mx-auto mb-6 bg-gradient-to-r from-amber-500/10 to-secondary-fixed/20 border border-amber-500/30 rounded-2xl p-4 flex items-center justify-between gap-3 text-left">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-amber-600">bolt</span>
+            <div>
+              <p className="font-bold text-sm text-primary">Welcome back!</p>
+              <p className="text-xs text-on-surface-variant">Ready to keep your healthy streak going?</p>
+            </div>
+          </div>
+          <button onClick={() => setShowNudge(false)} className="text-on-surface-variant/60 hover:text-on-surface">
+            <span className="material-symbols-outlined text-sm">close</span>
+          </button>
+        </div>
+      )}
       
       {/* Hero Section */}
-      <div className="max-w-xl w-full mx-auto space-y-8 flex flex-col items-center">
+      <div className="max-w-xl w-full mx-auto space-y-8 flex flex-col items-center text-center">
         
-        <div className="space-y-6 flex flex-col items-center">
-          
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-surface-variant shadow-sm text-xs font-bold text-[#006c49] animate-fade-in uppercase tracking-wider">
+        <div className="space-y-4 flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/10 shadow-sm text-xs font-bold text-primary animate-fade-in uppercase tracking-wider">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-lighter opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
             Vision AI Label Scanning
           </div>
 
-          <h1 className="font-display text-5xl md:text-6xl font-black tracking-tight leading-tight">
-            <span className="gradient-text drop-shadow-sm">Know what</span>
-            <br />
-            <span className="text-gray-900">you eat.</span>
+          <h1 className="font-display text-4xl md:text-5xl font-black tracking-tight leading-tight text-gray-900">
+            Know what <br /> you eat.
           </h1>
           
-          <p className="text-gray-500 text-lg md:text-xl max-w-sm">
+          <p className="text-gray-500 text-base max-w-sm">
             Scan any product label to instantly reveal hidden nasties and personalized health insights.
           </p>
         </div>
 
-        {/* Massive Primary CTA */}
-        <button 
-          onClick={onOpenScanner}
-          className="relative w-full max-w-sm aspect-square md:aspect-auto md:h-24 bg-primary text-white rounded-[40px] md:rounded-full shadow-floating hover:bg-primary-light active:scale-95 transition-all flex flex-col md:flex-row items-center justify-center gap-4 group animate-pulse-ring"
-        >
-          {/* Internal Glow */}
-          <div className="absolute inset-0 rounded-[40px] md:rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        {/* Demo Mode / Recruiter Section */}
+        <div className="w-full text-left space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display font-bold text-xl text-gray-900">Recruiter Demo</h2>
+            <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-md">Instant Verdicts</span>
+          </div>
+          <p className="text-sm text-gray-500">Tap a popular item below to instantly see how our verdict card works without needing an API key.</p>
           
-          <svg className="w-12 h-12 md:w-8 md:h-8 group-hover:scale-110 transition-transform drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-          </svg>
-          <span className="font-display font-bold text-2xl drop-shadow-sm">Tap to Scan</span>
-        </button>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {DEMO_FOODS.map((food) => (
+              <button 
+                key={food.id}
+                onClick={() => onDemoSelect({
+                  ...food.verdictData,
+                  productName: food.name // Passing name for history if needed
+                })}
+                className="flex flex-col bg-white rounded-3xl p-3 border border-surface-variant shadow-sm hover:border-primary hover:shadow-md transition-all text-left group"
+              >
+                <div className="w-full aspect-square bg-gray-100 rounded-2xl mb-3 overflow-hidden">
+                  <img src={food.image} alt={food.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">{food.category}</span>
+                <h3 className="font-bold text-gray-900 text-sm leading-tight line-clamp-2">{food.name}</h3>
+              </button>
+            ))}
+          </div>
+        </div>
 
-        {/* Secondary Options Toggle */}
-        {!showManual ? (
-          <button 
-            onClick={() => setShowManual(true)}
-            className="text-gray-400 font-semibold hover:text-gray-600 transition-colors text-sm pt-4"
-          >
-            Or search manually
-          </button>
-        ) : (
-          <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-sm border border-surface-variant/50 animate-slide-down space-y-4">
-            
+        <div className="w-full h-px bg-gray-200 my-4"></div>
+
+        {/* Manual Search / Upload Section */}
+        <div className="w-full text-left space-y-4">
+          <h2 className="font-display font-bold text-xl text-gray-900">Live AI Analysis</h2>
+          <p className="text-sm text-gray-500">Take a photo of a real nutrition label or search by name to use the live Gemini AI engine.</p>
+          
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-surface-variant/50 space-y-4">
             <div className="relative w-full">
-              <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">search</span>
               <input 
                 type="text" 
                 value={productName}
@@ -87,20 +113,18 @@ const DashboardHome = ({
               />
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 py-2">
               <div className="h-px bg-gray-200 flex-1"></div>
-              <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">OR</span>
+              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">OR</span>
               <div className="h-px bg-gray-200 flex-1"></div>
             </div>
 
-            <div className="w-full text-left">
-              <ImageUpload 
-                imageFile={imageFile} 
-                imagePreview={imagePreview} 
-                onUpload={handleImageUpload} 
-                variant="mobile-card"
-              />
-            </div>
+            <ImageUpload 
+              imageFile={imageFile} 
+              imagePreview={imagePreview} 
+              onUpload={handleImageUpload} 
+              variant="mobile-card"
+            />
 
             <button
               onClick={handleSubmit}
@@ -108,19 +132,16 @@ const DashboardHome = ({
               className={`w-full py-3.5 rounded-pill font-bold text-sm transition-all duration-300 shadow-sm mt-4 ${
                 isLoading || (!productName && !imageFile)
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-gray-900 text-white hover:bg-black active:scale-95'
+                  : 'bg-primary text-white hover:bg-primary-light active:scale-95'
               }`}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
+                  <span className="material-symbols-outlined animate-spin">progress_activity</span>
                   {loadingStatus || "Analyzing..."}
                 </span>
               ) : (
-                "Analyze Now"
+                "Analyze with AI"
               )}
             </button>
             {validationErrors?.input && (
@@ -129,10 +150,9 @@ const DashboardHome = ({
               </p>
             )}
           </div>
-        )}
+        </div>
 
       </div>
-
     </div>
   );
 };

@@ -53,6 +53,50 @@ function App() {
 
   const { user, guestId } = useAuth();
 
+  // ── Phase 2: Desktop QR / UTM Conversion Tracking ──
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('utm_source') === 'desktop') {
+      const refData = { source: 'desktop_qr', medium: params.get('utm_medium') || 'qr', timestamp: Date.now() };
+      localStorage.setItem('beyondlabel_referral', JSON.stringify(refData));
+      trackEvent('desktop_to_mobile_conversion', { medium: refData.medium });
+    }
+  }, []);
+
+  // ── Phase 3: PWA Install Prompt Banner ──
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [showPwaBanner, setShowPwaBanner] = useState(false);
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+      const dismissed = localStorage.getItem('beyondlabel_pwa_dismissed');
+      const scanCount = parseInt(localStorage.getItem('beyondlabel_scan_count') || '0', 10);
+      if (!dismissed && scanCount >= 3) {
+        setShowPwaBanner(true);
+      }
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallPwa = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowPwaBanner(false);
+      localStorage.setItem('beyondlabel_pwa_dismissed', 'true');
+    }
+  };
+
+  const handleDismissPwa = () => {
+    setShowPwaBanner(false);
+    localStorage.setItem('beyondlabel_pwa_dismissed', 'true');
+  };
+
   // Identify user in analytics when they load
   useEffect(() => {
     if (user?.id) {
@@ -188,6 +232,34 @@ function App() {
     <div className="min-h-screen flex flex-col font-sans text-on-background bg-background">
       
       <main className="flex-grow w-full p-5 pb-24 max-w-[600px] mx-auto overflow-y-auto">
+        {/* PWA Install Banner */}
+        {showPwaBanner && (
+          <div className="bg-secondary text-white p-4 rounded-2xl mb-4 shadow-lg flex items-center justify-between gap-3 animate-slide-down">
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-2xl">install_mobile</span>
+              <div>
+                <p className="font-bold text-sm">Install BeyondLabel</p>
+                <p className="text-xs text-white/80">Add to home screen for instant camera scanning.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleInstallPwa}
+                className="bg-white text-secondary text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-white/90 transition-colors"
+              >
+                Install
+              </button>
+              <button
+                onClick={handleDismissPwa}
+                className="text-white/80 hover:text-white p-1"
+                aria-label="Dismiss banner"
+              >
+                <span className="material-symbols-outlined text-base">close</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {!verdict && currentTab === 'home' && (
           <DashboardHome 
             productName={productName}
@@ -211,6 +283,7 @@ function App() {
             handleSubmit={handleAnalyze}
             validationErrors={validationErrors}
             onOpenScanner={() => setCurrentTab('scan')}
+            onDemoSelect={(mockResult) => setVerdict(mockResult)}
           />
         )}
 

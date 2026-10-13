@@ -200,51 +200,39 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1500, onRetry =
  * Analyzes a text product name using the backend API proxy.
  */
 export const analyzeProduct = async (productName, goalId, onRetry = null) => {
-  const models = ['llama-3.1-70b-versatile', 'llama3-70b-8192', 'llama-3.1-8b-instant'];
-  let lastError = null;
-
-  for (const model of models) {
-    try {
-      console.log(`Sending text query to backend API using model: ${model}`);
-      const response = await fetchWithRetry(
-        `${API_BASE}/analyze`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            productName,
-            goalId,
-            model
-          })
+  // The server picks the model and falls back between models (api/analyze.js).
+  try {
+    const response = await fetchWithRetry(
+      `${API_BASE}/analyze`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        2, // 2 retries per model before trying fallback model
-        1500,
-        onRetry
-      );
+        body: JSON.stringify({ productName, goalId })
+      },
+      2,
+      1500,
+      onRetry
+    );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error(`Groq API Error (${model}):`, response.status, errorData);
-        
-        const errorMessage = errorData.error?.message || (typeof errorData.error === 'string' ? errorData.error : null) || response.statusText || 'Failed to connect to Groq';
-        throw new Error(errorMessage);
-      }
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Groq API Error:', response.status, errorData);
 
-      const data = await response.json();
-      const rawText = data.result;
-      
-      if (!rawText) throw new Error('Received empty response from API.');
-
-      return parseVerdict(rawText);
-    } catch (err) {
-      console.warn(`Groq model ${model} failed, trying fallback model. Error: ${err.message}`);
-      lastError = err;
+      const errorMessage = errorData.error?.message || (typeof errorData.error === 'string' ? errorData.error : null) || response.statusText || 'Failed to connect to Groq';
+      throw new Error(errorMessage);
     }
-  }
 
-  throw new Error(`Groq Analysis Failed: ${lastError?.message || 'Check your internet connection or API Key.'}`);
+    const data = await response.json();
+    const rawText = data.result;
+
+    if (!rawText) throw new Error('Received empty response from API.');
+
+    return parseVerdict(rawText);
+  } catch (err) {
+    throw new Error(`Groq Analysis Failed: ${err.message || 'Check your internet connection or API Key.'}`);
+  }
 };
 
 /**
@@ -368,66 +356,50 @@ export const analyzeImage = async (imageFile, goalId, onRetry = null) => {
 
   // Stage 3: Upload and analyze
   if (onRetry) onRetry('Uploading to AI...');
-  const models = ['gemini-2.0-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash'];
-  let lastError = null;
-
-  for (const model of models) {
-    try {
-      if (onRetry) onRetry('Analyzing ingredients...');
-      console.log(`Sending image query to backend API using model: ${model}`);
-      const response = await fetchWithRetry(
-        `${API_BASE}/analyze-image`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            base64Image,
-            mimeType,
-            goalId,
-            model
-          })
-        },
-        2, // 2 retries per model before trying fallback model
-        1500,
-        (msg) => {
-          if (onRetry) onRetry(msg);
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error(`Gemini Vision API Error (${model}):`, response.status, errorData);
-        if (response.status === 404) {
-          throw new Error(`Model ${model} is not supported or not found (404)`);
-        }
-        
-        const errorMessage = errorData.error?.message || (typeof errorData.error === 'string' ? errorData.error : null) || response.statusText || 'Failed to connect to Gemini';
-        throw new Error(errorMessage);
+  // The server picks the model and falls back between models (api/analyze-image.js).
+  try {
+    if (onRetry) onRetry('Analyzing ingredients...');
+    const response = await fetchWithRetry(
+      `${API_BASE}/analyze-image`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ base64Image, mimeType, goalId })
+      },
+      2,
+      1500,
+      (msg) => {
+        if (onRetry) onRetry(msg);
       }
+    );
 
-      if (onRetry) onRetry('Generating verdict...');
-      const data = await response.json();
-      
-      const rawText = data.result;
-      
-      if (!rawText || rawText.trim().length === 0) {
-        throw new Error(`Received empty response from API.`);
-      }
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Gemini Vision API Error:', response.status, errorData);
 
-      const result = parseVerdict(rawText);
-      
-      // Cache successful results for instant repeats
-      if (result.verdict !== 'Insufficient Data') {
-        setCachedResult(imageHash, goalId, result);
-      }
-
-      return result;
-    } catch (err) {
-      console.warn(`Gemini model ${model} failed, trying fallback model. Error: ${err.message}`);
-      lastError = err;
+      const errorMessage = errorData.error?.message || (typeof errorData.error === 'string' ? errorData.error : null) || response.statusText || 'Failed to connect to Gemini';
+      throw new Error(errorMessage);
     }
-  }
 
-  throw new Error(`Gemini Image Analysis Failed: ${lastError?.message || 'Ensure your label photo is clear.'}`);
+    if (onRetry) onRetry('Generating verdict...');
+    const data = await response.json();
+
+    const rawText = data.result;
+
+    if (!rawText || rawText.trim().length === 0) {
+      throw new Error(`Received empty response from API.`);
+    }
+
+    const result = parseVerdict(rawText);
+
+    // Cache successful results for instant repeats
+    if (result.verdict !== 'Insufficient Data') {
+      setCachedResult(imageHash, goalId, result);
+    }
+
+    return result;
+  } catch (err) {
+    throw new Error(`Gemini Image Analysis Failed: ${err.message || 'Ensure your label photo is clear.'}`);
+  }
 };
 

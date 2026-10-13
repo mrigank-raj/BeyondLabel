@@ -2,6 +2,9 @@ import { buildPrompt } from '../src/utils/promptBuilder.js';
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY;
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+// Tried in order; any failure (retired model, rate limit, outage) falls through to the next.
+// Swap models with the GROQ_MODELS env var (comma-separated) instead of editing code.
+const MODELS = (process.env.GROQ_MODELS || 'openai/gpt-oss-120b,openai/gpt-oss-20b').split(',').map((m) => m.trim());
 
 export default async function handler(req, res) {
   // CORS for local development if needed
@@ -22,7 +25,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { productName, goalId, model = 'llama-3.1-70b-versatile' } = req.body;
+  const { productName, goalId } = req.body;
 
   if (!productName || !goalId) {
     return res.status(400).json({ error: 'Missing productName or goalId' });
@@ -35,20 +38,25 @@ export default async function handler(req, res) {
   try {
     const prompt = buildPrompt(productName, goalId);
 
-    const response = await fetch(GROQ_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.3,
-        max_tokens: 4096,
-        response_format: { type: "json_object" }
-      })
-    });
+    let response, model;
+    for (model of MODELS) {
+      response = await fetch(GROQ_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${GROQ_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.3,
+          max_tokens: 4096,
+          response_format: { type: "json_object" }
+        })
+      });
+      if (response.ok) break;
+      console.warn(`Groq model ${model} failed (${response.status}), trying next model`);
+    }
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

@@ -28,7 +28,13 @@ const DesktopLandingPage = () => {
   const [activeGoal, setActiveGoal] = useState(0);
   const [scoreCount, setScoreCount] = useState(0);
   const featuresRef = useRef(null);
+  const resultRef = useRef(null);
   const scoreTarget = 82;
+
+  /* ── Bring the verdict/error into view; it renders below the hero, off-screen ── */
+  useEffect(() => {
+    if (verdict || error) resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [verdict, error]);
 
   /* ── Intersection Observer for feature reveals ── */
   useEffect(() => {
@@ -248,7 +254,7 @@ const DesktopLandingPage = () => {
 
       {/* ═══ Verdict Result (Appears after search) ═══ */}
       {(verdict || error) && (
-        <section className="px-5 md:px-10 py-16 bg-surface-container-lowest border-b border-outline-variant/30">
+        <section ref={resultRef} className="scroll-mt-20 px-5 md:px-10 py-16 bg-surface-container-lowest border-b border-outline-variant/30">
           <div className="max-w-[1200px] mx-auto">
             {error && (
               <div className="max-w-xl bg-error-container/30 border border-error-container rounded-2xl p-5 animate-slide-up">

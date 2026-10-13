@@ -3,8 +3,9 @@ import { buildImagePrompt } from '../src/utils/promptBuilder.js';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 // Tried in order; any failure (retired model, overload, outage) falls through to the next.
-// The "-latest" aliases track Google's current Flash models. Override with GEMINI_MODELS (comma-separated).
-const MODELS = (process.env.GEMINI_MODELS || 'gemini-flash-latest,gemini-flash-lite-latest').split(',').map((m) => m.trim());
+// The "-latest" aliases track Google's current Flash models; lite first for speed.
+// Override with GEMINI_MODELS (comma-separated).
+const MODELS = (process.env.GEMINI_MODELS || 'gemini-flash-lite-latest,gemini-flash-latest').split(',').map((m) => m.trim());
 
 export default async function handler(req, res) {
   // CORS
@@ -38,30 +39,41 @@ export default async function handler(req, res) {
   try {
     const prompt = buildImagePrompt(goalId);
     
-    let response, model;
+    let response = null, model;
     for (model of MODELS) {
-      response = await fetch(`${API_URL}/${model}:generateContent?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { inlineData: { mimeType, data: base64Image } },
-                { text: prompt }
-              ]
+      try {
+        response = await fetch(`${API_URL}/${model}:generateContent?key=${GEMINI_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  { inlineData: { mimeType, data: base64Image } },
+                  { text: prompt }
+                ]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 4096,
+              responseMimeType: "application/json"
             }
-          ],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 4096,
-            responseMimeType: "application/json"
-          }
-        }),
-        signal: AbortSignal.timeout(15000) // 15s per model
-      });
+          }),
+          signal: AbortSignal.timeout(15000) // 15s per model
+        });
+      } catch (error) {
+        if (error.name !== 'TimeoutError') throw error;
+        response = null;
+        console.warn(`Gemini model ${model} timed out, trying next model`);
+        continue;
+      }
       if (response.ok) break;
       console.warn(`Gemini model ${model} failed (${response.status}), trying next model`);
+    }
+
+    if (!response) {
+      return res.status(504).json({ error: 'Request timed out' });
     }
 
     if (!response.ok) {

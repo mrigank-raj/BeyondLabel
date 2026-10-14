@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { HEALTH_GOALS, DEFAULT_GOAL } from '../constants/goals';
 
 const Icon = ({ name, className = '' }) => (
@@ -31,11 +32,13 @@ const OnboardingModal = ({ onComplete, onSelectGoal }) => {
 
   if (!isOpen) return null;
 
-  return (
+  // Portal to <body>: the parent's fade-in animation creates a stacking context that put
+  // the bottom nav (z-40) above this modal (z-50) and hid its buttons on short screens.
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
       <div className="absolute inset-0 bg-primary/60 backdrop-blur-md" />
 
-      <div className="relative z-10 w-full max-w-md bg-surface-container-lowest rounded-[2.5rem] p-8 border border-outline-variant/30 shadow-2xl text-center">
+      <div className="relative z-10 w-full max-w-md max-h-full overflow-y-auto bg-surface-container-lowest rounded-[2.5rem] p-8 border border-outline-variant/30 shadow-2xl text-center">
         {/* Progress Dots */}
         <div className="flex items-center justify-center gap-2 mb-6">
           {[1, 2, 3].map((s) => (
@@ -80,7 +83,7 @@ const OnboardingModal = ({ onComplete, onSelectGoal }) => {
               We tailor your health scores and ingredient warnings based on your goal.
             </p>
 
-            <div className="flex flex-col gap-2.5 max-h-72 overflow-y-auto pr-1 mb-6">
+            <div className="flex flex-col gap-2.5 max-h-[min(18rem,40dvh)] overflow-y-auto pr-1 mb-6">
               {HEALTH_GOALS.map((g) => {
                 const isActive = selectedGoal === g.id;
                 return (
@@ -146,7 +149,8 @@ const OnboardingModal = ({ onComplete, onSelectGoal }) => {
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

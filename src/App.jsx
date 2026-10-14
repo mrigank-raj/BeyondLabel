@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DashboardHome from './components/DashboardHome';
 import DashboardHistory from './components/DashboardHistory';
 import VerdictCard from './components/VerdictCard';
@@ -57,6 +57,12 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('');
   const [error, setError] = useState(null);
+
+  // The error banner renders below the form, behind the fixed bottom nav; bring it into view
+  const errorRef = useRef(null);
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [error]);
   const [validationErrors, setValidationErrors] = useState({});
 
   const { user, guestId } = useAuth();
@@ -311,7 +317,7 @@ function App() {
 
         {/* Dismissable Error Banner */}
         {error && (
-          <div className="max-w-xl mx-auto mb-6 bg-red-50 border border-red-200 p-4 rounded-xl shadow-sm animate-slide-down">
+          <div ref={errorRef} role="alert" className="max-w-xl mx-auto mb-6 bg-red-50 border border-red-200 p-4 rounded-xl shadow-sm animate-slide-down">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5">
                 <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
@@ -324,6 +330,7 @@ function App() {
               </div>
               <button
                 onClick={() => setError(null)}
+                aria-label="Dismiss error"
                 className="flex-shrink-0 p-1 rounded-md text-red-400 hover:text-red-600 hover:bg-red-100 transition-colors"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

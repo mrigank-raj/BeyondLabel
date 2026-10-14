@@ -47,6 +47,7 @@ export const AuthProvider = ({ children }) => {
     guestId,
     loading,
     isGuest: !user,
+    authEnabled: !!supabase,
     signInWithGoogle: async () => {
       if (!supabase) return alert("Supabase not configured");
       return supabase.auth.signInWithOAuth({ provider: 'google' });

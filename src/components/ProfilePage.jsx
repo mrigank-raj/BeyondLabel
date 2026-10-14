@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import GoalSelector from './GoalSelector';
 
 const ProfilePage = ({ goal, setGoal }) => {
-  const { user, isGuest, guestId, signInWithGoogle, signOut } = useAuth();
+  const { user, isGuest, authEnabled, guestId, signInWithGoogle, signOut } = useAuth();
 
   return (
     <div className="w-full animate-fade-in space-y-6 max-w-2xl mx-auto">
@@ -20,11 +20,13 @@ const ProfilePage = ({ goal, setGoal }) => {
             </div>
             <h2 className="font-bold text-xl text-gray-900 mb-2">Guest Mode Active</h2>
             <p className="text-sm text-gray-600 mb-6">
-              You are currently using BeyondLabel anonymously. Your scan history is saved locally on this device. Sign in to sync your data across devices and unlock premium insights.
+              You are currently using BeyondLabel anonymously. Your scan history is saved locally on this device.
+              {authEnabled && ' Sign in to sync your data across devices and unlock premium insights.'}
             </p>
             <p className="text-xs text-gray-400 mb-6 font-mono bg-white px-2 py-1 rounded">Guest ID: {guestId}</p>
-            
-            <button 
+
+            {/* Sign-in only works when Supabase is configured; otherwise it just alerted an error */}
+            {authEnabled && <button
               onClick={signInWithGoogle}
               className="px-6 py-3 bg-gray-900 text-white rounded-pill font-bold shadow-sm hover:bg-gray-800 transition-colors w-full md:w-auto flex items-center justify-center gap-2"
             >
@@ -35,7 +37,7 @@ const ProfilePage = ({ goal, setGoal }) => {
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
               </svg>
               Sign In with Google
-            </button>
+            </button>}
           </div>
         ) : (
           <div className="bg-green-50 rounded-2xl p-6 border border-green-100 flex flex-col items-center md:items-start text-center md:text-left">

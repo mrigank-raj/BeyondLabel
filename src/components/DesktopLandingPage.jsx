@@ -15,7 +15,8 @@ const Icon = ({ name, fill, className = '' }) => (
 );
 
 /* ─── Quick suggestion chips ─── */
-const TRENDING = ['Maltodextrin', 'E635', 'Palm Oil'];
+// Real products: the analyzer needs a product, a bare ingredient returns "Insufficient Data"
+const TRENDING = ['Maggi Noodles', 'Kurkure Masala Munch', 'Bournvita'];
 
 const DesktopLandingPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -161,7 +162,7 @@ const DesktopLandingPage = () => {
 
             {/* Trending Chips */}
             <div className="flex flex-wrap gap-2">
-              <span className="text-label-caps text-outline-variant mr-2 flex items-center">Trending:</span>
+              <span className="text-label-caps text-outline-variant mr-2 flex items-center">Try:</span>
               {TRENDING.map((item, i) => (
                 <button
                   key={i}
@@ -273,11 +274,11 @@ const DesktopLandingPage = () => {
           <div className="ticker inline-flex flex-row flex-nowrap items-center gap-12 px-6 w-max">
             {[0, 1].map((rep) => (
               <div key={rep} className="inline-flex flex-row flex-nowrap items-center gap-12 text-label-caps text-surface-variant/80 whitespace-nowrap uppercase tracking-widest flex-shrink-0">
-                <span className="inline-flex items-center gap-2 flex-shrink-0"><Icon name="database" className="text-secondary" /> 50,000+ Ingredients Analyzed</span>
+                <span className="inline-flex items-center gap-2 flex-shrink-0"><Icon name="database" className="text-secondary" /> Ingredient-Level Analysis</span>
                 <span className="flex-shrink-0">•</span>
-                <span className="inline-flex items-center gap-2 flex-shrink-0"><Icon name="verified_user" className="text-secondary" /> 1M+ Scans This Month</span>
+                <span className="inline-flex items-center gap-2 flex-shrink-0"><Icon name="verified_user" className="text-secondary" /> 9 Health Goals</span>
                 <span className="flex-shrink-0">•</span>
-                <span className="inline-flex items-center gap-2 flex-shrink-0"><Icon name="shield" className="text-secondary" /> Clinically Backed Data</span>
+                <span className="inline-flex items-center gap-2 flex-shrink-0"><Icon name="shield" className="text-secondary" /> Label Photo or Product Name</span>
                 <span className="flex-shrink-0">•</span>
                 <span className="inline-flex items-center gap-2 flex-shrink-0"><Icon name="auto_awesome" className="text-secondary" /> AI-Driven Insights</span>
                 <span className="flex-shrink-0">•</span>
@@ -437,14 +438,15 @@ const DesktopLandingPage = () => {
                     <Icon name="person" className="text-secondary" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-sm font-bold text-on-surface truncate">Shared by Alex</div>
+                    <div className="text-sm font-bold text-on-surface truncate">Shared with a friend</div>
                     <div className="text-xs text-on-surface-variant truncate">"Check out this clean alternative!"</div>
                   </div>
                 </div>
-                <button className="w-full bg-surface-container-high py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 text-on-surface whitespace-nowrap overflow-hidden">
+                {/* Illustration only, so not a real button */}
+                <div aria-hidden="true" className="w-full bg-surface-container-high py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 text-on-surface whitespace-nowrap overflow-hidden">
                   <Icon name="ios_share" className="text-sm flex-shrink-0" />
                   <span className="truncate">Share Discovery</span>
-                </button>
+                </div>
               </div>
             </div>
           </div>
@@ -458,7 +460,7 @@ const DesktopLandingPage = () => {
           <div className="flex-1 text-center md:text-left">
             <h2 className="font-display text-display-lg text-white mb-6 tracking-tight">Ready to eat better?</h2>
             <p className="text-body-lg text-surface-variant max-w-md mx-auto md:mx-0 mb-8">
-              Join over 1 million users making smarter, healthier choices every day. Scan the QR code to open the app instantly.
+              Make smarter, healthier choices every day. Scan the QR code to open the app on your phone.
             </p>
             <a
               href="https://beyondlabel.vercel.app"

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { analyzeProduct } from '../services/geminiService';
+import { DEFAULT_GOAL } from '../constants/goals';
 import DesktopVerdictCard from './DesktopVerdictCard';
 import DesktopCTABar from './DesktopCTABar';
 
@@ -76,7 +77,7 @@ const DesktopLandingPage = () => {
     setLoadingStatus('Analyzing...');
 
     try {
-      const result = await analyzeProduct(query, 'General Health', (msg) => setLoadingStatus(msg));
+      const result = await analyzeProduct(query, DEFAULT_GOAL, (msg) => setLoadingStatus(msg));
       setVerdict(result);
     } catch (err) {
       setError('Something went wrong. Please try again.');

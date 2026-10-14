@@ -1,4 +1,4 @@
-import { GOAL_PROMPT_MODIFIERS } from '../constants/goals.js';
+import { GOAL_PROMPT_MODIFIERS, resolveGoalId } from '../constants/goals.js';
 
 const SYSTEM_INSTRUCTION = `You are an expert, highly rigorous Indian nutritionist and food safety analyst. Your job is to analyze packaged foods critically and give honest, plain-English verdicts. You do not fall for marketing gimmicks.
 
@@ -64,13 +64,13 @@ If the product is unknown, or if the image is blurry, unreadable, or not a food 
 }`;
 
 export const buildPrompt = (productName, goalId) => {
-  const goalModifier = GOAL_PROMPT_MODIFIERS[goalId] || "";
+  const goalModifier = GOAL_PROMPT_MODIFIERS[resolveGoalId(goalId)];
   
   return `${SYSTEM_INSTRUCTION}\n\nUser Health Goal: ${goalModifier}\n\nPlease analyze this product: "${productName}" and return ONLY valid JSON.`;
 };
 
 export const buildImagePrompt = (goalId) => {
-  const goalModifier = GOAL_PROMPT_MODIFIERS[goalId] || "";
+  const goalModifier = GOAL_PROMPT_MODIFIERS[resolveGoalId(goalId)];
   
   return `${SYSTEM_INSTRUCTION}\n\nUser Health Goal: ${goalModifier}\n\nPlease analyze the food product label in the attached image and return ONLY valid JSON.`;
 };

@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { HEALTH_GOALS, DEFAULT_GOAL } from '../constants/goals';
 
 const Icon = ({ name, className = '' }) => (
   <span className={`material-symbols-outlined ${className}`}>{name}</span>
 );
 
-const HEALTH_GOALS = [
-  { name: 'General Health', desc: 'Balanced nutrition and ingredient transparency', icon: 'favorite' },
-  { name: 'Heart Health', desc: 'Low sodium, heart-healthy fats, and cholesterol tracking', icon: 'monitor_heart' },
-  { name: 'Vegan', desc: 'Strictly plant-based, cruelty-free ingredient checking', icon: 'spa' },
-  { name: 'Keto / Low-Carb', desc: 'Minimal sugars and net-carb optimization', icon: 'bolt' },
-  { name: 'Gluten-Free', desc: 'Detect hidden wheat, gluten, and cross-contamination risks', icon: 'grain' },
-  { name: 'Clean Eating', desc: 'Avoid artificial dyes, preservatives, and emulsifiers', icon: 'eco' },
-];
-
 const OnboardingModal = ({ onComplete, onSelectGoal }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(1);
-  const [selectedGoal, setSelectedGoal] = useState('General Health');
+  const [selectedGoal, setSelectedGoal] = useState(DEFAULT_GOAL);
 
   useEffect(() => {
     const onboarded = localStorage.getItem('beyondlabel_onboarded');
@@ -32,7 +24,6 @@ const OnboardingModal = ({ onComplete, onSelectGoal }) => {
 
   const handleFinish = () => {
     localStorage.setItem('beyondlabel_onboarded', 'true');
-    localStorage.setItem('beyondlabel_default_goal', selectedGoal);
     if (onSelectGoal) onSelectGoal(selectedGoal);
     setIsOpen(false);
     if (onComplete) onComplete();
@@ -91,11 +82,11 @@ const OnboardingModal = ({ onComplete, onSelectGoal }) => {
 
             <div className="flex flex-col gap-2.5 max-h-72 overflow-y-auto pr-1 mb-6">
               {HEALTH_GOALS.map((g) => {
-                const isActive = selectedGoal === g.name;
+                const isActive = selectedGoal === g.id;
                 return (
                   <button
-                    key={g.name}
-                    onClick={() => setSelectedGoal(g.name)}
+                    key={g.id}
+                    onClick={() => setSelectedGoal(g.id)}
                     className={`p-3.5 rounded-2xl border flex items-center gap-3 transition-all text-left ${
                       isActive
                         ? 'bg-secondary/15 border-secondary shadow-sm'
@@ -110,7 +101,7 @@ const OnboardingModal = ({ onComplete, onSelectGoal }) => {
                       <Icon name={g.icon} className="text-xl" />
                     </div>
                     <div className="min-w-0">
-                      <p className="font-bold text-sm text-on-surface">{g.name}</p>
+                      <p className="font-bold text-sm text-on-surface">{g.label}</p>
                       <p className="text-[11px] text-on-surface-variant truncate">{g.desc}</p>
                     </div>
                   </button>

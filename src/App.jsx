@@ -11,7 +11,7 @@ import InsightsDashboard from './components/InsightsDashboard';
 import DesktopLandingPage from './components/DesktopLandingPage';
 import { analyzeProduct, analyzeImage } from './services/geminiService';
 import { saveToHistory } from './services/storageService';
-import { lookupBarcode } from './services/barcodeService';
+import { resolveGoalId } from './constants/goals';
 import { trackEvent, identifyUser } from './lib/analytics';
 import { useAuth } from './contexts/AuthContext';
 
@@ -40,7 +40,15 @@ function App() {
   const [productName, setProductName] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [goal, setGoal] = useState('General Health');
+  const [goal, setGoal] = useState(() => {
+    try { return resolveGoalId(localStorage.getItem('beyondlabel_default_goal')); }
+    catch { return resolveGoalId(null); }
+  });
+
+  // Remember the goal (set in onboarding or Profile) across visits
+  useEffect(() => {
+    try { localStorage.setItem('beyondlabel_default_goal', goal); } catch { /* storage unavailable */ }
+  }, [goal]);
   
   // App routing state
   const [currentTab, setCurrentTab] = useState('home'); // 'home', 'history', 'goals', 'profile'
@@ -132,23 +140,11 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goal, productName, imageFile]);
 
-  const handleScanSuccess = async (barcode) => {
-    // Show a loading state while we look up the barcode
-    setLoadingStatus('Looking up product...');
-    setCurrentTab('home'); // Close scanner by going back to home
-    
-    // Attempt lookup
-    const result = await lookupBarcode(barcode);
-    setLoadingStatus(''); // Clear lookup status
-    
-    if (result && result.found && result.fullName) {
-      setProductName(result.fullName);
-      if (validationErrors.input) setValidationErrors(prev => ({ ...prev, input: null }));
-      trackEvent('scan_completed', { type: 'barcode', status: 'success', product: result.fullName });
-    } else {
-      trackEvent('scan_completed', { type: 'barcode', status: 'not_found' });
-      alert('Product not found in database. Please try searching by name or take a photo of the label.');
-    }
+  // The Scan screen captures a label photo; hand it to the normal photo flow (preview + Analyze)
+  const handleScanSuccess = (file) => {
+    setCurrentTab('home');
+    setImageFile(file);
+    if (validationErrors.input) setValidationErrors(prev => ({ ...prev, input: null }));
   };
 
   const handleAnalyze = async (e) => {

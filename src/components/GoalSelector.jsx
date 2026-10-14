@@ -1,13 +1,6 @@
 import React from 'react';
 import { HEALTH_GOALS } from '../constants/goals';
 
-const GOAL_ICONS = {
-  muscle_gain: '💪',
-  fat_loss: '🔥',
-  general_health: '🌿',
-  diabetes: '🩺',
-};
-
 const GoalSelector = ({ selectedGoal, onSelect }) => {
   return (
     <div className="w-full">
@@ -25,7 +18,7 @@ const GoalSelector = ({ selectedGoal, onSelect }) => {
                   : 'bg-white text-gray-700 border-surface-variant hover:border-primary-lighter hover:bg-surface-variant/30 hover:shadow-sm'
               }`}
             >
-              <span className="text-base">{GOAL_ICONS[goal.id]}</span>
+              <span className="text-base">{goal.emoji}</span>
               {goal.label}
               {isSelected && (
                 <svg className="w-4 h-4 ml-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">

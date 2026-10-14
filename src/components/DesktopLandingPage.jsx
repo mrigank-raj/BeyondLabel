@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { analyzeProduct, friendlyErrorMessage } from '../services/geminiService';
+import { trackEvent } from '../lib/analytics';
 import { DEFAULT_GOAL } from '../constants/goals';
 import DesktopVerdictCard from './DesktopVerdictCard';
 import DesktopCTABar from './DesktopCTABar';
@@ -80,13 +81,19 @@ const DesktopLandingPage = () => {
     setError(null); setVerdict(null); setIsLoading(true);
     setLoadingStatus('Analyzing...');
 
+    // Same event names as the mobile app so scan counts cover both; split by `surface`
+    const props = { surface: 'desktop', type: 'text', goal: DEFAULT_GOAL, from_chip: !!customQuery };
+    trackEvent('analysis_started', props);
+
     try {
       const result = await analyzeProduct(query, DEFAULT_GOAL, (msg) => setLoadingStatus(msg));
       setVerdict(result);
+      trackEvent('analysis_completed', { ...props, verdict: result.verdict });
     } catch (err) {
       setError(friendlyErrorMessage(err));
       console.error(err);
       Sentry.captureException(err, { tags: { flow: 'desktop-text' } });
+      trackEvent('analysis_failed', props);
     } finally {
       setIsLoading(false); setLoadingStatus('');
     }
@@ -499,7 +506,7 @@ const DesktopLandingPage = () => {
           </div>
           <div className="flex flex-col items-center gap-1 text-center max-w-md text-surface-variant/60">
             <a href="https://github.com/mrigank-raj/BeyondLabel" target="_blank" rel="noreferrer" className="text-sm hover:text-white transition-colors">Source on GitHub</a>
-            <p className="text-xs">Your scans are saved on your device. Product names and label photos are sent to AI services only to analyze them; error reports help fix bugs.</p>
+            <p className="text-xs">Your scans are saved on your device. Product names and label photos are sent to AI services only to analyze them; anonymous usage analytics and error reports help improve the app.</p>
           </div>
           <div className="text-sm text-surface-variant/60">© {new Date().getFullYear()} BeyondLabel</div>
         </div>

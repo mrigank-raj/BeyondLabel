@@ -173,6 +173,7 @@ function App() {
     };
 
     trackEvent('analysis_started', {
+      surface: 'mobile',
       type: imageFile ? 'image' : 'text',
       goal: goal
     });
@@ -188,6 +189,7 @@ function App() {
       setVerdict(result);
       
       trackEvent('analysis_completed', {
+        surface: 'mobile',
         type: imageFile ? 'image' : 'text',
         goal: goal,
         verdict: result.verdict
@@ -202,6 +204,7 @@ function App() {
       console.error(err);
       // Caught errors never reach Sentry on their own; this is what flags an AI outage
       Sentry.captureException(err, { tags: { flow: imageFile ? 'image' : 'text' } });
+      trackEvent('analysis_failed', { surface: 'mobile', type: imageFile ? 'image' : 'text', goal });
 
       setError(friendlyErrorMessage(err));
     } finally {

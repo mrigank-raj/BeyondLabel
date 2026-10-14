@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { analyzeProduct } from '../services/geminiService';
+import { analyzeProduct, friendlyErrorMessage } from '../services/geminiService';
 import { DEFAULT_GOAL } from '../constants/goals';
 import DesktopVerdictCard from './DesktopVerdictCard';
 import DesktopCTABar from './DesktopCTABar';
@@ -84,7 +84,7 @@ const DesktopLandingPage = () => {
       const result = await analyzeProduct(query, DEFAULT_GOAL, (msg) => setLoadingStatus(msg));
       setVerdict(result);
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      setError(friendlyErrorMessage(err));
       console.error(err);
       Sentry.captureException(err, { tags: { flow: 'desktop-text' } });
     } finally {
@@ -264,7 +264,7 @@ const DesktopLandingPage = () => {
         <section ref={resultRef} className="scroll-mt-20 px-5 md:px-10 py-16 bg-surface-container-lowest border-b border-outline-variant/30">
           <div className="max-w-[1200px] mx-auto">
             {error && (
-              <div className="max-w-xl bg-error-container/30 border border-error-container rounded-2xl p-5 animate-slide-up">
+              <div role="alert" className="max-w-xl bg-error-container/30 border border-error-container rounded-2xl p-5 animate-slide-up">
                 <p className="text-on-error-container font-semibold text-body-md">{error}</p>
               </div>
             )}
@@ -484,7 +484,7 @@ const DesktopLandingPage = () => {
                   width="160" height="160" className="rounded"
                 />
               </div>
-              <p className="text-center text-surface-variant text-label-caps text-xs tracking-widest uppercase">Scan to download</p>
+              <p className="text-center text-surface-variant text-label-caps text-xs tracking-widest uppercase">Scan to open on your phone</p>
             </div>
           </div>
         </div>
@@ -497,12 +497,11 @@ const DesktopLandingPage = () => {
             <Icon name="eco" fill className="text-secondary text-2xl" />
             <span className="font-display text-xl text-white tracking-tighter">BeyondLabel</span>
           </div>
-          <div className="flex gap-6 text-sm text-surface-variant/60">
-            <a href="#" className="hover:text-white transition-colors">Privacy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms</a>
-            <a href="#" className="hover:text-white transition-colors">Contact</a>
+          <div className="flex flex-col items-center gap-1 text-center max-w-md text-surface-variant/60">
+            <a href="https://github.com/mrigank-raj/BeyondLabel" target="_blank" rel="noreferrer" className="text-sm hover:text-white transition-colors">Source on GitHub</a>
+            <p className="text-xs">Your scans are saved on your device. Product names and label photos are sent to AI services only to analyze them; error reports help fix bugs.</p>
           </div>
-          <div className="text-sm text-surface-variant/60">© {new Date().getFullYear()} BeyondLabel Inc.</div>
+          <div className="text-sm text-surface-variant/60">© {new Date().getFullYear()} BeyondLabel</div>
         </div>
       </footer>
 

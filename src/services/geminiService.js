@@ -197,6 +197,25 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1500, onRetry =
 };
 
 /**
+ * Turns an analysis error into a message for users (mobile app and desktop page share this).
+ * Shows the raw error during local development.
+ */
+export const friendlyErrorMessage = (err) => {
+  if (import.meta.env.DEV) return err?.message || 'An unexpected error occurred.';
+  const msg = (err?.message || '').toLowerCase();
+  if (msg.includes('api key') || msg.includes('missing') || msg.includes('.env')) {
+    return 'Our AI service is currently undergoing maintenance. Please try again shortly.';
+  }
+  if (msg.includes('fetch') || msg.includes('network') || msg.includes('connect')) {
+    return 'Unable to connect to the server. Please check your internet connection and try again.';
+  }
+  if (msg.includes('rate limit') || msg.includes('429') || msg.includes('busy')) {
+    return 'The AI service is currently busy. Please wait a moment and try again.';
+  }
+  return 'We ran into an issue analyzing the product. Please try again.';
+};
+
+/**
  * Analyzes a text product name using the backend API proxy.
  */
 export const analyzeProduct = async (productName, goalId, onRetry = null) => {

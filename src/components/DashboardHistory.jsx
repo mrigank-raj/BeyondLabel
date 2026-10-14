@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { getHistory, getWeeklyInsights } from '../services/storageService';
+import { getHistory, getWeeklyInsights, verdictCategory } from '../services/storageService';
+import { HEALTH_GOALS, resolveGoalId } from '../constants/goals';
 
-const DashboardHistory = ({ onAnalyzeNew }) => {
+const FILTERS = [
+  { id: 'all', label: 'All', active: 'bg-white text-gray-900 shadow-sm' },
+  { id: 'safe', label: 'Safe', active: 'bg-green-100 text-green-700 shadow-sm' },
+  { id: 'flagged', label: 'Flagged', active: 'bg-red-100 text-red-700 shadow-sm' },
+];
+
+const DashboardHistory = ({ onAnalyzeNew, goal, onEditGoal, onOpenItem }) => {
   const [history, setHistory] = useState([]);
   const [insights, setInsights] = useState({ safeRatio: 0, scanned: 0, goalAligned: 0, flagged: 0 });
+  const [filter, setFilter] = useState('all');
+  const currentGoal = HEALTH_GOALS.find((g) => g.id === resolveGoalId(goal));
+  const shown = filter === 'all' ? history : history.filter((item) => verdictCategory(item.verdictData?.verdict) === filter);
 
   useEffect(() => {
     setHistory(getHistory());
@@ -14,27 +24,17 @@ const DashboardHistory = ({ onAnalyzeNew }) => {
       {/* Mobile Header */}
       <div className="lg:hidden flex items-center justify-between mb-4 px-1">
         <h1 className="font-display font-bold text-2xl text-gray-900">History</h1>
-        <button className="text-gray-500">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-          </svg>
-        </button>
       </div>
 
       {/* Top Banner */}
       <div className="bg-white rounded-4xl p-6 md:p-8 flex items-center justify-between shadow-sm border border-surface-variant">
         <div className="flex items-center gap-4 md:gap-6">
-          <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 border-2 border-white shadow-sm flex-shrink-0">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="User" className="w-full h-full object-cover" />
+          <div className="w-16 h-16 rounded-full bg-green-50 border-2 border-white shadow-sm flex-shrink-0 flex items-center justify-center text-3xl" aria-hidden="true">
+            {currentGoal.emoji}
           </div>
           <div>
             <h1 className="font-display text-2xl md:text-3xl font-bold text-gray-900">History & Goals</h1>
-            <p className="flex items-center gap-1.5 text-sm font-semibold text-gray-500 mt-1">
-              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              Premium Member
-            </p>
+            <p className="text-sm font-semibold text-gray-500 mt-1">Saved on this device</p>
           </div>
         </div>
         
@@ -45,8 +45,8 @@ const DashboardHistory = ({ onAnalyzeNew }) => {
             </svg>
           </div>
           <div className="text-right">
-            <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">CURRENT FOCUS</p>
-            <p className="font-semibold text-sm text-green-800">Muscle Gain & Recovery</p>
+            <p className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">CURRENT FOCUS</p>
+            <p className="font-semibold text-sm text-green-800">{currentGoal.label}</p>
           </div>
         </div>
       </div>
@@ -59,57 +59,28 @@ const DashboardHistory = ({ onAnalyzeNew }) => {
           {/* Active Health Goals */}
           <section className="bg-white rounded-4xl p-6 md:p-8 shadow-sm border border-surface-variant">
             <div className="flex justify-between items-end mb-6">
-              <h2 className="font-display font-bold text-xl text-gray-900">Active Health Goals</h2>
-              <button className="text-primary text-sm font-semibold flex items-center gap-1 hover:text-primary-light transition-colors">
+              <h2 className="font-display font-bold text-xl text-gray-900">Your Health Goal</h2>
+              <button onClick={onEditGoal} className="text-primary text-sm font-semibold flex items-center gap-1 hover:text-primary-light transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
-                Edit Goals
+                Change Goal
               </button>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Goal 1 (Active) */}
-              <div className="border-2 border-gray-900 rounded-3xl p-5 relative bg-gray-50/50">
+
+            <div className="border-2 border-gray-900 rounded-3xl p-5 relative bg-gray-50/50">
                 <div className="absolute top-4 right-4 bg-gray-900 text-white rounded-full w-6 h-6 flex items-center justify-center">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                    </svg>
+                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xl" aria-hidden="true">
+                    {currentGoal.emoji}
                   </div>
-                  <h3 className="font-bold text-gray-900">Muscle Gain</h3>
+                  <h3 className="font-bold text-gray-900">{currentGoal.label}</h3>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed mb-4">
-                  Prioritizes high protein, complete amino acid profiles, and clean carbs.
-                </p>
-                <div className="flex gap-2">
-                  <span className="px-3 py-1 bg-gray-200 text-gray-700 text-[10px] font-bold uppercase rounded-pill tracking-wider">High Protein</span>
-                  <span className="px-3 py-1 bg-gray-200 text-gray-700 text-[10px] font-bold uppercase rounded-pill tracking-wider">Low Sugar</span>
-                </div>
-              </div>
-
-              {/* Goal 2 (Inactive) */}
-              <div className="border-2 border-surface-variant rounded-3xl p-5 relative opacity-60">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </div>
-                  <h3 className="font-bold text-gray-500">Heart Health</h3>
-                </div>
-                <p className="text-sm text-gray-400 leading-relaxed mb-4">
-                  Strictly flags high sodium, trans fats, and added sugars.
-                </p>
-                <div className="flex gap-2">
-                  <span className="px-3 py-1 bg-gray-100 text-gray-500 text-[10px] font-bold uppercase rounded-pill tracking-wider">Low Sodium</span>
-                </div>
-              </div>
+                <p className="text-sm text-gray-600 leading-relaxed">{currentGoal.desc}</p>
             </div>
           </section>
 
@@ -118,9 +89,17 @@ const DashboardHistory = ({ onAnalyzeNew }) => {
             <div className="flex justify-between items-end mb-6">
               <h2 className="font-display font-bold text-xl text-gray-900">Saved Analysis</h2>
               <div className="flex gap-2 bg-gray-100 p-1 rounded-pill">
-                <button className="px-4 py-1.5 rounded-pill text-xs font-bold text-gray-500">All</button>
-                <button className="px-4 py-1.5 rounded-pill text-xs font-bold bg-green-100 text-green-700 shadow-sm">Safe</button>
-                <button className="px-4 py-1.5 rounded-pill text-xs font-bold text-red-500">Flagged</button>
+                {FILTERS.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    aria-pressed={filter === f.id}
+                    onClick={() => setFilter(f.id)}
+                    className={`px-4 py-1.5 rounded-pill text-xs font-bold transition-colors ${filter === f.id ? f.active : 'text-gray-600'}`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
               </div>
             </div>
             
@@ -135,13 +114,20 @@ const DashboardHistory = ({ onAnalyzeNew }) => {
                     Scan your first product
                   </button>
                 </div>
+              ) : shown.length === 0 ? (
+                <p className="text-center text-gray-500 py-8">No {filter} products yet.</p>
               ) : (
-                history.map((item, index) => (
+                shown.map((item, index) => (
                   <React.Fragment key={item.id}>
-                    <div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer group">
+                    <button
+                      type="button"
+                      onClick={() => onOpenItem?.(item)}
+                      className="w-full text-left flex items-center justify-between p-2 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer group"
+                    >
                       <div className="flex items-center gap-4">
                         <div className="w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden shadow-sm flex items-center justify-center text-2xl">
-                          {item.imageUrl ? (
+                          {/* blob: preview URLs die on reload, so they'd render as broken images */}
+                          {item.imageUrl && !item.imageUrl.startsWith('blob:') ? (
                             <img src={item.imageUrl} alt={item.productName} className="w-full h-full object-cover" />
                           ) : (
                             '📦'
@@ -174,8 +160,8 @@ const DashboardHistory = ({ onAnalyzeNew }) => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </div>
-                    </div>
-                    {index < history.length - 1 && <div className="h-px bg-gray-100 w-full" />}
+                    </button>
+                    {index < shown.length - 1 && <div className="h-px bg-gray-100 w-full" />}
                   </React.Fragment>
                 ))
               )}
@@ -192,8 +178,8 @@ const DashboardHistory = ({ onAnalyzeNew }) => {
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
             
-            <h2 className="font-display font-bold text-2xl mb-2 relative z-10">Weekly Insights</h2>
-            <p className="text-green-100/80 text-sm mb-8 relative z-10">Your scanning habits are improving.</p>
+            <h2 className="font-display font-bold text-2xl mb-2 relative z-10">Your Insights</h2>
+            <p className="text-green-100/80 text-sm mb-8 relative z-10">Based on the scans saved on this device.</p>
             
             <div className="space-y-2 mb-8 relative z-10">
               <div className="flex justify-between text-sm font-semibold">
@@ -231,7 +217,7 @@ const DashboardHistory = ({ onAnalyzeNew }) => {
             </div>
             <h3 className="font-bold text-gray-900 mb-2">Analyze New Label</h3>
             <p className="text-sm text-gray-500 leading-relaxed mb-6">
-              Instantly cross-check against your Muscle Gain goals.
+              Instantly cross-check against your {currentGoal.label} goal.
             </p>
             <button 
               onClick={onAnalyzeNew}

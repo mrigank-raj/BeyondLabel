@@ -58,6 +58,12 @@ export const getHistory = () => {
   }
 };
 
+/** Groups a verdict for filters and insights: 'safe' | 'flagged' | 'neutral' (Moderate / unknown). */
+export const verdictCategory = (verdict) =>
+  (verdict === 'Excellent' || verdict === 'Good') ? 'safe'
+    : (verdict === 'Poor' || verdict === 'Avoid') ? 'flagged'
+    : 'neutral';
+
 export const getWeeklyInsights = () => {
   const history = getHistory();
   if (history.length === 0) {
@@ -70,15 +76,9 @@ export const getWeeklyInsights = () => {
   let flagged = 0;
 
   history.forEach(item => {
-    const verdict = item.verdictData?.verdict;
-    // New Taxonomy: Excellent, Good, Moderate, Poor, Avoid
-    if (verdict === 'Excellent' || verdict === 'Good') {
-      goalAligned++;
-    } else if (verdict === 'Poor' || verdict === 'Avoid') {
-      flagged++;
-    } else if (verdict === 'Moderate') {
-      // Could count as neutral, or flagged depending on strictness. Let's say flagged for strict users, but for now we won't count it in 'safe'
-    }
+    const category = verdictCategory(item.verdictData?.verdict);
+    if (category === 'safe') goalAligned++;
+    else if (category === 'flagged') flagged++;
   });
 
   // Calculate ratio based on trustworthy items vs total items

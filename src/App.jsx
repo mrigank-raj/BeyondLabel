@@ -9,7 +9,7 @@ import BarcodeScanner from './components/BarcodeScanner';
 import ProfilePage from './components/ProfilePage';
 import InsightsDashboard from './components/InsightsDashboard';
 import DesktopLandingPage from './components/DesktopLandingPage';
-import { analyzeProduct, analyzeImage } from './services/geminiService';
+import { analyzeProduct, analyzeImage, friendlyErrorMessage } from './services/geminiService';
 import { saveToHistory } from './services/storageService';
 import { resolveGoalId } from './constants/goals';
 import { trackEvent, identifyUser } from './lib/analytics';
@@ -203,24 +203,7 @@ function App() {
       // Caught errors never reach Sentry on their own; this is what flags an AI outage
       Sentry.captureException(err, { tags: { flow: imageFile ? 'image' : 'text' } });
 
-      let friendlyMessage = 'We ran into an issue analyzing the product. Please try again.';
-      
-      if (import.meta.env.DEV) {
-        // Show detailed technical errors during local development
-        friendlyMessage = err.message || 'An unexpected error occurred.';
-      } else {
-        // Mask technical jargon in production
-        const msg = (err.message || '').toLowerCase();
-        if (msg.includes('api key') || msg.includes('missing') || msg.includes('.env')) {
-          friendlyMessage = 'Our AI service is currently undergoing maintenance. Please try again shortly.';
-        } else if (msg.includes('fetch') || msg.includes('network') || msg.includes('connect')) {
-          friendlyMessage = 'Unable to connect to the server. Please check your internet connection and try again.';
-        } else if (msg.includes('rate limit') || msg.includes('429') || msg.includes('busy')) {
-          friendlyMessage = 'The AI service is currently busy. Please wait a moment and try again.';
-        }
-      }
-      
-      setError(friendlyMessage);
+      setError(friendlyErrorMessage(err));
     } finally {
       setIsLoading(false);
       setLoadingStatus('');
@@ -302,11 +285,14 @@ function App() {
         )}
 
         {!verdict && currentTab === 'history' && (
-          <DashboardHistory 
+          <DashboardHistory
             onAnalyzeNew={() => {
               setCurrentTab('home');
               setVerdict(null);
-            }} 
+            }}
+            goal={goal}
+            onEditGoal={() => setCurrentTab('profile')}
+            onOpenItem={(item) => item.verdictData && setVerdict(item.verdictData)}
           />
         )}
         

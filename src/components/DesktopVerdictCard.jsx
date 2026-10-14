@@ -49,7 +49,7 @@ const DesktopVerdictCard = ({ verdict }) => {
     if (s >= 51)
       return {
         stroke: 'text-primary-fixed-dim',
-        label: 'text-primary-fixed-dim',
+        label: 'text-emerald-700', // the -fixed-dim tones are ~1.7:1 on white; labels need 4.5:1
         border: 'border-primary-fixed-dim',
         bg: 'bg-primary-fixed/30',
         accent: 'border-l-primary-fixed-dim'
@@ -57,7 +57,7 @@ const DesktopVerdictCard = ({ verdict }) => {
     if (s >= 31)
       return {
         stroke: 'text-tertiary-fixed-dim',
-        label: 'text-tertiary-fixed-dim',
+        label: 'text-amber-700',
         border: 'border-tertiary-fixed-dim',
         bg: 'bg-tertiary-fixed/30',
         accent: 'border-l-tertiary-fixed-dim'

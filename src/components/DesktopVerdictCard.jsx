@@ -204,7 +204,7 @@ const DesktopVerdictCard = ({ verdict }) => {
         {/* The Bottom Line (Suggestion Callout) */}
         {suggestion && (
           <div className={`bg-surface-container-low border-l-4 ${sc.accent} border border-outline-variant/30 rounded-2xl p-5`}>
-            <p className="text-label-caps font-bold text-outline uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+            <p className="text-label-caps font-bold text-on-surface-variant uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
               <Icon name="tips_and_updates" className="text-base text-secondary" />
               The Bottom Line
             </p>
@@ -215,7 +215,7 @@ const DesktopVerdictCard = ({ verdict }) => {
         {/* Macro Breakdown Bar Chart */}
         {macros && (
           <div className="bg-surface rounded-2xl p-5 border border-outline-variant/20">
-            <p className="text-label-caps font-bold text-outline uppercase tracking-wider mb-4 flex items-center gap-1.5">
+            <p className="text-label-caps font-bold text-on-surface-variant uppercase tracking-wider mb-4 flex items-center gap-1.5">
               <Icon name="bar_chart" className="text-base text-secondary" />
               Nutritional Balance & Macros
             </p>
@@ -249,7 +249,7 @@ const DesktopVerdictCard = ({ verdict }) => {
                           style={{ width: barWidth }}
                         ></div>
                       </div>
-                      <span className="text-[10px] text-on-surface-variant/70 mt-1 uppercase font-medium">
+                      <span className="text-[10px] text-on-surface-variant mt-1 uppercase font-medium">
                         {m.status || 'Moderate'}
                       </span>
                     </div>
@@ -262,7 +262,7 @@ const DesktopVerdictCard = ({ verdict }) => {
         {/* Healthier Alternatives Grid */}
         {alternatives && alternatives.length > 0 && (
           <div className="pt-2">
-            <p className="text-label-caps font-bold text-outline uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <p className="text-label-caps font-bold text-on-surface-variant uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <Icon name="thumb_up" className="text-base text-secondary" />
               Better Alternatives
             </p>

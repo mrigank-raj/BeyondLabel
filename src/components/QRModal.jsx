@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const Icon = ({ name, className = '' }) => (
   <span className={`material-symbols-outlined ${className}`}>{name}</span>
 );
 
 const QRModal = ({ isOpen, onClose }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const qrUrl = "https://beyondlabel.vercel.app?utm_source=desktop&utm_medium=qr";
@@ -19,7 +26,7 @@ const QRModal = ({ isOpen, onClose }) => {
       />
 
       {/* Modal Dialog */}
-      <div className="relative z-10 w-full max-w-sm bg-surface-container-lowest rounded-[2rem] p-8 border border-outline-variant/30 shadow-2xl text-center">
+      <div role="dialog" aria-modal="true" aria-label="Open on your phone" className="relative z-10 w-full max-w-sm bg-surface-container-lowest rounded-[2rem] p-8 border border-outline-variant/30 shadow-2xl text-center">
         {/* Close Button */}
         <button
           onClick={onClose}

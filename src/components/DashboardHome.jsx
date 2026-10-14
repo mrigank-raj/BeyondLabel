@@ -109,7 +109,7 @@ const DashboardHome = ({
 
             <div className="flex items-center gap-4 py-1">
               <div className="h-px bg-gray-100 flex-1"></div>
-              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">OR UPLOAD LABEL</span>
+              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">OR UPLOAD LABEL</span>
               <div className="h-px bg-gray-100 flex-1"></div>
             </div>
 

@@ -13,6 +13,7 @@ import { analyzeProduct, analyzeImage } from './services/geminiService';
 import { saveToHistory } from './services/storageService';
 import { resolveGoalId } from './constants/goals';
 import { trackEvent, identifyUser } from './lib/analytics';
+import * as Sentry from '@sentry/react';
 import { useAuth } from './contexts/AuthContext';
 
 /**
@@ -199,7 +200,9 @@ function App() {
       
     } catch (err) {
       console.error(err);
-      
+      // Caught errors never reach Sentry on their own; this is what flags an AI outage
+      Sentry.captureException(err, { tags: { flow: imageFile ? 'image' : 'text' } });
+
       let friendlyMessage = 'We ran into an issue analyzing the product. Please try again.';
       
       if (import.meta.env.DEV) {

@@ -3,6 +3,8 @@ import { analyzeProduct } from '../services/geminiService';
 import { DEFAULT_GOAL } from '../constants/goals';
 import DesktopVerdictCard from './DesktopVerdictCard';
 import DesktopCTABar from './DesktopCTABar';
+import QRModal from './QRModal';
+import * as Sentry from '@sentry/react';
 
 /* ─── Material Symbols helper ─── */
 const Icon = ({ name, fill, className = '' }) => (
@@ -24,6 +26,7 @@ const DesktopLandingPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('');
   const [error, setError] = useState(null);
+  const [qrOpen, setQrOpen] = useState(false); // the app is mobile-only; desktop CTAs hand off via QR
 
   /* ─── Feature animation state ─── */
   const [featuresVisible, setFeaturesVisible] = useState(false);
@@ -83,6 +86,7 @@ const DesktopLandingPage = () => {
     } catch (err) {
       setError('Something went wrong. Please try again.');
       console.error(err);
+      Sentry.captureException(err, { tags: { flow: 'desktop-text' } });
     } finally {
       setIsLoading(false); setLoadingStatus('');
     }
@@ -104,12 +108,13 @@ const DesktopLandingPage = () => {
           <a href="#features" className="text-on-surface-variant hover:text-primary transition-colors">Features</a>
           <a href="#cta" className="text-on-surface-variant hover:text-primary transition-colors">Try it</a>
         </div>
-        <a
-          href="https://beyondlabel.vercel.app"
+        <button
+          type="button"
+          onClick={() => setQrOpen(true)}
           className="bg-secondary text-white text-label-caps uppercase tracking-widest px-6 py-3 rounded-full hover:bg-on-secondary-fixed-variant transition-colors flex items-center gap-2 shadow-sm"
         >
           Open App <Icon name="arrow_forward" className="text-sm" />
-        </a>
+        </button>
       </nav>
 
       {/* ═══ 2. Hero Section ═══ */}
@@ -462,12 +467,13 @@ const DesktopLandingPage = () => {
             <p className="text-body-lg text-surface-variant max-w-md mx-auto md:mx-0 mb-8">
               Make smarter, healthier choices every day. Scan the QR code to open the app on your phone.
             </p>
-            <a
-              href="https://beyondlabel.vercel.app"
+            <button
+              type="button"
+              onClick={() => setQrOpen(true)}
               className="inline-flex bg-secondary text-white text-label-caps uppercase tracking-widest px-8 py-4 rounded-full hover:bg-on-secondary-fixed-variant transition-colors shadow-lg items-center gap-2"
             >
               <Icon name="qr_code_scanner" /> Get Started Now
-            </a>
+            </button>
           </div>
           <div className="flex-shrink-0">
             <div className="glass-card rounded-[2rem] p-8 border-white/20 bg-white/5 backdrop-blur-2xl">
@@ -501,6 +507,7 @@ const DesktopLandingPage = () => {
       </footer>
 
       <DesktopCTABar hasVerdict={!!verdict} />
+      <QRModal isOpen={qrOpen} onClose={() => setQrOpen(false)} />
     </div>
   );
 };

@@ -1,10 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import * as htmlToImage from 'html-to-image';
+import * as Sentry from '@sentry/react';
 
 const VerdictCard = ({ verdictData }) => {
   const [copied, setCopied] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [shareFile, setShareFile] = useState(null); // rendered once, reused for repeat shares
+  const [needsSecondTap, setNeedsSecondTap] = useState(false);
   const cardRef = useRef(null);
+
+  useEffect(() => { setShareFile(null); setNeedsSecondTap(false); }, [verdictData]);
 
   useEffect(() => {
     if (cardRef.current) {
@@ -48,16 +53,21 @@ const VerdictCard = ({ verdictData }) => {
 
   const handleShare = async () => {
     setIsGeneratingImage(true);
+    setNeedsSecondTap(false);
+    let file = shareFile;
     try {
-      const element = cardRef.current;
-      if (!element) throw new Error("Card element not found");
-      
-      // Generate image blob
-      const blob = await htmlToImage.toBlob(element, { backgroundColor: '#ffffff' });
-      if (!blob) throw new Error("Failed to generate image blob");
-      
-      const file = new File([blob], `beyondlabel-${Date.now()}.png`, { type: 'image/png' });
-      
+      if (!file) {
+        const element = cardRef.current;
+        if (!element) throw new Error("Card element not found");
+
+        // Embedding the web fonts takes a few seconds on first render
+        const blob = await htmlToImage.toBlob(element, { backgroundColor: '#ffffff' });
+        if (!blob) throw new Error("Failed to generate image blob");
+
+        file = new File([blob], `beyondlabel-${Date.now()}.png`, { type: 'image/png' });
+        setShareFile(file);
+      }
+
       // Try to use native share with files
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
@@ -67,7 +77,7 @@ const VerdictCard = ({ verdictData }) => {
         });
       } else {
         // Fallback: download the image
-        const url = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(file);
         const a = document.createElement('a');
         a.href = url;
         a.download = file.name;
@@ -86,7 +96,15 @@ const VerdictCard = ({ verdictData }) => {
       window.dispatchEvent(new Event('beyondlabel_share'));
       
     } catch (err) {
+      if (err.name === 'AbortError') return; // user closed the share sheet
+      if (err.name === 'NotAllowedError' && file) {
+        // The image took longer than the tap's user activation lasts (strict on iOS Safari);
+        // it's ready now, so a second tap shares instantly.
+        setNeedsSecondTap(true);
+        return;
+      }
       console.error('Error sharing image:', err);
+      Sentry.captureException(err, { tags: { flow: 'share' } });
       // Fallback to text share if image generation fails
       handleCopy();
     } finally {
@@ -273,7 +291,7 @@ const VerdictCard = ({ verdictData }) => {
                 ) : (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                 )}
-                {isGeneratingImage ? 'Generating...' : 'Share Analysis'}
+                {isGeneratingImage ? 'Generating...' : needsSecondTap ? 'Tap again to share' : 'Share Analysis'}
               </button>
               <div className="h-px w-full bg-gray-200 my-2"></div>
               <button disabled className="w-full text-[#006c49] py-2 font-bold flex items-center justify-center gap-2 opacity-70">
@@ -318,7 +336,7 @@ const VerdictCard = ({ verdictData }) => {
           <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 ${config.bg} ${config.color}`}>
             <span className="text-3xl">{config.icon}</span>
           </div>
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Verdict</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Verdict</p>
           <h2 className={`text-3xl font-display font-extrabold mb-3 ${config.color}`}>
             {config.label}
           </h2>
@@ -381,13 +399,13 @@ const VerdictCard = ({ verdictData }) => {
             <h3 className="font-display font-bold text-lg text-gray-900 mb-1 ml-2">Better Alternatives</h3>
             <p className="text-sm text-gray-500 mb-4 ml-2">Products with cleaner ingredients.</p>
             
-            <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar pl-2 pr-4 snap-x">
+            <div tabIndex={0} role="region" aria-label="Healthier alternatives" className="flex overflow-x-auto gap-4 pb-4 no-scrollbar pl-2 pr-4 snap-x">
               {alternatives.map((alt, idx) => (
                 <div key={idx} className="snap-start flex-none w-64 bg-white rounded-3xl overflow-hidden border border-surface-variant shadow-sm p-4">
                   <div className="h-32 bg-primary/10 rounded-2xl mb-3 flex items-center justify-center text-primary font-bold">
                     Alternative #{idx+1}
                   </div>
-                  <span className="text-[10px] font-bold text-green-600 tracking-wider">{alt.score ? `${alt.score}/100 SCORE` : 'RECOMMENDED'}</span>
+                  <span className="text-[10px] font-bold text-green-700 tracking-wider">{alt.score ? `${alt.score}/100 SCORE` : 'RECOMMENDED'}</span>
                   <h4 className="font-bold text-gray-900 text-sm mt-1 mb-2 leading-tight line-clamp-1">{alt.name}</h4>
                   <p className="text-xs text-gray-500 line-clamp-2">{alt.reason}</p>
                 </div>
@@ -408,7 +426,7 @@ const VerdictCard = ({ verdictData }) => {
             ) : (
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
             )}
-            Share
+            {isGeneratingImage ? 'Preparing…' : needsSecondTap ? 'Tap again to share' : 'Share'}
           </button>
           <button 
             onClick={() => window.location.reload()}

@@ -184,7 +184,7 @@ const ImageUpload = ({ imageFile, imagePreview, onUpload, variant = "desktop-car
                 </label>
                 <p className="pl-1.5 text-gray-500">or drag and drop</p>
               </div>
-              <p className="text-xs text-gray-400 mt-1.5">PNG, JPG, WEBP up to 4MB</p>
+              <p className="text-xs text-gray-500 mt-1.5">PNG, JPG, WEBP up to 4MB</p>
             </>
           )}
         </div>

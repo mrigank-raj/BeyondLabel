@@ -114,7 +114,13 @@ const VerdictCard = ({ verdictData }) => {
 
   return (
     <div ref={cardRef} className="w-full mt-4 md:mt-8 pb-24 animate-fade-in space-y-6">
-      
+      {verdictData.estimated && (
+        <p className="flex items-center gap-2 text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+          <span className="material-symbols-outlined text-[16px]">info</span>
+          Estimated from product name. Scan the label for exact values.
+        </p>
+      )}
+
       {/* ------------------------------------------------------------------ */}
       {/* DESKTOP LAYOUT (>= 1024px) */}
       {/* ------------------------------------------------------------------ */}

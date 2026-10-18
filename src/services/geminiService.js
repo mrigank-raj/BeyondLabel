@@ -129,6 +129,7 @@ const parseVerdict = (text) => {
     else if (verdictStr.includes('Avoid')) verdict = 'Avoid';
 
     return {
+      productName: typeof parsedData.productName === 'string' ? parsedData.productName.trim() || null : null,
       verdict,
       healthScore: parsedData.healthScore ?? null,
       why: parsedData.why || 'No explanation provided.',
@@ -315,7 +316,7 @@ const setCachedResult = (imageHash, goalId, result) => {
  * Compresses an image before sending to the API. 
  * Aggressively reduces payload size for fast uploads and lower AI latency.
  */
-const compressImage = async (file) => {
+export const compressImage = async (file, MAX_DIMENSION = 600, quality = 0.5) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -327,8 +328,7 @@ const compressImage = async (file) => {
         let width = img.width;
         let height = img.height;
         
-        const MAX_DIMENSION = 600; // Aggressive: 600px is enough for label text readability
-        
+        // Default 600px is enough for label text readability; History thumbnails pass 160
         if (width > height && width > MAX_DIMENSION) {
           height = Math.round(height * (MAX_DIMENSION / width));
           width = MAX_DIMENSION;
@@ -343,7 +343,7 @@ const compressImage = async (file) => {
         ctx.drawImage(img, 0, 0, width, height);
         
         // Aggressive JPEG compression — 50% quality keeps text readable
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
         resolve({
           base64: dataUrl.split(',')[1],
           mimeType: 'image/jpeg'

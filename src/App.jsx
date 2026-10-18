@@ -9,7 +9,7 @@ import BarcodeScanner from './components/BarcodeScanner';
 import ProfilePage from './components/ProfilePage';
 import InsightsDashboard from './components/InsightsDashboard';
 import DesktopLandingPage from './components/DesktopLandingPage';
-import { analyzeProduct, analyzeImage, friendlyErrorMessage } from './services/geminiService';
+import { analyzeProduct, analyzeImage, compressImage, friendlyErrorMessage } from './services/geminiService';
 import { saveToHistory } from './services/storageService';
 import { resolveGoalId } from './constants/goals';
 import { trackEvent, identifyUser } from './lib/analytics';
@@ -121,10 +121,10 @@ function App() {
     }
   }, [user, guestId]);
 
-  const validate = () => {
+  const validate = (query) => {
     const errors = {};
     if (!goal) errors.goal = "Please select a health goal.";
-    if (!productName && !imageFile) errors.input = "Enter a product name or upload a photo.";
+    if (!query && !imageFile) errors.input = "Enter a product name or upload a photo.";
     return errors;
   };
 
@@ -154,10 +154,12 @@ function App() {
     if (validationErrors.input) setValidationErrors(prev => ({ ...prev, input: null }));
   };
 
-  const handleAnalyze = async (e) => {
+  // `nameOverride` lets a trending chip search right away, before the productName state update lands
+  const handleAnalyze = async (e, nameOverride) => {
     if (e) e.preventDefault();
-    
-    const errors = validate();
+    const query = (nameOverride ?? productName).trim();
+
+    const errors = validate(query);
     setValidationErrors(errors);
 
     if (Object.keys(errors).length > 0) {
@@ -183,7 +185,8 @@ function App() {
       if (imageFile) {
         result = await analyzeImage(imageFile, goal, handleRetryMessage);
       } else {
-        result = await analyzeProduct(productName, goal, handleRetryMessage);
+        // Name searches answer from the model's memory, not the pack; VerdictCard flags this
+        result = { ...await analyzeProduct(query, goal, handleRetryMessage), estimated: true };
       }
       
       setVerdict(result);
@@ -197,7 +200,11 @@ function App() {
 
       // Save successful analysis to local storage
       if (result.verdict !== 'Insufficient Data') {
-        saveToHistory(productName || 'Scanned Label', imagePreview, result);
+        // imagePreview is a blob: URL that dies on reload; store a ~10KB data URL instead
+        const thumb = imageFile && await compressImage(imageFile, 160, 0.6)
+          .then(({ base64, mimeType }) => `data:${mimeType};base64,${base64}`)
+          .catch(() => null);
+        saveToHistory(result.productName || query || 'Scanned Label', thumb, result);
       }
       
     } catch (err) {
@@ -274,7 +281,10 @@ function App() {
             handleSubmit={handleAnalyze}
             validationErrors={validationErrors}
             onOpenScanner={() => setCurrentTab('scan')}
-            onDemoSelect={(mockResult) => setVerdict(mockResult)}
+            onTrendingSelect={(name) => {
+              setProductName(name);
+              handleAnalyze(null, name);
+            }}
           />
         )}
 

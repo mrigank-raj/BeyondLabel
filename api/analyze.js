@@ -6,6 +6,12 @@ const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 // Swap models with the GROQ_MODELS env var (comma-separated) instead of editing code.
 const MODELS = (process.env.GROQ_MODELS || 'openai/gpt-oss-120b,openai/gpt-oss-20b').split(',').map((m) => m.trim());
 
+// Same product + goal → same answer, so repeat searches (trending chips) skip Groq.
+// Stores the in-flight promise so a burst of identical taps makes one call.
+// ponytail: per-instance memory, lost on cold start; move to Vercel Runtime Cache if hit rate matters.
+const cache = new Map();
+const CACHE_MAX = 200;
+
 export default async function handler(req, res) {
   // CORS for local development if needed
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -35,6 +41,24 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Server configuration error: Missing API Key' });
   }
 
+  const key = `${goalId}|${String(productName).trim().replace(/\s+/g, ' ').toLowerCase()}`;
+  let pending = cache.get(key);
+  if (!pending) {
+    pending = callGroq(productName, goalId);
+    cache.set(key, pending);
+    if (cache.size > CACHE_MAX) cache.delete(cache.keys().next().value);
+    // Only clean successes stay cached; errors and broken JSON retry live next time
+    pending.then(({ status, body }) => {
+      try { if (status === 200) return JSON.parse(body.result); } catch { /* fall through */ }
+      cache.delete(key);
+    });
+  }
+  const { status, body } = await pending;
+  return res.status(status).json(body);
+}
+
+// Resolves to { status, body } and never throws, so a cached promise can't reject.
+async function callGroq(productName, goalId) {
   try {
     const prompt = buildPrompt(productName, goalId);
 
@@ -61,22 +85,22 @@ export default async function handler(req, res) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error(`Groq API Error (${model}):`, response.status, errorData);
-      return res.status(response.status).json({ 
-        error: errorData.error?.message || response.statusText || 'Failed to connect to Groq AI' 
-      });
+      return { status: response.status, body: {
+        error: errorData.error?.message || response.statusText || 'Failed to connect to Groq AI'
+      } };
     }
 
     const data = await response.json();
     const rawText = data.choices?.[0]?.message?.content;
 
     if (!rawText) {
-      return res.status(500).json({ error: 'Received empty response from Groq' });
+      return { status: 500, body: { error: 'Received empty response from Groq' } };
     }
 
-    return res.status(200).json({ result: rawText });
+    return { status: 200, body: { result: rawText } };
 
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(500).json({ error: error.message || 'Internal Server Error' });
+    return { status: 500, body: { error: error.message || 'Internal Server Error' } };
   }
 }

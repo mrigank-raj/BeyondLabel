@@ -17,6 +17,7 @@ You MUST respond in pure JSON format only, without any markdown formatting or \`
 
 Use the following strict JSON schema:
 {
+  "productName": "string (brand and product as printed on the pack, e.g. 'Maggi 2-Minute Masala Noodles'; null if not visible)",
   "verdict": "Excellent" | "Good" | "Moderate" | "Poor" | "Avoid" | "Insufficient Data",
   "healthScore": 0-100,
   "why": "2-3 sentences explaining the verdict in plain English. Reference specific ingredients and the user's health goal.",

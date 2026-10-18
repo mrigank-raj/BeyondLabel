@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import ImageUpload from './ImageUpload';
 import OnboardingModal from './OnboardingModal';
 import { getHistory } from '../services/storageService';
-import { DEMO_FOODS } from '../constants/mockData';
 
-const DashboardHome = ({ 
-  productName, handleProductNameChange, 
+const TRENDING = ['Maggi Masala Noodles', 'Kurkure Masala Munch', 'Yoga Bar Protein Bar'];
+
+const DashboardHome = ({
+  productName, handleProductNameChange,
   imageFile, imagePreview, handleImageUpload,
   goal, handleGoalSelect,
   isLoading, handleSubmit, loadingStatus,
   validationErrors,
-  onDemoSelect
+  onTrendingSelect
 }) => {
   const [showNudge, setShowNudge] = useState(false);
 
@@ -71,18 +72,32 @@ const DashboardHome = ({
           <div className="bg-white rounded-[2rem] p-5 shadow-[0_8px_30px_-5px_rgba(0,0,0,0.08)] border border-surface-variant/50 space-y-5">
             
             {/* Search Input */}
-            <div className="relative w-full">
+            <form role="search" onSubmit={handleSubmit} className="relative w-full">
               <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[22px]">search</span>
-              <input 
-                type="text" 
+              <input
+                type="search"
+                enterKeyHint="search"
+                aria-label="Search for a food product"
                 value={productName}
                 onChange={(e) => handleProductNameChange(e.target.value)}
-                placeholder="Search for any food product..." 
-                className="w-full bg-gray-50 border border-gray-200 rounded-pill py-3.5 pl-12 pr-4 text-[15px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-gray-400"
+                placeholder="Search e.g. Maggi, Kurkure..."
+                className="w-full bg-gray-50 border border-gray-200 rounded-pill py-3.5 pl-12 pr-14 text-[15px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-gray-400"
               />
-            </div>
+              {productName.trim() && (
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  aria-label="Search"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center disabled:opacity-60"
+                >
+                  <span className={`material-symbols-outlined text-[20px] ${isLoading ? 'animate-spin' : ''}`}>
+                    {isLoading ? 'progress_activity' : 'arrow_forward'}
+                  </span>
+                </button>
+              )}
+            </form>
 
-            {/* Trending Searches (Demo Mode) */}
+            {/* Trending Searches: real searches, so results follow the user's goal */}
             {!productName && !imageFile && (
               <div className="animate-fade-in pt-1">
                 <div className="flex items-center gap-1.5 mb-3 px-1">
@@ -90,17 +105,15 @@ const DashboardHome = ({
                   <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Trending Right Now</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {DEMO_FOODS.map((food) => (
+                  {TRENDING.map((name) => (
                     <button
-                      key={food.id}
-                      onClick={() => onDemoSelect({
-                        ...food.verdictData,
-                        productName: food.name
-                      })}
+                      key={name}
+                      type="button"
+                      onClick={() => onTrendingSelect(name)}
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gray-50 hover:bg-primary/5 border border-gray-200 hover:border-primary/30 rounded-full text-sm font-medium text-gray-700 hover:text-primary transition-all active:scale-95 group"
                     >
                       <span className="material-symbols-outlined text-[16px] text-gray-400 group-hover:text-primary/70 transition-colors">search</span>
-                      {food.name}
+                      {name}
                     </button>
                   ))}
                 </div>
